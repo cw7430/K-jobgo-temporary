@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <!-- ✅ SEO 최적화 메타 태그 for 회사소개 페이지 -->
+<meta name="title" content="(주)한국경영지원사업단 - 회사소개 | 외국인 인재 매칭 플랫폼 K-jobgo">
+<meta name="description" content="(주)한국경영지원사업단의 비전과 서비스를 소개합니다. 외국인 인재 매칭부터 사후관리까지, 믿고 맡길 수 있는 파트너 K-jobgo.">
+<meta name="keywords" content="한국경영지원사업단, 회사소개, 외국인근로자, 유학생, 취업연계, 인력매칭, K-jobgo, KOREAMSA, 외국인인재">
+<meta name="robots" content="index, follow">
+
+<!-- ✅ 오픈그래프 (SNS 공유 최적화) -->
+<meta property="og:title" content="(주)한국경영지원사업단 | 회사소개 - K-jobgo">
+<meta property="og:description" content="외국인 인재와 기업을 연결하는 믿을 수 있는 파트너 K-jobgo. 회사의 비전과 서비스를 소개합니다.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://kjobgo.com/company">
+<meta property="og:image" content="https://k-jobgo-profile-photos-seoul.s3.ap-northeast-2.amazonaws.com/img/favicon.png">
+ 
+	<title>(주)한국경영지원사업단 | 외국인 인재 매칭 플랫폼 - K‑jobgo</title>
+
+<link rel="icon" href="https://k-jobgo-profile-photos-seoul.s3.ap-northeast-2.amazonaws.com/img/favicon.png" />
+
+	
+<!-- ✅ 공통 먼저, 상세 후 -->
+<link rel="stylesheet" th:href="@{/css/layout.css}">
+<link rel="stylesheet" th:href="@{/css/toggle.css}">
+<link rel="stylesheet" th:href="@{/css/main.css}">
+<link rel="stylesheet" th:href="@{/css/company.css}">
+<link rel="stylesheet" th:href="@{/css/login.css}">
+
+
+</head>
+
+<body class="all-page" th:attr="data-is-admin=${isAdmin}">
+<div th:replace="~{login :: loginModal}"></div>
+<header class="top-var">
+  <!-- ✅ 로고 + 슬로건 + 회사소개를 하나의 묶음으로 감싸기 -->
+<div class="brand-header">
+  <div class="logo-slogan">
+    <img src="/img/favicon.png" class="logo" alt="K-jobgo | 외국인 인재 매칭 플랫폼" />
+    <p class="about-slogan"> KOREAMSA Inc.</p>
+  </div>
+      <!-- SEO 및 브랜드 노출 -->
+    <div class="company-info">
+      <p class="sr-only">(주)한국경영지원사업단</p>
+    </div>
+</div>
+  
+<div class="menu-wrapper">
+	    <!-- 로그인 상태 라벨 -->
+  <div class="login-info">
+    <span th:if="${isAdmin}" th:text="${adminName + '님'}"></span>
+    <button id="loginBtn" th:text="${isAdmin} ? '로그아웃' : '로그인'"></button>
+  </div>
+  
+  <div class="menu-toggle" onclick="toggleMenu()">☰</div>
+
+  <!-- 토글 메뉴 -->
+  <div id="menu" class="menu-popup hidden-menu">
+    <ul>
+     <!-- <li onclick="location.href='/PartnerCompanyInsight'">Partner Company Insight</li> -->
+      <li onclick="alert('페이지 준비 중입니다.')">Partner Company Insight</li>
+      <li onclick="alert('페이지 준비 중입니다.')">Q&A board</li>
+
+      <!-- 관리자 전용 -->
+      <li th:if="${isAdmin}" class="menu-divider"></li>
+      <li th:if="${isAdmin}" class="admin-label">관리자 전용</li>
+      <li th:if="${isAdmin}" onclick="location.href='/admin/profileList'">프로필 전체 보기</li>
+    </ul>
+  </div>
+</div>  
+</header>
+  
+  <!-- ✅ K-jobgo 로고 전용 중앙 박스 (about-section 위에 배치) -->
+<div class="center-kjobgo-logo">
+<a th:href="@{/}">
+  <img src="/img/k-jobgo_company.png" alt="K-jobgo | 외국인 인재 매칭 플랫폼" class="k-jobgologo" />
+</a>
+</div>
+
+<div class="download-section">
+  <a href="https://k-jobgo-profile-photos-seoul.s3.ap-northeast-2.amazonaws.com/files/brochure_K-jobgo.pdf" download class="download-btn">
+    📄 회사소개서
+  </a>
+</div>
+
+
+<div class="media-section">
+  <!-- 🔹 미디어 섹션 타이틀 -->
+<h2 class="media-title">행사 사진 & 영상</h2>
+  <!-- 좌측 이미지 격자 -->
+<div class="image-grid">
+  <img src="/img/ceo1.jpg" data-type="image" data-url="https://k-jobgo-profile-photos-seoul.s3.ap-northeast-2.amazonaws.com/img/ceo1.jpg" onclick="playMedia(this)">
+  <img src="/img/ceo2.jpg" data-type="image" data-url="https://k-jobgo-profile-photos-seoul.s3.ap-northeast-2.amazonaws.com/img/ceo2.jpg" onclick="playMedia(this)">
+  <img src="/img/ceo4.jpg" data-type="image" data-url="https://k-jobgo-profile-photos-seoul.s3.ap-northeast-2.amazonaws.com/img/ceo4.jpg" onclick="playMedia(this)">
+  <img src="/img/ceo5.jpg" data-type="image" data-url="https://k-jobgo-profile-photos-seoul.s3.ap-northeast-2.amazonaws.com/img/ceo5.jpg" onclick="playMedia(this)">
+<img src="/img/ve_news.png"
+     data-type="video"
+     data-url="https://k-jobgo-profile-photos-seoul.s3.ap-northeast-2.amazonaws.com/video/kjobgo_news.mp4"
+     onclick="playMedia(this)">
+</div>
+
+  <!-- 우측 동영상 (고정) -->
+  <div class="video-preview" id="mediaDisplay">
+	<video id="mainVideo" controls width="100%" height="auto">
+	  <source src="https://k-jobgo-profile-photos-seoul.s3.ap-northeast-2.amazonaws.com/video/kjobgo_news.mp4" type="video/mp4">
+	  브라우저가 video 태그를 지원하지 않습니다.
+	</video>
+	   <div class="media-caption">2025년 6월 9일 - 타이빈즈엉 방문 현장</div>
+  </div>
+</div>
+
+ <div class="about-section">
+        <!-- 첫 번째: 왼쪽 도형, 오른쪽 설명 -->
+        <div class="step-box left-align">
+            <div class="step-circle">
+                <div class="step-icon">🌱</div>
+                <h2 class="step-title-colored">
+  <span class="k">K</span><span class="dash">-</span><span class="j">j</span><span class="o1">o</span><span class="b">b</span><span class="g">g</span><span class="o2">o</span>
+</h2>
+
+            </div>
+            <div class="step-content">
+             <h2 class="step-title">Start · Free · Support · Job Matching</h2>
+                             <span class="keywords">Start your job journey in Korea.</span>
+                <p class="step-desc">외국인 근로자의 든든한 동반자, <span class="highlight">100% 무료</span> 취업 연계 플랫폼</p>
+            </div>
+        </div>
+
+        <!-- 두 번째: 왼쪽 도형, 오른쪽 설명 -->
+<div class="step-box left-align">
+            <div class="step-circle">
+                <div class="step-icon">⚖️</div>
+                <h2 class="step-title">Legal Support</h2>
+            </div>
+            <div class="step-content">
+             <h2 class="step-title">Labor · Tax · Administration · Safe System</h2>
+                  <span class="keywords">Build with Confidence. Operate with Compliance.</span>
+                <p class="step-desc">노무사, 세무사, 행정사와 함께 근로자를 위한 <span class="highlight">환경</span>을 완비했습니다.
+                      <br>
+   				 </p>
+            </div>
+
+        </div>
+
+ <!-- 세 번째: 왼쪽 도형, 오른쪽 설명 -->
+<div class="step-box left-align">
+  <div class="step-circle">
+    <div class="step-icon">👥</div>
+    <h2 class="step-title">Consult</h2>
+  </div>
+  <div class="step-content">
+    <h2 class="step-title">1:1 Customized Consultation</h2>
+    <span class="keywords">Talk to an expert who understands your culture.</span>
+    <p class="step-desc">
+      각 나라·지역별 담당자가 상주하여 <span class="highlight">1:1 맞춤 상담</span> 가능합니다.
+    </p>
+  </div>
+</div>
+
+<!-- 네 번째: 왼쪽 설명, 오른쪽 도형 -->
+<div class="step-box left-align">
+  <div class="step-circle">
+    <div class="step-icon">🤝</div>
+    <h2 class="step-title">After-care</h2>
+  </div>
+  <div class="step-content">
+    <h2 class="step-title">Visa · Salary · Culture · After-care</h2>
+    <span class="keywords">Support continues even after you start working.</span>
+    <p class="step-desc">
+      비자, 급여, 문화 적응까지 근로자의 <span class="highlight">취업 이후</span>까지 책임집니다.
+    </p>
+  </div>
+</div>
+
+<!-- 다섯 번째: 왼쪽 도형, 오른쪽 설명 -->
+<div class="step-box left-align">
+  <div class="step-circle">
+    <div class="step-icon">📞</div>
+    <h2 class="step-title">Access</h2>
+  </div>
+  <div class="step-content">
+    <h2 class="step-title">Call · Email · Visit · Accessibility</h2> 
+    <span class="keywords">You can reach us in many ways.</span>
+    <p class="step-desc">
+      유선, 이메일, 오프라인 방문 모두 가능하여 <span class="highlight">접근성</span>이 우수합니다.
+    </p>
+  </div>
+</div>
+</div>
+
+    <footer class="foot-var">
+         <div>
+  		<p> 
+  		<span>(주)한국경영지원사업단&nbsp; 대표이사 : 이준희 <span class="divider">|</span> 사업자등록번호 : 887-81-00124</span><br>
+        본사_경기도 김포시 김포한강4로 125 월드타워 705호 <span class="divider">|</span> 본부_경기도 광명시 일직로 43 GIDC A1706호<br>
+        국내지사_김해지사, 대구지사, 천안지사, 광주지사, 원주지사 <span class="divider">|</span> 해외지사_베트남, 필리핀, 인도네시아, 인도, 몽골, 네팔, 우즈베키스탄<br>
+        유료직업소개업 등록번호 : 제2025-4090515-14-5-00012호 <span class="divider">|</span> 
+        Tel_ 031-983-0942 <span class="divider">|</span>  Fax_ 031-624-1540  <span class="divider">|</span> Email_ k-jobgo@naver.com<br>
+ 		ⓒ 2025 K-jobgo. All rights reserved.</p>
+ 		</div>
+    </footer>
+    
+    <!-- JS 연결 -->
+    <script th:src="@{/js/common.js}"></script>
+    <script th:src="@{/js/login.js}"></script>
+    <script th:src="@{/js/company.js}"></script>
+    </body>
+</html>

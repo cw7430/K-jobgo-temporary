@@ -1,0 +1,298 @@
+@charset "UTF-8";
+
+.center-kjobgo-logo {
+  position: relative;             /* 독립적 위치지정 */
+  width: 100%;                    /* 전체 너비 */
+  display: flex;                  /* 가로 중앙 정렬용 */
+  justify-content: center;       /* 가운데 정렬 */
+  align-items: center;           /* 수직 가운데 정렬 */
+  margin: 60px auto 10px auto;   /* 위아래 여백 */
+  z-index: 10;                    /* 다른 요소 위에 */
+}
+
+/* ✅ 로고 이미지 */
+.k-jobgologo {
+  width: 380px;
+  height: auto;
+  object-fit: contain;
+  display: block;
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+/* 최대 너비, 가운데 정렬, 패딩 */
+.matching-container {
+	flex: 1;  /* 남는 영역을 채움 */
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 30px;
+    font-size: 1.1rem;
+}
+
+/* Tab Navigation (탭 메뉴) */
+.tab-nav {
+    display: flex;
+    justify-content: center;
+    border-bottom: 2px solid #ccc;
+    margin-top: 60px;
+    margin-bottom: 40px;
+    list-style: none;
+    padding: 0;
+}
+
+.tab-nav li {
+    padding: 10px 20px;
+    cursor: pointer;
+    font-weight: bold;
+    color: #666;
+    border-bottom: 3px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.tab-nav li.active {
+    color: #000;
+    border-color: #0E2C54; /* 탭 active 색상 */
+}
+
+/* Tab Content 기본 설정 */
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* Flag 이미지 그룹 */
+.flag-group {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.flag-group img {
+    max-width: 160px;    /* 최대 너비만 제한 */
+    max-height: 100px;    /* 최대 높이만 제한 */
+    width: auto;         /* 원본 비율 유지 */
+    height: auto;        /* 원본 비율 유지 */
+    object-fit: contain;  /* ⭐⭐ 핵심 - 이미지가 짤리지 않고 비율 유지하며 맞춰짐 */
+    margin: 10px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    background-color: white;
+}
+
+.flag-group img:hover {
+    transform: scale(1.1);
+    border-color: #0E2C54;
+}
+
+/* QR 코드 영역 */
+.qr-display {
+    text-align: center;
+    padding: 50px;   /* 기존 20 → 30 */
+    border: 1px solid #eee;
+    border-radius: 10px;
+    background-color: #fafafa;
+    max-width: 450px;  /* 기존 400 → 450 */
+    margin: 20px auto; /* 위에도 여유 */
+}
+
+/* ✅ 베트남 탭 가로 2분할 */
+
+.qr-warning {
+  text-align: center;
+  font-weight: 500;
+  color: #ff9900;
+  margin: 10px 0;
+}
+
+.qr-display.multi {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  gap: 20px;
+  position: relative;
+  margin: 20px auto;
+  max-width: none;   /* ✅ 상위 제한 없앰 */
+  width: 100%;
+  padding: 40px 20px;
+}
+
+/* ✅ 베트남 탭만 더 넓게 */
+.qr-display.qr-vietnam {
+  max-width: 1000px;   /* 예: 일반은 450px, 베트남은 1000px */
+}
+
+/* ✅ 각 box 반반 */
+.qr-box {
+  flex: 1;
+  max-width: 480px;
+  padding: 20px;
+  box-sizing: border-box;
+  text-align: center;
+  border: 1px solid #ddd;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.qr-canvas {
+  margin: 10px auto;
+  width: 200px;
+  height: 200px;
+}
+
+.qr-description-center {
+  text-align: center;
+  margin-top: 30px;
+}
+
+.qr-display .qr-img {
+    width: 200px;
+    height: 200px;
+    margin: 10px 0;
+    object-fit: contain;
+}
+
+.qr-label {
+  font-weight: bold;
+  font-size: 1.2rem;
+  color: #0E2C54;
+  margin-bottom: 10px;
+}
+
+.qr-vietnam {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  flex-wrap: wrap;
+  position: relative;
+}
+
+.qr-description {
+  width: 100%;
+  text-align: center;
+  font-size: 0.95rem;
+  color: #666;
+  margin-top: 30px;
+}
+
+.qr-manager {
+  font-weight: bold;
+  font-size: 1.1rem;
+  background-color: #FF7043;  /* 코랄 오렌지 */
+  color: #ffffff;             /* 흰색 글씨 */
+  padding: 8px 14px;
+  border-radius: 8px;
+  display: inline-block;
+  margin-bottom: 15px;
+  border: 1px solid;
+}
+
+@media screen and (max-width: 768px) {
+  /* 로고 크기 축소 */
+  .k-jobgologo {
+    width: 70%;
+    max-width: 250px;
+    margin: 0 auto;
+  }
+  
+  .brand-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .menu-wrapper {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+
+  .login-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    margin-bottom: 0;
+  }
+
+  .menu-toggle {
+    font-size: 1.5rem;
+    cursor: pointer;
+  }
+
+  .logo-slogan {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .matching-container {
+    padding: 0 16px;  /* 기존 30px → 16px로 헤더와 통일 */
+  }
+  
+  .tab-nav {
+    display: flex;
+    flex-wrap: wrap;         /* 줄바꿈 허용 */
+    justify-content: center; /* 가운데 정렬 */
+    gap: 10px;               /* 탭 간 간격 */
+    padding: 0;
+    margin: 20px 0;
+  }
+
+  .tab-nav li {
+    flex: 1 1 30%;           /* 한 줄에 3개 → 자동 줄바꿈 */
+    text-align: center;
+    padding: 10px;
+    font-size: 0.9rem;
+    white-space: nowrap;
+  }
+
+  /* 국기 이미지 크기 조정 */
+  .flag-group {
+    grid-template-columns: repeat(3, 1fr); /* 2열 */
+    justify-items: center;
+  }
+
+  .flag-group img {
+    max-width: 100%;
+    width: 100px;
+    height: auto;
+    object-fit: contain;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    background-color: white;
+  }
+  
+  /* QR 영역 패딩 조정 */
+  .qr-display {
+    padding: 10px;
+  }
+
+  .qr-manager {
+    font-size: 1rem;
+  }
+
+  .qr-label {
+    font-size: 1.1rem;
+  }
+
+  .qr-description {
+    font-size: 0.9rem;
+  }
+}
+

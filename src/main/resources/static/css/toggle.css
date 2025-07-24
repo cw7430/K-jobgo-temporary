@@ -1,0 +1,130 @@
+/* ✅ 메뉴 묶음: header 안에서 절대 위치 고정 */
+.menu-wrapper {
+  height: 30px;
+  overflow: visible;
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+/* ✅ 메뉴 아이콘 */
+.menu-toggle {
+  font-size: 24px;
+  cursor: pointer;
+  display: inline-block;
+  z-index: 1000;
+  position: relative;
+}
+
+.menu-popup {
+  position: absolute;
+  top: 40px;
+  right: 0;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 10px 0;
+  width: 220px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  z-index: 1000;
+}
+
+.menu-popup ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.menu-popup li {
+  padding: 10px 20px;
+  font-size: 15px;
+  cursor: pointer;
+  border-bottom: 1px solid #eee;
+}
+
+.menu-popup li:hover {
+  background-color: #f8f8f8;
+}
+
+.menu-divider {
+  border-bottom: 1px solid #ccc;
+  margin: 5px 0;
+  height: 1px;
+}
+
+.admin-label {
+  font-weight: bold;
+  padding: 10px 20px;
+  color: #0E2C54;
+  background-color: #f0f0f0;
+  cursor: default;
+  font-size: 14px;
+}
+
+.login-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: bold;
+}
+
+/* ✅ 토글 메뉴 리스트 */
+.hidden-menu {
+  display: none;
+  position: absolute;
+  top: 36px;
+  right: 0;
+  width: 160px;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 10px 15px;
+  z-index: 999;
+  text-align: right;
+  list-style: none;
+  margin: 0;
+  padding-left: 0;
+}
+
+.hidden-menu li {
+  padding: 5px 0;
+  cursor: pointer;
+  text-align: right;
+  list-style-type: none !important;
+}
+
+.hidden-menu li:hover {
+  color: #E88C44;
+}
+
+#menu {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .menu-wrapper {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+
+  .hidden-menu {
+    width: 140px;
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+
+  .menu-toggle {
+    font-size: 20px;
+  }
+}
+

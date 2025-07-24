@@ -1,0 +1,261 @@
+/* ================================
+   ✅ 중앙 K-jobgo 로고: 완전 독립 스타일
+   ================================ */
+.center-kjobgo-logo {
+  position: relative;             /* 독립적 위치지정 */
+  width: 100%;                    /* 전체 너비 */
+  display: flex;                  /* 가로 중앙 정렬용 */
+  justify-content: center;       /* 가운데 정렬 */
+  align-items: center;           /* 수직 가운데 정렬 */
+  margin: 60px auto 10px auto;   /* 위아래 여백 */
+  z-index: 10;                    /* 다른 요소 위에 */
+}
+
+.page-wrapper {
+    max-width: 1400px;     /* ✅ 최대 너비 지정 */
+    margin: 0 auto;        /* ✅ 가운데 정렬 */
+    padding: 0 20px;       /* ✅ 양쪽 여백 (반응형) */        
+    width: 100%;    
+}
+
+/* 기본 초기화 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Noto Sans KR', sans-serif;
+}
+
+#userPage .search-container {
+    margin-bottom: 10px; /* 줄이고 */
+}
+
+#userPage .table {
+    margin-top: 10px !important; /* 기존 margin 덮어쓰기 */
+}
+
+/* 전체 테이블 스타일 */
+.table {
+    width: 100%;
+    max-width: 1400px; 
+    border-collapse: collapse;
+    margin: 40px auto;
+    background-color: #ffffff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    font-size: 15px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* ✅ 검색창 바로 아래 테이블 고정 + 최소 공간 확보 */
+.table-wrapper {
+  margin-top: 10px;      /* 검색창과의 간격 */
+}
+
+/* ✅ 기존 테이블 margin 제거 (덮어쓰기) */
+.table {
+  margin: 0 auto !important;
+}
+
+/* 테이블 헤더 */
+.table thead {
+    background-color: #007BFF;
+    color: #ffffff;
+}
+
+.table thead th {
+    padding: 14px;
+    text-align: center;
+    font-weight: 600;
+}
+
+/* 테이블 본문 */
+.table tbody td {
+    padding: 12px;
+    text-align: center;
+    border-top: 1px solid #eee;
+    color: #333;
+}
+
+/* 홀짝 배경색 */
+.table tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+/* 마우스 호버 효과 */
+.table tbody tr:hover {
+    background-color: #eaf2ff;
+    transition: background-color 0.3s ease;
+}
+
+/* 버튼: 프로필 등록 */
+.insertFormBtn, .applyFormBtn {
+	text-align: left; /* 왼쪽 정렬 */
+    background-color: #007BFF;
+    color: white;
+    font-weight: 500;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin: 20px 0;
+    transition: background-color 0.2s ease;
+}
+
+.insertFormBtn:hover, .applyFormBtn:hover {
+    background-color: #0056b3;
+}
+
+/* 검색 필터 박스 */
+.search-container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 20px;
+    background-color: #f1f5ff;
+    border-radius: 8px;
+    margin-bottom: 4px; /* ✅ 여백 확 줄이기 */
+}
+
+.search-container select {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.search-container form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: center;
+}
+
+.search-input {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  width: 300px;
+}
+
+.searchBtn {
+  background-color: #007BFF;
+  color: white;
+  font-weight: 500;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.searchBtn:hover {
+  background-color: #0056b3;
+}
+
+/* 페이지 제목 */
+h1 {
+    text-align: center;
+    font-size: 28px;
+    font-weight: 700;
+    color: #0E2C54;
+    margin: 50px 0 20px;
+}
+
+/* 링크 안의 h1을 감싸는 a 태그에 스타일 적용 */
+a.clean-link {
+    color: inherit;         /* h1의 색상 상속 */
+    text-decoration: none;  /* 밑줄 제거 */
+    display: inline-block;  /* h1을 감싸는 용도로 블록 처리 */
+    width: 100%;            /* 클릭 범위를 넓게 */
+}
+
+/* 호버 효과 (선택사항) */
+a.clean-link:hover {
+    opacity: 0.9;
+    cursor: pointer;
+}
+.clickable-row {
+    cursor: pointer;
+}
+
+.pagination {
+    text-align: center;
+    margin-top : 30px;
+}
+
+.pagination ul {
+    display: inline-flex;
+    list-style: none;
+    padding: 0;
+    gap: 6px;
+    align-items: center; /* 세로 정렬 */
+}
+
+/* 숫자 페이지 버튼 */
+.pagination li a {
+    display: block;
+    padding: 6px 12px;
+    background: #f2f2f2;
+    color: #333;
+    text-decoration: none;
+    border-radius: 4px;
+}
+
+/* 현재 페이지 강조 */
+.pagination li.active a {
+    background: #007bff;
+    color: white;
+    font-weight: bold;
+}
+
+/* 이전 / 다음은 텍스트 강조만 */
+.pagination li.prev a,
+.pagination li.next a {
+    background: none;
+    color: #007bff;
+    font-weight: bold;
+    padding: 6px 8px;
+    border: none;
+}
+
+/* 비활성 상태는 클릭 안되고 색 연하게 */
+.pagination li.disabled span {
+    color: #bbb;
+    padding: 6px 8px;
+}
+
+/* ✅ footer를 항상 바닥으로 밀어내기 */
+footer.foot-var {
+  margin-top: auto;
+  padding: 24px 0 0 0;
+  text-align: center;
+  color: black;
+  font-size: 14px;
+  line-height: 1.4;
+}
+@media screen and (max-width: 768px) {
+  .profile-list-container {
+    padding: 10px;
+  }
+
+  .profile-card {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .filter-section {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .pagination {
+    justify-content: center;
+  }
+}
+
+

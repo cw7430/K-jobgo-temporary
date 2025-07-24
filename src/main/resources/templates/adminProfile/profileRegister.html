@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile-info</title>
+
+    <!-- Favicon -->
+<link rel="icon" href="https://k-jobgo-profile-photos-seoul.s3.ap-northeast-2.amazonaws.com/img/favicon.png" />
+    
+    <!-- CSS 연결 -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" th:href="@{/css/layout.css}">
+    <link rel="stylesheet" th:href="@{/css/toggle.css}">
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+    <link rel="stylesheet" th:href="@{/css/login.css}">
+    <link rel="stylesheet" th:href="@{/css/profile.css}">
+</head>
+
+<body class="all-page" th:attr="data-is-admin=${isAdmin}">
+<header class="top-var">
+<div class="brand-header">
+  <div class="logo-slogan">
+    <img src="/img/favicon.png" class="logo" alt="K-jobgo | 외국인 인재 매칭 플랫폼" />
+    <p class="about-slogan"> KOREAMSA Inc.</p>
+  </div>
+      <!-- SEO 및 브랜드 노출 -->
+    <div class="company-info">
+      <p class="sr-only">(주)한국경영지원사업단</p>
+    </div>
+</div>
+
+<div class="menu-wrapper">
+	    <!-- 로그인 상태 라벨 -->
+  <div class="login-info">
+    <span th:if="${isAdmin}" th:text="${adminName + '님'}"></span>
+    <button id="loginBtn" th:text="${isAdmin} ? '로그아웃' : '로그인'"></button>
+  </div>
+  
+  <div class="menu-toggle" onclick="toggleMenu()">☰</div>
+
+  <!-- 토글 메뉴 -->
+  <div id="menu" class="menu-popup hidden-menu">
+    <ul>
+    <!-- <li onclick="location.href='/PartnerCompanyInsight'">Partner Company Insight</li> -->
+      <li onclick="alert('페이지 준비 중입니다.')">Partner Company Insight</li>
+      <li onclick="alert('페이지 준비 중입니다.')">Q&A board</li>
+
+      <!-- 관리자 전용 -->
+      <li th:if="${isAdmin}" class="menu-divider"></li>
+      <li th:if="${isAdmin}" class="admin-label">관리자 전용</li>
+      <li th:if="${isAdmin}" onclick="location.href='/admin/profileList'">프로필 전체 보기</li>
+    </ul>
+  </div>
+</div>  
+</header>
+
+  <!-- ✅ K-jobgo 로고 전용 중앙 박스 (about-section 위에 배치) -->
+<div class="center-kjobgo-logo">
+<a th:href="@{/}">
+  <img src="/img/k-jobgo_company.png" alt="K-jobgo | 외국인 인재 매칭 플랫폼" class="k-jobgologo" />
+</a>
+</div>
+
+<form class="profileform" th:action="@{/admin/profileRegister}"  method="post" enctype="multipart/form-data">
+<h1>인재 프로필 등록</h1>
+    <!-- ✅ 통합 박스 시작 -->
+            <div class="notice-required">
+  <p>※ <strong>기본정보는 필수 항목</strong>입니다. 모든 항목을 빠짐없이 입력해주세요.</p>
+</div>
+    <div class="profile-box">
+        <!-- 사진 영역 -->
+        <div class="photo-area">
+            <input type="file" id="photo" name="photo" accept="image/*" />
+            <img id="preview" src="#" alt="미리보기" />
+        </div>
+
+<!-- 기본정보 -->
+<div class="profile-info">
+    <div class="row-group">
+        <label>한국 이름:</label>
+        <input type="text" name="profile.nameKor" />
+    </div>
+    <div class="row-group">
+        <label>현지 이름:</label>
+        <input type="text" name="profile.nameOrigin" />
+    </div>
+    <div class="row-group">
+        <label>성별:</label>
+        <label><input type="radio" name="profile.gender" value="남성" /> 남성</label>
+        <label><input type="radio" name="profile.gender" value="여성" /> 여성</label>
+    </div>
+    <div class="row-group">
+        <label>비자 종류:</label>
+        <input type="text" name="profile.visaType" placeholder="예: E-7 / E-7-1 (대문자)" />
+    </div>
+    <div class="row-group">
+        <label>비자 만기일:</label>
+        <input type="date" name="profile.visaExpire" />
+        <label><input type="checkbox" name="profile.visaExtendable" /> 연장 가능</label>
+    </div>
+</div>
+
+            <!-- 개인정보: 이메일, 연락처 등 -->
+            <div class="profile-sub-info">
+                <div class="email-group">
+                    <label>이메일:</label>
+                    <input type="text" name="profile.emailId" placeholder="이메일 아이디" />
+                    <span>@</span>
+                    <input type="text" name="profile.emailDomain" placeholder="예: gmail.com" />
+                </div>
+                <div class="phone-group">
+                    <label>핸드폰 번호:</label>
+                    <input type="text" name="profile.phone1" maxlength="3" placeholder="010" />
+                    <span>-</span>
+                    <input type="text" name="profile.phone2" maxlength="4" placeholder="1234" />
+                    <span>-</span>
+                    <input type="text" name="profile.phone3" maxlength="4" placeholder="5678" />
+                </div>
+                <div class="address-group">
+                    <label>주소:</label>
+                    <input type="text" name="profile.address"  placeholder="예: 경기도 광명시 일직로43" />
+                </div>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" name="profile.drivingLicense" /> 운전면허 있음</label>
+                    <label><input type="checkbox" name="profile.dormitory" /> 기숙사 필요</label>
+                </div>
+            </div>
+        </div>
+        
+<div class="notice-required">
+    <p>※ <strong>국적, 최초 입국일, 희망 근무지역</strong>은 필수 입력 항목입니다.</p>
+  </div>
+
+<!-- 인적사항 -->
+<div class="section personal-section">
+    <h3>인적사항</h3>
+    <div class="row">
+        <label>국적:</label>
+        <input type="text" name="personalInfo.nationality" />
+    </div>
+
+<div class="row row-bodyinfo">
+    <label>나이:</label>
+    <input type="number" name="personalInfo.age" />
+
+    <label>키:</label>
+    <div class="input-unit">
+        <input type="number" name="personalInfo.height" />
+        <span class="unit">cm</span>
+    </div>
+
+    <label>몸무게:</label>
+    <div class="input-unit">
+        <input type="number" name="personalInfo.weight" />
+        <span class="unit">kg</span>
+    </div>
+</div>
+
+<div class="row row-entry-topik">
+    <label>최초 입국일:</label>
+    <input type="date" name="personalInfo.firstEntry" />
+
+    <label>TOPIK:</label>
+    <select name="personalInfo.topikLevel">
+   	    <option value="등급">등급</option>
+        <option value="상">상</option>
+        <option value="중">중</option>
+        <option value="하">하</option>
+    </select>
+</div>
+
+<div class="row row-salary-location">
+<label for="expectedSalary">희망 급여:</label>
+<select name="personalInfo.expectedSalary" id="expectedSalary">
+	<option value="급여 선택">급여 선택</option>
+  <option value="0~200">0~200</option>
+  <option value="200~250">200~250</option>
+  <option value="250~300">250~300</option>
+  <option value="300~350">300~350</option>
+  <option value="350~400">350~400</option>
+  <option value="400~">400~</option>
+    <option value="급여 협의">급여 협의</option>
+</select>
+  <span class="unit-label">만원</span>
+
+
+<label for="desiredLocation">희망 근무 지역:</label>
+<select name="personalInfo.desiredLocation" id="desiredLocation">
+  <option value="지역">지역</option>
+  <option value="서울">서울</option>
+  <option value="경기">경기</option>
+  <option value="인천">인천</option>
+  <option value="대전">대전</option>
+  <option value="세종">세종</option>
+  <option value="충남">충남</option>
+  <option value="충북">충북</option>
+  <option value="광주">광주</option>
+  <option value="전남">전남</option>
+  <option value="전북">전북</option>
+  <option value="대구">대구</option>
+  <option value="경북">경북</option>
+  <option value="부산">부산</option>
+  <option value="경남">경남</option>
+  <option value="울산">울산</option>
+  <option value="강원">강원</option>
+  <option value="제주">제주</option>
+  <option value="전국">전국</option> <!-- ✅ 특별 옵션 -->
+</select>
+
+</div>
+
+    <hr/>
+
+    <!-- 🎓 학력사항 -->
+    <div class="section" id="education-section">
+		<h3>
+		  학력사항
+		  <span class="btn-inline-group">
+		    <button type="button" onclick="addEducation()">+ 추가</button>
+		    <button type="button" onclick="deleteSelectedEdu()">- 삭제</button>
+		  </span>
+		</h3>
+		 <div class="edu-entry">
+		             <input type="checkbox" class="edu-checkbox" />
+		            <input type="text" name="educationList[0].period" placeholder="(예: 2025-00-00 ~ 2025-00-00)" />
+		            <input type="text" name="educationList[0].schoolName" placeholder="학교명" />
+		            <input type="text" name="educationList[0].major" placeholder="학과" />
+		<label><input type="radio" name="educationList[0].status" value="graduated" /> 졸업</label>
+		<label><input type="radio" name="educationList[0].status" value="enrolled" /> 재학중</label>
+        </div>
+    </div>
+
+    <hr/>
+
+    <!-- 💼 경력사항 -->
+    <div class="section" id="work-section">
+		<h3>
+		  경력사항
+		  <span class="btn-inline-group">
+		    <button type="button" onclick="addWork()">+ 추가</button>
+		    <button type="button" onclick="deleteSelectedWork()">- 삭제</button>
+		  </span>
+		</h3>
+        <div class="work-entry">
+                <input type="checkbox" class="work-checkbox" />
+            <input type="text" name="workList[0].period" placeholder="(예: 2025-00-00 ~ 2025-00-00)" />
+            <input type="text" name="workList[0].companyName" placeholder="회사명" />
+            <input type="text" name="workList[0].jobResponsibility" placeholder="담당 업무"/>
+        </div>
+    </div>
+
+    <hr/>
+
+    <!-- ✍ 특이사항 -->
+<div class="section">
+  <h3>특이사항</h3>
+  <textarea name="strengths"
+            placeholder="특이사항을 입력하세요 (예: 자격증, 기술능력, 한국어 :TOPIK 등급)" rows="5" th:text="${profileDto.strengths}"></textarea>
+</div>
+
+    <div class="btn-form-group">
+      <button type="submit">등록</button>
+      <button type="button" onclick="location.href='/admin/profileList'">취소</button>
+    </div>
+    </div>
+</form>
+
+
+<footer class="foot-var">
+         <div>
+  		<p> 
+  		<span>(주)한국경영지원사업단&nbsp; 대표이사 : 이준희 <span class="divider">|</span> 사업자등록번호 : 887-81-00124</span><br>
+        본사_경기도 김포시 김포한강4로 125 월드타워 705호 <span class="divider">|</span> 본부_경기도 광명시 일직로 43 GIDC A1706호<br>
+        국내지사_김해지사, 대구지사, 천안지사, 광주지사, 원주지사 <span class="divider">|</span> 해외지사_베트남, 필리핀, 인도네시아, 인도, 몽골, 네팔, 우즈베키스탄<br>
+        유료직업소개업 등록번호 : 제2025-4090515-14-5-00012호 <span class="divider">|</span> 
+        Tel_ 031-983-0942 <span class="divider">|</span>  Fax_ 031-624-1540  <span class="divider">|</span> Email_ k-jobgo@naver.com<br>
+ 		ⓒ 2025 K-jobgo. All rights reserved.</p>
+ 		</div>
+</footer>
+
+<!-- JS 연결 -->
+<script th:src="@{/js/common.js}"></script>
+<script th:src="@{/js/login.js}"></script>
+<script th:src="@{/js/profile.js}"></script>
+</body>
+</html>

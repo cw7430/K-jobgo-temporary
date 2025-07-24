@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- ✅ SEO 최적화 메타 태그 -->
+<meta name="title" content="K-jobgo Matching Page - 외국인 근로자 매칭 매니저 안내">
+<meta name="description" content="K-jobgo 매칭 페이지에서는 국가별 외국인 매칭 매니저와 Kakao 오픈채팅으로 빠르게 연결할 수 있습니다.">
+<meta name="keywords" content="외국인 근로자, 유학생 취업, Kakao 매칭, 매칭 매니저, 오픈채팅, k-jobgo, 한국경영지원사업단, 외국인 채용, 다국어 채팅, QR 코드 채용">
+<meta name="robots" content="index, follow">
+
+<!-- ✅ Open Graph (SNS 공유 최적화) -->
+<meta property="og:title" content="K-jobgo Matching Page - 외국인 매칭 매니저 안내">
+<meta property="og:description" content="국가별 매칭 매니저와 카카오톡으로 바로 연결해보세요. QR코드 스캔으로 간편한 상담이 가능합니다.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://kjobgo.com/matching">
+<meta property="og:image" content="https://k-jobgo-profile-photos-seoul.s3.ap-northeast-2.amazonaws.com/img/favicon.png">
+
+<!-- ✅ 타이틀 -->
+<title>K-jobgo Matching Page | 외국인 근로자 매칭 매니저 안내</title>
+
+     <!-- Favicon -->
+<link rel="icon" href="https://k-jobgo-profile-photos-seoul.s3.ap-northeast-2.amazonaws.com/img/favicon.png" />
+	
+<!-- ✅ 공통 먼저, 상세 후 -->
+<link rel="stylesheet" th:href="@{/css/layout.css}">
+<link rel="stylesheet" th:href="@{/css/toggle.css}">
+<link rel="stylesheet" th:href="@{/css/matching.css}">
+<link rel="stylesheet" th:href="@{/css/login.css}">
+</head>
+
+<body class="all-page" th:attr="data-is-admin=${isAdmin}">
+
+<div th:replace="~{login :: loginModal}"></div>
+<header class="top-var">
+  <!-- ✅ 로고 + 슬로건 + 회사소개를 하나의 묶음으로 감싸기 -->
+<div class="brand-header">
+  <div class="logo-slogan">
+    <img src="/img/favicon.png" class="logo" alt="K-jobgo | 외국인 인재 매칭 플랫폼" />
+    <p class="about-slogan"> KOREAMSA Inc.</p>
+  </div>
+      <!-- SEO 및 브랜드 노출 -->
+    <div class="company-info">
+      <p class="sr-only">(주)한국경영지원사업단</p>
+    </div>
+</div>
+  
+<div class="menu-wrapper">
+	    <!-- 로그인 상태 라벨 -->
+  <div class="login-info">
+    <span th:if="${isAdmin}" th:text="${adminName + '님'}"></span>
+    <button id="loginBtn" th:text="${isAdmin} ? '로그아웃' : '로그인'"></button>
+  </div>
+  
+  <div class="menu-toggle" onclick="toggleMenu()">☰</div>
+
+  <!-- 토글 메뉴 -->
+  <div id="menu" class="menu-popup hidden-menu">
+    <ul>
+    <!-- <li onclick="location.href='/PartnerCompanyInsight'">Partner Company Insight</li> -->
+      <li onclick="alert('페이지 준비 중입니다.')">Partner Company Insight</li>
+      <li onclick="alert('페이지 준비 중입니다.')">Q&A board</li>
+
+      <!-- 관리자 전용 -->
+      <li th:if="${isAdmin}" class="menu-divider"></li>
+      <li th:if="${isAdmin}" class="admin-label">관리자 전용</li>
+      <li th:if="${isAdmin}" onclick="location.href='/admin/profileList'">프로필 전체 보기</li>
+    </ul>
+  </div>
+</div>  
+</header>
+
+  <!-- ✅ K-jobgo 로고 전용 중앙 박스 (about-section 위에 배치) -->
+<div class="center-kjobgo-logo">
+<a th:href="@{/}">
+  <img src="/img/k-jobgo_company.png" alt="K-jobgo | 외국인 인재 매칭 플랫폼" class="k-jobgologo" />
+</a>
+</div>
+
+<div class="matching-container">
+    <!-- Tab Navigation -->
+    <ul class="tab-nav">
+        <li class="active" data-tab="tab-en">English</li> <!-- 영어 -->
+        <li data-tab="tab-mn">Монгол</li> <!--  몽골어 -->
+        <li data-tab="tab-vi">Tiếng Việt</li> <!-- 베트남어 -->
+        <li data-tab="tab-mm">မြန်မာဘာသာ</li> <!-- 미얀마어 -->
+        <li data-tab="tab-hi">हिंदी / বাংলা / नेपाली</li> <!-- 인도 / 방글라데시어, 네팔어 -->
+        <li data-tab="tab-id">Indonesia</li>
+    </ul>
+
+    <!-- Tab Contents -->
+    <div class="tab-content active" id="tab-en">
+        <div class="flag-group">
+            <img src="/img/flags/ph.png" alt="Philippines">
+            <img src="/img/flags/lk.png" alt="Sri Lanka">
+            <img src="/img/flags/pk.png" alt="Pakistan">
+            <img src="/img/flags/uz.png" alt="Uzbekistan">
+            <img src="/img/flags/kh.png" alt="Cambodia">
+            <img src="/img/flags/kg.png" alt="Kyrgyzstan">
+        </div>
+        <!-- 영어권 -->
+        <div class="qr-display">
+         <p class="qr-manager">
+         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#000000" viewBox="0 0 24 24" style="vertical-align: middle; margin-right: 8px;">
+    	<path d="M12 2C6.48 2 2 5.94 2 10.5c0 2.67 1.84 5.03 4.65 6.47L5.2 21l4.07-2.15c.86.18 1.77.28 2.73.28 5.52 0 10-3.94 10-8.5S17.52 2 12 2z"/>
+  		</svg>Matching Manager : Aimee </p>
+         <p class="qr-label">Kakao Open Chat QR</p>
+  			<div class="qr-canvas" id="qr-en"></div>
+		  <!-- 하단 안내문구 -->
+		  <div class="qr-description">
+		    <p class="qr-kor">카카오톡 오픈채팅방으로 상담 가능합니다.</p>
+		    <p class="qr-eng">You can contact our matching manager via Kakao Open Chat.</p>
+		  </div>
+        </div>
+    </div>
+        <!-- 몽골 : 준비중 -->
+    <div class="tab-content" id="tab-mn">
+        <div class="flag-group">
+            <img src="/img/flags/mn.png" alt="Mongolia">
+        </div>
+
+        <div class="qr-display">
+         <p class="qr-manager">
+         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#000000" viewBox="0 0 24 24" style="vertical-align: middle; margin-right: 8px;">
+    	<path d="M12 2C6.48 2 2 5.94 2 10.5c0 2.67 1.84 5.03 4.65 6.47L5.2 21l4.07-2.15c.86.18 1.77.28 2.73.28 5.52 0 10-3.94 10-8.5S17.52 2 12 2z"/>
+  		</svg>준비중입니다. </p>
+            <p>빠른 시일 내에 매칭 매니저를 배정할 예정입니다.</p>
+            <p class="qr-description">A matching manager will be assigned soon.</p>    
+        </div>
+      <!--  
+        <div class="qr-display">
+        <p class="qr-manager">
+         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#000000" viewBox="0 0 24 24" style="vertical-align: middle; margin-right: 8px;">
+    	<path d="M12 2C6.48 2 2 5.94 2 10.5c0 2.67 1.84 5.03 4.65 6.47L5.2 21l4.07-2.15c.86.18 1.77.28 2.73.28 5.52 0 10-3.94 10-8.5S17.52 2 12 2z"/>
+  		</svg>Matching Manager : Thu Thu Htet Htun</p>
+  		<p class="qr-label">Kakao Open Chat QR</p>
+  		 <div class="qr-canvas" id="qr-mn"></div>
+	  <!-- 하단 안내문구 
+	  <div class="qr-description">
+	    <p class="qr-kor">카카오톡 오픈채팅방으로 상담 가능합니다.</p>
+	    <p class="qr-eng">You can contact our matching manager via Kakao Open Chat.</p>
+	  </div>
+        </div>       -->   
+    </div>
+
+<!-- 베트남 -->
+<div class="tab-content" id="tab-vi">
+  <div class="flag-group">
+    <img src="/img/flags/vn.png" alt="Vietnam">
+  </div>
+
+  <!-- ⚠️ 안내 문구 -->
+  <p class="qr-warning" >⚠️ Vui lòng chỉ liên hệ một người để tránh gây nhầm lẫn.</p>
+
+  <!-- QR 코드 2분할 박스 -->
+  <div class="qr-display multi qr-vietnam">
+    <div class="qr-box">
+      <p class="qr-manager">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#000000" viewBox="0 0 24 24" style="vertical-align: middle; margin-right: 8px;">
+          <path d="M12 2C6.48 2 2 5.94 2 10.5c0 2.67 1.84 5.03 4.65 6.47L5.2 21l4.07-2.15c.86.18 1.77.28 2.73.28 5.52 0 10-3.94 10-8.5S17.52 2 12 2z"/>
+        </svg>
+        Matching Manager : TRAN THI AN
+      </p>
+      <p class="qr-label">Kakao Open Chat QR</p>
+      <div class="qr-canvas" id="qr-vi-1"></div>
+    </div>
+
+    <!-- 가운데 세로 구분선 -->
+    <div class="qr-divider"></div>
+
+    <div class="qr-box">
+      <p class="qr-manager">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#000000" viewBox="0 0 24 24" style="vertical-align: middle; margin-right: 8px;">
+          <path d="M12 2C6.48 2 2 5.94 2 10.5c0 2.67 1.84 5.03 4.65 6.47L5.2 21l4.07-2.15c.86.18 1.77.28 2.73.28 5.52 0 10-3.94 10-8.5S17.52 2 12 2z"/>
+        </svg>
+        Matching Manager : VU THI HUYEN
+      </p>
+      <p class="qr-label">Kakao Open Chat QR</p>
+      <div class="qr-canvas" id="qr-vi-2"></div>
+    </div>
+      <!-- 하단 안내문구 -->
+  <div class="qr-description">
+    <p class="qr-kor">카카오톡 오픈채팅방으로 상담 가능합니다.</p>
+    <p class="qr-eng">You can contact our matching manager via Kakao Open Chat.</p>
+  </div>
+  </div>
+</div>
+
+        <!-- 미얀마 -->
+    <div class="tab-content" id="tab-mm">
+        <div class="flag-group">
+            <img src="/img/flags/mm.png" alt="mm">
+        </div>
+        <div class="qr-display">
+         <p class="qr-manager">
+         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#000000" viewBox="0 0 24 24" style="vertical-align: middle; margin-right: 8px;">
+    	<path d="M12 2C6.48 2 2 5.94 2 10.5c0 2.67 1.84 5.03 4.65 6.47L5.2 21l4.07-2.15c.86.18 1.77.28 2.73.28 5.52 0 10-3.94 10-8.5S17.52 2 12 2z"/>
+  		</svg>Matching Manager : Thu Thu Htet Htun </p>
+  		  <p class="qr-label">Kakao Open Chat QR</p>
+  		  	<div class="qr-canvas" id="qr-mm"></div>
+			<div class="qr-description">
+			  <p class="qr-kor">카카오톡 오픈채팅방으로 상담 가능합니다.</p>
+			  <p class="qr-eng">You can contact our matching manager via Kakao Open Chat.</p>
+			</div>
+        </div> 
+    </div>
+    
+        <!-- 인도/ 네팔 / 방글라데시 -->
+    <div class="tab-content" id="tab-hi">
+        <div class="flag-group">
+            <img src="/img/flags/in.png" alt="India">
+            <img src="/img/flags/bd.png" alt="Bangladesh">
+            <img src="/img/flags/np.png" alt="Nepal">
+        </div>
+        <div class="qr-display">
+         <p class="qr-manager">
+         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#000000" viewBox="0 0 24 24" style="vertical-align: middle; margin-right: 8px;">
+    	<path d="M12 2C6.48 2 2 5.94 2 10.5c0 2.67 1.84 5.03 4.65 6.47L5.2 21l4.07-2.15c.86.18 1.77.28 2.73.28 5.52 0 10-3.94 10-8.5S17.52 2 12 2z"/>
+  		</svg>Matching Manager : KUMARU</p>
+  		  <p class="qr-label">Kakao Open Chat QR</p>
+  		  	<div class="qr-canvas" id="qr-hi"></div>
+			<div class="qr-description">
+			  <p class="qr-kor">카카오톡 오픈채팅방으로 상담 가능합니다.</p>
+			  <p class="qr-eng">You can contact our matching manager via Kakao Open Chat.</p>
+			</div>
+        </div> 
+    </div>
+
+<!-- 인도네시아 -->
+    <div class="tab-content" id="tab-id">
+        <div class="flag-group">
+              <img src="/img/flags/id.png" alt="indonesia">
+        </div>
+        <div class="qr-display">
+         <p class="qr-manager">
+         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#000000" viewBox="0 0 24 24" style="vertical-align: middle; margin-right: 8px;">
+    	<path d="M12 2C6.48 2 2 5.94 2 10.5c0 2.67 1.84 5.03 4.65 6.47L5.2 21l4.07-2.15c.86.18 1.77.28 2.73.28 5.52 0 10-3.94 10-8.5S17.52 2 12 2z"/>
+  		</svg>Matching Manager : Agnesia</p>
+  		  <p class="qr-label">Kakao Open Chat QR</p>
+  		  	<div class="qr-canvas" id="qr-id"></div>
+			<div class="qr-description">
+			  <p class="qr-kor">카카오톡 오픈채팅방으로 상담 가능합니다.</p>
+			  <p class="qr-eng">You can contact our matching manager via Kakao Open Chat.</p>
+			</div>
+        </div> 
+   </div>
+</div>
+
+</body>
+
+    <footer class="foot-var">
+     <div>
+  		<p> 
+  		<span>(주)한국경영지원사업단&nbsp; 대표이사 : 이준희 <span class="divider">|</span> 사업자등록번호 : 887-81-00124</span><br>
+        본사_경기도 김포시 김포한강4로 125 월드타워 705호 <span class="divider">|</span> 본부_경기도 광명시 일직로 43 GIDC A1706호<br>
+        국내지사_김해지사, 대구지사, 천안지사, 광주지사, 원주지사 <span class="divider">|</span> 해외지사_베트남, 필리핀, 인도네시아, 인도, 몽골, 네팔, 우즈베키스탄<br>
+        유료직업소개업 등록번호 : 제2025-4090515-14-5-00012호 <span class="divider">|</span> 
+        Tel_ 031-983-0942 <span class="divider">|</span>  Fax_ 031-624-1540  <span class="divider">|</span> Email_ k-jobgo@naver.com<br>
+ 		ⓒ 2025 K-jobgo. All rights reserved.</p>
+ 	</div>
+    </footer>
+    
+    <!-- JS 연결 -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+    <script th:src="@{/js/common.js}"></script>
+    <script th:src="@{/js/login.js}"></script>
+    <script th:src="@{/js/matching.js}"></script>
+</html>

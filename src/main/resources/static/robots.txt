@@ -1,0 +1,4 @@
+User-agent: *
+Disallow:
+
+Sitemap: https://k-jobgo.com/sitemap.xml

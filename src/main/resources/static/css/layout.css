@@ -1,0 +1,310 @@
+@charset "UTF-8";
+
+/* 기본 설정 */
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', sans-serif;
+  color: #0E2C54;
+  display: flex;           
+  flex-direction: column;   
+}
+
+/* 헤더 */
+header.top-var {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  background-color: white;
+  position: relative;
+}
+
+/* 로고+슬로건+링크 묶음 */
+.brand-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.logo {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+/* ✅ 로고+슬로건 / 회사명 묶음 */
+.logo-slogan {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px; /* 아래 회사명과 간격 */
+}
+
+.about-slogan {
+  font-size: 16px;
+  font-weight: 500;
+  color: #0E2C54;
+  margin: 0;
+}
+
+/* 바로 아래 나오는 회사명 */
+.company-info p {
+  font-size: 14px;
+  font-weight: 600;
+  color: #0E2C54;
+  margin: 0;
+  margin-left: 32px; /* 로고라인 기준 맞추기 */
+  line-height: 1.2;
+}
+
+body.all-page .company-info {
+  margin-left: 12px;
+  font-size: 10px;
+  color: #333;
+  line-height: 1.4;
+  margin-top: -4px;
+}
+
+body.all-page .company-info p {
+  font-size: 15px;
+  font-weight: 600;
+  margin: 4px 0 2px 0;
+  color: #0E2C54;
+}
+
+/* ✅ footer를 항상 바닥으로 밀어내기 */
+footer.foot-var {
+  margin-top: auto;
+  padding: 24px 0 0 0;
+  text-align: center;
+  color: black;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.footer-info-line .company-imfo {
+  font-size: 13px;
+  color: #0E2C54;
+  border-bottom: 1px solid #0E2C54;
+  text-decoration: none;
+  padding-bottom: 2px;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.footer-info-line .company-imfo:hover {
+  color: #E88C44;
+  border-bottom-color: #E88C44;
+}
+
+.divider {
+  margin: 0 5px;
+  color: #aaa;
+}
+
+/* 토글 메뉴 */
+.menu-wrapper {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  z-index: 999;
+  pointer-events: auto;
+}
+.menu-toggle {
+  font-size: 24px;
+  cursor: pointer;
+  padding: 8px 12px;
+  transition: transform 0.3s ease;
+  z-index: 1000;
+}
+.menu-toggle:hover {
+  transform: scale(1.1);
+}
+.hidden-menu {
+  display: none;
+  position: absolute;
+  top: 36px;
+  right: 0;
+  width: 160px;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 10px 15px;
+  z-index: 999;
+  list-style: none;
+  margin: 0;
+  padding-left: 0;
+  text-align: right;
+}
+.hidden-menu li {
+  list-style-type: none;
+  padding: 5px 0;
+  cursor: pointer;
+}
+.hidden-menu li:hover {
+  color: #E88C44;
+}
+
+/* 토글 시 바디 고정 */
+body.menu-open {
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+}
+
+/* 버튼 공통 */
+button,
+.main-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 40px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 16px;
+  color: #000;
+  background-color: #ffffff;
+  transition: opacity 0.3s ease;
+}
+
+button:hover,
+.main-btn:hover {
+  opacity: 0.9;
+  background-color: #0054a8;
+  color: white;
+  transform: scale(1.05);
+}
+
+/* 푸터 */
+footer.foot-var {
+  margin-top: 0;
+  padding: 24px 0 0 0; /* 위쪽 여백 */
+  text-align: center;
+  color: black;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+/* 공통 유틸 */
+.hidden {
+  display: none !important;
+}
+
+:root {
+  --blue: #0083e8;
+  --yellow: #fcee09;
+  --purple: #7030a0;
+  --green: #3f7f2f;
+  --red: #c90000;
+}
+
+/* 모바일 */
+@media (max-width: 768px) {
+  /*html, body {
+    font-size: 14px;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+  } */
+  html, body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', sans-serif;
+  color: #0E2C54;
+  display: flex;           
+  flex-direction: column;   
+    }
+  header.top-var {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .brand-header {
+    align-items: flex-start !important;
+    text-align: left !important;
+  }
+
+  .logo-slogan {
+    justify-content: flex-start !important;
+    text-align: left;
+  }
+
+  .about-slogan {
+    font-size: 14px;
+  }
+
+  .company-info {
+    margin-left: 32px !important; /* 로고 라인에 맞추기 */
+    text-align: left !important;
+    width: auto;
+  }
+
+  .company-info p {
+    font-size: 12px !important;
+    text-align: left !important;
+  }
+
+  .menu-wrapper {
+    position: static;
+    width: 100%;
+    align-items: flex-start;
+  }
+
+  .hidden-menu {
+    width: 100%;
+    box-shadow: none;
+    border: none;
+    border-radius: 0;
+    text-align: left;
+  }
+
+  .hidden-menu li {
+    padding: 10px 0;
+  }
+
+  .main-slogan {
+    font-size: 22px;
+    text-align: center;
+    padding: 12px;
+  }
+
+  .k-jobgologo {
+    width: 100%;
+    max-width: 200px;
+    display: block;
+    margin: 0 auto;
+  }
+
+  footer.foot-var {
+    font-size: 8px;
+    padding: 16px 10px;
+  }
+
+  footer.foot-var p {
+    text-align: center !important;
+    margin: 0 auto;
+    width: 100%;
+  }
+  
+  .footer-flags-container {
+    justify-content: center !important;
+    text-align: center;
+    width: 100%;
+  }
+
+  .footer-flag-banner {
+    width: 90%;
+    max-width: 300px;
+  }
+}

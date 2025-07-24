@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>ProfileList</title>
+
+    <!-- Favicon -->
+<link rel="icon" href="https://k-jobgo-profile-photos-seoul.s3.ap-northeast-2.amazonaws.com/img/favicon.png" />
+    
+    <!-- CSS 연결 -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" th:href="@{/css/layout.css}">
+    <link rel="stylesheet" th:href="@{/css/toggle.css}">
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+    <link rel="stylesheet" th:href="@{/css/login.css}">
+    <link rel="stylesheet" th:href="@{/css/profile.css}">
+    <link rel="stylesheet" th:href="@{/css/profileList.css}">
+</head>
+
+<body class="all-page" th:attr="data-is-admin=${isAdmin}">
+
+<div th:replace="~{login :: loginModal}"></div>
+
+<header class="top-var">
+<div class="brand-header">
+  <div class="logo-slogan">
+    <img src="/img/favicon.png" class="logo" alt="K-jobgo | 외국인 인재 매칭 플랫폼" />
+    <p class="about-slogan"> KOREAMSA Inc.</p>
+  </div>
+      <!-- SEO 및 브랜드 노출 -->
+    <div class="company-info">
+      <p class="sr-only">(주)한국경영지원사업단</p>
+    </div>
+</div>
+<div class="menu-wrapper">
+	    <!-- 로그인 상태 라벨 -->
+  <div class="login-info">
+    <span th:if="${isAdmin}" th:text="${adminName + '님'}"></span>
+    <button id="loginBtn" th:text="${isAdmin} ? '로그아웃' : '로그인'"></button>
+  </div>
+  
+  <div class="menu-toggle" onclick="toggleMenu()">☰</div>
+
+  <!-- 토글 메뉴 -->
+  <div id="menu" class="menu-popup hidden-menu">
+    <ul>
+    <!-- <li onclick="location.href='/PartnerCompanyInsight'">Partner Company Insight</li> -->
+      <li onclick="alert('페이지 준비 중입니다.')">Partner Company Insight</li>
+      <li onclick="alert('페이지 준비 중입니다.')">Q&A board</li>
+
+      <!-- 관리자 전용 -->
+      <li th:if="${isAdmin}" class="menu-divider"></li>
+      <li th:if="${isAdmin}" class="admin-label">관리자 전용</li>
+      <li th:if="${isAdmin}" onclick="location.href='/admin/profileList'">프로필 전체 보기</li>
+    </ul>
+  </div>
+</div>  
+</header>
+
+  <!-- ✅ K-jobgo 로고 전용 중앙 박스 (about-section 위에 배치) -->
+<div class="center-kjobgo-logo">
+<a th:href="@{/}">
+  <img src="/img/k-jobgo_company.png" alt="K-jobgo | 외국인 인재 매칭 플랫폼" class="k-jobgologo" />
+</a>
+</div>
+
+<div class="page-wrapper">
+ <h1><a href="/admin/profileList" class="clean-link">인재정보</a></h1>
+<div class="registerPage" >
+<button type="button" id="insertFormBtn" class="insertFormBtn">프로필 등록</button>
+</div>
+<form id="searchForm" method="get" th:action="@{/admin/profileList}">
+<div class="search-container">
+		<select name="desiredLocation" id="desiredLocation"> <!-- 검색 필터 : 지역, 국적, 성별, 비자타입 -->
+			  <option value="">희망근무지역</option>
+			  <option value="서울" th:selected="${desiredLocation == '서울'}">서울</option>
+			  <option value="경기" th:selected="${desiredLocation == '경기'}">경기</option>
+			  <option value="인천" th:selected="${desiredLocation == '인천'}">인천</option>
+			  <option value="대전" th:selected="${desiredLocation == '대전'}">대전</option>
+			  <option value="세종" th:selected="${desiredLocation == '세종'}">세종</option>
+			  <option value="충남" th:selected="${desiredLocation == '충남'}">충남</option>
+			  <option value="충북" th:selected="${desiredLocation == '충북'}">충북</option>
+			  <option value="광주" th:selected="${desiredLocation == '광주'}">광주</option>
+			  <option value="전남" th:selected="${desiredLocation == '전남'}">전남</option>
+			  <option value="전북" th:selected="${desiredLocation == '전북'}">전북</option>
+			  <option value="대구" th:selected="${desiredLocation == '대구'}">대구</option>
+			  <option value="경북" th:selected="${desiredLocation == '경북'}">경북</option>
+			  <option value="부산" th:selected="${desiredLocation == '부산'}">부산</option>
+			  <option value="경남" th:selected="${desiredLocation == '경남'}">경남</option>
+			  <option value="울산" th:selected="${desiredLocation == '울산'}">울산</option>
+			  <option value="강원" th:selected="${desiredLocation == '강원'}">강원</option>
+			  <option value="제주" th:selected="${desiredLocation == '제주'}">제주</option>
+			  <option value="전국" th:selected="${desiredLocation == '전국'}">전국</option>
+		</select>
+<select name="nationality" id="nationality">
+     <option value="" th:selected="${nationality == null}">국적</option>
+    <option value="네팔" th:selected="${nationality == '네팔'}">네팔</option>
+    <option value="몽골" th:selected="${nationality == '몽골'}">몽골</option>
+    <option value="미얀마" th:selected="${nationality == '미얀마'}">미얀마</option>
+    <option value="방글라데시" th:selected="${nationality == '방글라데시'}">방글라데시</option>
+    <option value="베트남" th:selected="${nationality == '베트남'}">베트남</option>
+    <option value="스리랑카" th:selected="${nationality == '스리랑카'}">스리랑카</option>
+    <option value="우즈베키스탄" th:selected="${nationality == '우즈베키스탄'}">우즈베키스탄</option>
+    <option value="인도" th:selected="${nationality == '인도'}">인도</option>
+    <option value="인도네시아" th:selected="${nationality == '인도네시아'}">인도네시아</option>
+    <option value="캄보디아" th:selected="${nationality == '캄보디아'}">캄보디아</option>
+    <option value="키르키스스탄" th:selected="${nationality == '키르키스스탄'}">키르키스스탄</option>
+    <option value="파키스탄" th:selected="${nationality == '파키스탄'}">파키스탄</option>
+    <option value="필리핀" th:selected="${nationality == '필리핀'}">필리핀</option>
+    <option value="기타" th:selected="${nationality == '기타'}">기타</option>
+</select>
+		<!-- 성별 -->
+		<select name="gender" id="gender">
+			  <option value="">성별</option>
+			  <option value="남" th:selected="${gender == '남'}">남</option>
+			  <option value="여" th:selected="${gender == '여'}">여</option>
+		</select>
+		<!-- 비자 종류 -->
+		<select name="visaType" id="visaType">
+			  <option value="">비자종류</option>
+			  <option value="D" th:selected="${visaType == 'D'}">D</option>
+			  <option value="E" th:selected="${visaType == 'E'}">E</option>
+			  <option value="F" th:selected="${visaType == 'F'}">F</option>
+			  <option value="G" th:selected="${visaType == 'G'}">G</option>
+			  <option value="H" th:selected="${visaType == 'H'}">H</option>
+		</select>
+		
+		    <!-- ✅ 검색어 입력란 -->
+		    <input type="text" name="keyword" id="keyword" class="search-input" th:value="${keyword}"placeholder="키워드를 입력하세요" />
+		
+		    <!-- ✅ 검색 버튼 -->
+		    <button type="submit" id="searchBtn" class="searchBtn">검색</button>
+		</div>
+	</form>
+</div>
+<div class="table-wrapper">
+<table class="table table-bordered table-hover">
+    <thead>
+        <tr class="text-center">
+            <th>NO</th>
+            <th>희망근무지역</th>
+            <th>국적</th>
+            <th>이름</th>
+            <th>성별</th>
+            <th>비자타입</th>
+            <th>등록일</th>
+            <th>수정일</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr th:if="${#lists.size(profileList) == 0}">
+            <td colspan="8" class="text-center">등록된 인재 정보가 없습니다.</td>
+        </tr>
+		<tr th:each="profile, iterStat : ${profileList}" th:attr="data-id=${profile.profileId}" class="clickable-row">
+		    <td th:text="${(pageInfo.currentPage - 1) * pageInfo.pageSize + iterStat.index + 1}"></td> <!-- NO -->
+		    <td th:text="${profile.personalInfo != null && profile.personalInfo.desiredLocation != null ? profile.personalInfo.desiredLocation : ''}"></td>
+		    <td th:text="${profile.personalInfo != null && profile.personalInfo.nationality != null ? profile.personalInfo.nationality : ''}"></td>
+		    <td th:text="${profile.nameKor}"></td>
+		    <td th:text="${profile.gender}"></td>
+		    <td th:text="${profile.visaType}"></td>
+		    <td th:text="${#temporals.format(profile.createdAt, 'yyyy-MM-dd')}"></td>
+		    <td th:text="${#temporals.format(profile.updatedAt, 'yyyy-MM-dd')}"></td>
+		</tr>
+    </tbody>
+</table>
+</div>
+<!-- ✅ 페이징 바 -->
+<div class="pagination">
+  <ul>
+    <!-- 이전 버튼 -->
+    <li th:if="${pageInfo.currentPage > 1}" class="prev">
+      <a th:href="@{/admin/profileList(page=${pageInfo.currentPage - 1}, desiredLocation=${desiredLocation}, 
+      nationality=${nationality}, gender=${gender}, visaType=${visaType},  keyword=${keyword})}">« 이전</a>
+    </li>
+    <li th:unless="${pageInfo.currentPage > 1}" class="disabled">
+      <span>« 이전</span>
+    </li>
+
+    <!-- 페이지 숫자 -->
+    <li th:each="i : ${#numbers.sequence(pageInfo.startPage, pageInfo.endPage)}"
+        th:classappend="${i == pageInfo.currentPage} ? 'active'">
+      <a th:href="@{/admin/profileList(page=${i}, desiredLocation=${desiredLocation}, nationality=${nationality}, gender=${gender},
+        visaType=${visaType},  keyword=${keyword})}" th:text="${i}">1</a>
+    </li>
+
+    <!-- 다음 버튼 -->
+    <li th:if="${pageInfo.currentPage < pageInfo.totalPages}" class="next">
+      <a th:href="@{/admin/profileList(page=${pageInfo.currentPage + 1}, desiredLocation=${desiredLocation}, 
+      nationality=${nationality}, gender=${gender}, visaType=${visaType},  keyword=${keyword})}">다음 »</a>
+    </li>
+    <li th:unless="${pageInfo.currentPage < pageInfo.totalPages}" class="disabled">
+      <span>다음 »</span>
+    </li>
+  </ul>
+</div>
+
+<footer class="foot-var">
+    <div>
+		<p> 
+		<span>(주)한국경영지원사업단&nbsp; 대표이사 : 이준희 <span class="divider">|</span> 사업자등록번호 : 887-81-00124</span><br>
+      본사_경기도 김포시 김포한강4로 125 월드타워 705호 <span class="divider">|</span> 본부_경기도 광명시 일직로 43 GIDC A1706호<br>
+      국내지사_김해지사, 대구지사, 천안지사, 광주지사, 원주지사 <span class="divider">|</span> 해외지사_베트남, 필리핀, 인도네시아, 인도, 몽골, 네팔, 우즈베키스탄<br>
+      유료직업소개업 등록번호 : 제2025-4090515-14-5-00012호 <span class="divider">|</span> 
+      Tel_ 031-983-0942 <span class="divider">|</span>  Fax_ 031-624-1540  <span class="divider">|</span> Email_ k-jobgo@naver.com<br>
+	ⓒ 2025 K-jobgo. All rights reserved.</p>
+  </div>
+</footer>
+
+<!-- JS 연결 -->
+<script th:src="@{/js/common.js}"></script>
+<script th:src="@{/js/login.js}"></script>
+<script th:src="@{/js/profileList.js}"></script>
+</body>
+</html>

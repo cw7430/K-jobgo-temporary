@@ -1,0 +1,546 @@
+/* ================================
+   ✅ 중앙 K-jobgo 로고: 완전 독립 스타일
+   ================================ */
+.center-kjobgo-logo {
+  position: relative;             /* 독립적 위치지정 */
+  width: 100%;                    /* 전체 너비 */
+  display: flex;                  /* 가로 중앙 정렬용 */
+  justify-content: center;       /* 가운데 정렬 */
+  align-items: center;           /* 수직 가운데 정렬 */
+  margin: 60px auto 10px auto;   /* 위아래 여백 */
+  z-index: 10;                    /* 다른 요소 위에 */
+}
+
+  html, body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', sans-serif;
+  color: #0E2C54;
+  display: flex;           
+  flex-direction: column; 
+  display: block; /* ✅ flex → block 으로 변경 시 layout 오류 감소 */
+    }
+    
+/* ==========================================================================
+   1. 기본 스타일 초기화
+   ========================================================================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
+/* ==========================================================================
+   2. 프로필 상세보기 컨테이너
+   ========================================================================== */
+.profile-detail {
+  max-width: 1500px;
+  margin: 80px auto 0;
+  padding: 80px 60px;
+  background-color: #f5f5f5;
+}
+.profile-detail h1 {
+  text-align: center;
+  font-size: 32px;
+  font-weight: 700;
+  color: #0E2C54;
+  letter-spacing: -0.5px;
+  position: relative;
+  margin-bottom: 40px;
+}
+.profile-detail h1::after {
+  content: '';
+  display: block;
+  width: 60px;
+  height: 3px;
+  background-color: #007BFF;
+  margin: 12px auto 0;
+  border-radius: 3px;
+}
+
+/* ==========================================================================
+   3. “필수 안내” 박스 공통
+   ========================================================================== */
+.notice-required {
+  width: 100%;
+  background-color: #fff8e1;
+  border-left: 5px solid #ff9800;
+  padding: 8px 12px;
+  font-size: 14px;
+  color: #333;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+
+/* ==========================================================================
+   4. 프로필 기본정보 박스
+   ========================================================================== */
+.profile-box {
+  display: flex;
+  gap: 30px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 20px;
+  margin-bottom: 30px;
+  align-items: flex-start;
+}
+
+/* — 사진 영역 */
+.photo-area {
+  width: 150px;
+   min-width: 150px;
+  text-align: center;
+}
+#preview {
+  width: 150px;
+   max-width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  display: block;
+}
+
+input[type="file"] {
+  display: inline-block;
+  margin-top: 6px;
+  max-width: 100%;
+}
+
+/* — 기본/추가 정보 컬럼 */
+.profile-info,
+.profile-sub-info {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* — 핸드폰, 나이,키 몸무게 영역 */
+.phone-group, .row-bodyinfo {
+  display: flex;
+  align-items: center;
+  gap: 6px; /* 각 요소 사이 간격 */
+}
+.phone-group input[type="text"]{
+  width: 60px; /* ✅ 너비 줄임 */
+  padding: 6px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  text-align: center; /* 숫자 가운데 정렬 */
+  background-color: #f0f0f0;
+}
+
+.phone-group span {
+  font-weight: bold;
+  color: #333;
+}
+
+/* ✅ 나이 입력란 */
+.row-bodyinfo input[name="personalInfo.age"] {
+    width: 80px;         /* 🔧 기존보다 줄임 */
+    margin-right: 16px;  /* 🔧 키: 라벨과의 간격 확보 */
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.row-bodyinfo label {
+    font-weight: 500;
+    margin-right: 6px;
+}
+
+/* 🔧 키: 라벨은 나이 input 다음에 위치하므로 margin-left로 여백 확보 */
+.row-bodyinfo label:nth-of-type(2) {
+    margin-left: 40px;  /* 또는 16px 등 조정 가능 */
+}
+
+/* 🔧 몸무게: 라벨은 키 input 다음에 위치하므로 margin-left로 간격 조정 */
+.row-bodyinfo label:nth-of-type(3) {
+    margin-left: 40px; /* 또는 16px 등 조정 가능 */
+}
+
+/* 🔧 TOPIK 라벨 앞 여백 */
+.row-entry-topik label:nth-of-type(2) {
+    margin-left: 40px; /* 또는 16px 등 조정 가능 */
+}
+
+/* 🔧 희망 근무 지역 라벨 앞 여백 */
+.row-salary-location label:nth-of-type(2) {
+    margin-left: 40px; /* 또는 16px 등 조정 가능 */
+}
+
+/* — 숫자 input의 너비 조절 */
+.row-bodyinfo input[type="number"] {
+  width: 80px; /* ✅ 너비 줄임 */
+  padding: 6px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #f0f0f0;
+  text-align: center;
+}
+
+/* — 각 입력 row */
+.profile-info .row-group,
+.profile-sub-info > div {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* — 라벨 스타일 */
+.profile-info label,
+.profile-sub-info label {
+  min-width: 100px;
+  font-weight: 500;
+  color: #007BFF;
+}
+
+/* ==========================================================================
+   5. “인적사항” 섹션
+   ========================================================================== */
+.personal-section {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 20px;
+  margin-bottom: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.personal-section h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #007BFF;
+  margin-bottom: 0;
+}
+.personal-section .row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ==========================================================================
+   6. 학력/경력/특이사항 섹션 공통
+   ========================================================================== */
+.section {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 20px;
+  margin-bottom: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+} 
+
+.section h3 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 18px;
+  font-weight: 600;
+  color: #007BFF;
+  border-bottom: 1px solid #007BFF;
+  padding-bottom: 5px;
+  margin-bottom: 15px;
+   flex-wrap: nowrap; /* 줄바꿈 방지 */
+}
+
+/* ✅ inline 버튼 묶음: 학력/경력 추가/삭제 */
+.btn-inline-group {
+  display: flex;
+  gap: 6px;
+  margin-left: 10px;
+  white-space: nowrap; /* 버튼 내부 줄바꿈 방지 */
+  flex-shrink: 0; /* 공간 줄어들어도 버튼 줄바꿈 방지 */
+}
+.section button[type="button"] {
+    background-color: #007BFF;
+    color: #fff;
+    border: none;
+    padding: 3px 8px; /* 🔧 기존보다 작게 */
+    font-size: 13px;  /* 🔧 글자도 작게 */
+    border-radius: 4px;
+    cursor: pointer;
+    line-height: 1.3;
+}
+
+.section button[type="button"]:hover {
+    background-color: #0056b3;
+}
+
+/* ==========================================================================
+   8. 라디오·체크박스 “선택된” 레이블 강조
+   ========================================================================== */
+/* — CSS4 :has() 사용 (최신 브라우저) */
+label:has(input[type="radio"]:checked),
+label:has(input[type="checkbox"]:checked) {
+  background-color: #e3f2fd;
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-weight: 600;
+}
+/* — 체크박스/radio 자체 accent-color 보강 */
+label input[type="radio"],
+label input[type="checkbox"] {
+  accent-color: #007BFF;
+  cursor: not-allowed;
+}
+
+/* ==========================================================================
+   9. 기타 스타일 (단위 표시 등)
+   ========================================================================== */
+.input-unit {
+  position: relative;
+}
+.input-unit .unit {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 13px;
+  color: #888;
+  pointer-events: none;
+}
+
+/* 버튼 그룹 (목록·수정·삭제) */
+.btn-group {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 30px;
+}
+.btn-group .btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  color: #fff;
+  text-decoration: none;
+  font-size: 14px;
+  cursor: pointer;
+}
+#ListBtn { background-color: #6A9CD7; }
+#updateBtn { background-color: #4CAF50; }
+#deleteBtn { background-color: #F44336; }
+
+/* — 수정/삭제 버튼을 나란히 배치 */
+.btn-right {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+/*수정 상태일 때 버튼 표시 조정용*/
+/* ✅ 완료 버튼 - 파랑 */
+#saveBtn {
+  display: none;
+  background-color: #007bff; /* 파랑 */
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+/* ✅ 취소 버튼 - 주황/노랑 */
+#cancelBtn {
+  display: none;
+  background-color: #f0ad4e; /* 주황/노랑 */
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+
+/*학력/경력 삭제 버튼 스타일*/
+.deleteBtn {
+  padding: 4px 10px;
+  background-color: #FF5722;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 13px;
+  cursor: pointer;
+  display: none; /* 수정 전에는 보이지 않음 */
+  margin-left: auto;
+}
+/*학력·경력 항목 그룹 내 버튼 오른쪽 정렬용*/
+.edu-entry,
+.work-entry {
+  display: flex;
+  gap: 10px;
+  align-items: center; 
+  border-radius: 8px;
+}
+
+/* 수정 모드 진입 시 input 스타일 */
+input:not([readonly]):not([disabled]) {
+  background-color: #fffbe6 !important;  /* 연노랑 배경으로 활성화 시각적 강조 */
+  border: 1px solid #FF9800 !important;
+  color: #333 !important;
+}
+
+.info-msg {
+  display: none;
+}
+
+/* 📌 학력/경력사항 - 기간 입력란 크기 조정 */
+.edu-entry input[name$=".period"],
+.work-entry input[name$=".period"] {
+    width: 230px; /* 🔧 원하는 크기로 조정 가능 */
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+/* ✅ 학력사항 상태 선택 (졸업, 재학중, 중퇴) */
+.edu-entry .status-group {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    margin-top: 8px;
+}
+
+.edu-entry .status-group label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.edu-entry .status-group input[type="radio"] {
+    accent-color: #007BFF; /* ✅ 포인트 컬러 */
+    cursor: pointer;
+}
+/* 수정 가능한 필드 스타일 */
+.editable-field {
+  border: 1px solid #007bff !important;
+  background-color: #ffffff;
+  padding: 6px 10px;
+  border-radius: 4px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+  cursor: text;
+}
+
+select.editable-field {
+  background-color: #fffbe6 !important;
+  border: 1px solid #FF9800 !important;
+  color: #333 !important;
+}
+
+/* 수정(활성화) 상태 */
+.strengths-textarea.editable-field {
+  font-size: 18px;    /* 글자 크기 크게 */
+  border: 2px solid #1976d2; /* 파란 테두리 */
+  background: #fff;
+  color: #222;
+  padding: 12px;
+  border-radius: 8px;
+  outline: none;
+  min-height: 80px;
+}
+
+/* 완료(읽기 전용) 상태 */
+.strengths-textarea[readonly] {
+  border: none;            /* 테두리 제거 */
+  background: transparent; /* 배경 투명 */
+  font-size: 16px;         /* 기본 크기(원하면 더 작게) */
+  color: #222;
+  resize: none;
+  padding: 12px;
+}
+
+/* ==========================================================================
+   7. 읽기 전용 필드 “값 유무”에 따른 테두리 · 배경 구분
+   ========================================================================== */
+/* (1) 기본값 - 항상 위에! (값 없는 상태) */
+input[readonly],
+select[disabled] {
+  padding: 5px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #f0f0f0;
+  color: #333;
+  cursor: not-allowed;
+  font-size: 14px;
+  height: 34px;
+}
+
+/* (2) 값이 있는 input - 파란 테두리/흰 배경 */
+input[readonly][value]:not([value=""]) {
+  background-color: #fff;
+  border: 1px solid #007BFF;
+  font-weight: 500;
+  color: #333;   color: #333 !important; 
+}
+
+/* (4) select 값이 있을 때 (JS로 has-value 부여) */
+select[disabled].has-value {
+  background-color: #fff !important;
+  border: 1.5px solid #007bff !important;
+  color: #333 !important;
+  font-weight: 500 !important;
+}
+
+/* ==========================================================================
+   10. 반응형
+   ========================================================================== */
+@media (max-width: 768px) {
+  /* ✅ 세로로 바꾸는 코드 제거 또는 덮어쓰기 */
+  .profile-box,
+  .row,
+  .profile-info .row-group,
+  .profile-sub-info > div {
+    flex-direction: row !important;
+    align-items: center !important;
+    flex-wrap: wrap; /* 너무 좁을 때 줄바꿈 허용 */
+    justify-content: flex-start;
+  }
+
+  input[readonly], 
+  select[disabled] {
+    width: auto !important;
+    max-width: 100%;
+  }
+  
+    .profile-detail {
+    padding: 20px;
+    margin: 20px auto 0;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .detail-section {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+
+  .profile-photo {
+    width: auto;
+    height: auto;
+  }
+
+  .info-grid {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  
+    .edu-entry, .work-entry {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .status-group {
+    margin-left: 0;
+  }
+}

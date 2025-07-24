@@ -1,0 +1,35 @@
+.map-section {
+  text-align: center;
+  padding: 30px;
+  background-color: #f9f9f9;
+}
+
+.korea-map-container {
+  position: relative;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.korea-map {
+  width: 100%;
+  height: auto;
+  border: 2px solid #ddd;
+  border-radius: 12px;
+}
+
+.marker {
+  position: absolute;
+  transform: translate(-50%, -100%);
+  background-color: rgba(0, 123, 255, 0.9);
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 14px;
+  white-space: nowrap;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+.marker:hover {
+  transform: translate(-50%, -110%) scale(1.05);
+}
