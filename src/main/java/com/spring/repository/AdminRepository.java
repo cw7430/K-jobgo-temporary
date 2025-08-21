@@ -15,4 +15,5 @@ public interface AdminRepository extends JpaRepository<Admin, Long> {
     // 로그인 ID로 관리자 조회 (공백 제거 후 비교)
     @Query("SELECT a FROM Admin a WHERE TRIM(a.adminLoginId) = TRIM(:adminLoginId)")
     Admin findByAdminLoginId(@Param("adminLoginId") String adminLoginId);
+    
 }

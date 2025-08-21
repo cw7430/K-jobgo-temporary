@@ -1,4 +1,4 @@
-// main.js
+// /js/main.js
 window.addEventListener("DOMContentLoaded", function () {
   console.log("✅ 메인 JS 실행됨");
 

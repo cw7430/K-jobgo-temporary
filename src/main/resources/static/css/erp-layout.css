@@ -1,0 +1,453 @@
+/* erp-layout.css */
+/* ==========================================
+   ERP Global Layout (공통 레이아웃/컴포넌트)
+   사이트 공통 톤(#0E2C54) + 블루 액센트 계열
+   ========================================== */
+
+/* ---------- 변수 & 리셋 ---------- */
+:root {
+  --brand-text: #0E2C54;   /* 사이트 기본 텍스트/아이콘 */
+  --accent: #007BFF;       /* 메인 액센트(버튼 기본) */
+  --accent-2: #0054a8;     /* 버튼 호버/딥 블루 */
+  --warn: #E88C44;         /* 강조(링크 호버 등) */
+  --bg: #ffffff;           /* 페이지 배경 (사이트와 동일) */
+  --card: #ffffff;         /* 카드/패널 배경 */
+  --line: #e6e8ed;         /* 경계선 */
+  --muted: #6c757d;        /* 세컨 버튼 등 */
+  --shadow: 0 4px 16px rgba(0, 0, 0, .06);
+  --radius: 8px;
+  --font: 'Segoe UI', "Noto Sans KR", system-ui, -apple-system, Roboto, Arial, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  color: var(--brand-text);
+  background: var(--bg);
+  font-family: var(--font);
+  line-height: 1.6;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 유틸 */
+.hidden {
+  display: none !important;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------- 헤더(사이트 header.html과 톤 일치) ---------- */
+header.top-var {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  background: #fff;
+  position: relative;
+  z-index: 10;
+}
+
+.brand-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.logo-slogan {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.logo {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+.about-slogan {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--brand-text);
+  margin: 0;
+}
+
+.company-info p {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--brand-text);
+  margin: 0;
+  margin-left: 32px;
+  line-height: 1.2;
+}
+
+body.all-page .company-info {
+  margin-left: 12px;
+  font-size: 10px;
+  color: #333;
+  line-height: 1.4;
+  margin-top: -4px;
+}
+
+body.all-page .company-info p {
+  font-size: 15px;
+  font-weight: 600;
+  margin: 4px 0 2px 0;
+  color: var(--brand-text);
+}
+
+/* ---------- 메뉴 토글 ---------- */
+.menu-wrapper {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  z-index: 999;
+  pointer-events: auto;
+}
+
+.menu-toggle {
+  font-size: 24px;
+  cursor: pointer;
+  padding: 8px 12px;
+  transition: transform .3s ease;
+  z-index: 1000;
+}
+
+.menu-toggle:hover {
+  transform: scale(1.1);
+}
+
+.menu-popup.hidden-menu {
+  display: none;
+  position: absolute;
+  top: 36px;
+  right: 0;
+  width: 180px;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .1);
+  padding: 10px 15px;
+  z-index: 999;
+  list-style: none;
+  margin: 0;
+  text-align: right;
+}
+
+.menu-popup.hidden-menu li {
+  list-style: none;
+  padding: 6px 0;
+  cursor: pointer;
+}
+
+.menu-popup.hidden-menu li:hover {
+  color: var(--warn);
+}
+
+body.menu-open {
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+}
+
+/* ---------- 공통 컨테이너/타이틀 ---------- */
+.wrap {
+  max-width: 1800px;
+  margin: 40px auto;
+  padding: 0 16px;
+}
+
+h1 {
+  font-size: 28px;
+  margin: 0 0 12px;
+}
+
+.sub {
+  margin: 8px 0 28px;
+  line-height: 1.6;
+}
+
+/* ---------- 버튼 & 툴바 (사이트 버튼 톤) ---------- */
+.toolbar {
+  display: flex;
+  gap: 10px;
+  margin: 8px 0 18px;
+  justify-content: flex-end;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 16px;
+  background: #fff;
+  color: #000;
+  transition: transform .15s ease,
+              background-color .2s ease,
+              color .2s ease,
+              opacity .2s ease;
+}
+
+.btn:hover {
+  opacity: .9;
+  background: var(--accent-2);
+  color: #fff;
+  transform: scale(1.05);
+}
+
+.btn--primary {
+  background: var(--accent);
+  color: #fff;
+}
+
+.btn--primary:hover {
+  background: var(--accent-2);
+  color: #fff;
+}
+
+.btn--secondary {
+  background: var(--muted);
+  color: #fff;
+}
+
+.btn--secondary:hover {
+  opacity: .95;
+}
+
+/* ---------- 입력 공통 ---------- */
+.inp, .sel, .txt {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #fff;
+  font-size: 14px;
+}
+
+.sel {
+  height: 42px;
+}
+
+.txt {
+  min-height: 44px;
+  resize: vertical;
+}
+
+.hint {
+  font-size: 12px;
+  color: #666;
+  margin-top: 6px;
+}
+
+/* ---------- 테이블(ERP 공통) ---------- */
+.table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+}
+
+.table thead th {
+  background: var(--accent);
+  color: #fff;
+  padding: 12px 10px;
+  text-align: center;
+  font-size: 14px;
+  border-right: 2px solid #fff;
+}
+
+.table thead th:last-child {
+  border-right: 0;
+}
+
+.table tbody td {
+  background: #f5f8ff; /* 옅은 블루 계열로 사이트 톤 유지 */
+  padding: 10px;
+  border-right: 2px solid #fff;
+  vertical-align: middle;
+}
+
+.table tbody td:last-child {
+  border-right: 0;
+}
+
+/* 가로/세로 스크롤 영역 + sticky header */
+.table-scroll {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  overflow: auto;         /* 가로/세로 스크롤 */
+  max-height: 60vh;       /* 세로 높이 제한 */
+  padding: 0;
+}
+
+.table.wide-table {
+  min-width: 1400px;      /* 가로 스크롤 유도 */
+  width: max-content;
+}
+
+.table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+/* (선택) 첫 컬럼 고정 */
+/*
+.table th:first-child,
+.table td:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 3;
+  background: #eef3ff;
+}
+*/
+
+.erp-table th:nth-child(1), /* No */
+.erp-table td:nth-child(1) {
+  width: 60px;
+  text-align: center;
+}
+
+.erp-table th:nth-child(5), /* 인원 */
+.erp-table td:nth-child(5) {
+  width: 70px;
+  text-align: center;
+}
+
+/* ---------- 푸터(사이트와 동일 톤) ---------- */
+footer.foot-var {
+  margin-top: auto;
+  padding: 24px 0 0 0;
+  text-align: center;
+  color: black;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.footer-info-line .company-imfo {
+  font-size: 13px;
+  color: var(--brand-text);
+  border-bottom: 1px solid var(--brand-text);
+  text-decoration: none;
+  padding-bottom: 2px;
+  cursor: pointer;
+  transition: color .3s, border-color .3s;
+}
+
+.footer-info-line .company-imfo:hover {
+  color: var(--warn);
+  border-bottom-color: var(--warn);
+}
+
+.divider {
+  margin: 0 5px;
+  color: #aaa;
+}
+
+/* ---------- 반응형 ---------- */
+@media (max-width: 768px) {
+  header.top-var {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .brand-header {
+    align-items: flex-start !important;
+    text-align: left !important;
+  }
+
+  .logo-slogan {
+    justify-content: flex-start !important;
+  }
+
+  .about-slogan {
+    font-size: 14px;
+  }
+
+  .company-info {
+    margin-left: 32px !important;
+    text-align: left !important;
+    width: auto;
+  }
+
+  .company-info p {
+    font-size: 12px !important;
+    text-align: left !important;
+  }
+
+  .menu-wrapper {
+    position: static;
+    width: 100%;
+    align-items: flex-start;
+  }
+
+  .menu-popup.hidden-menu {
+    width: 100%;
+    box-shadow: none;
+    border: none;
+    border-radius: 0;
+    text-align: left;
+  }
+
+  .menu-popup.hidden-menu li {
+    padding: 10px 0;
+  }
+
+  .wrap {
+    padding: 0 12px;
+  }
+
+  footer.foot-var {
+    font-size: 8px;
+    padding: 16px 10px;
+  }
+
+  footer.foot-var p {
+    text-align: center !important;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .footer-flags-container {
+    justify-content: center !important;
+    text-align: center;
+    width: 100%;
+  }
+
+  .footer-flag-banner {
+    width: 90%;
+    max-width: 300px;
+  }
+}

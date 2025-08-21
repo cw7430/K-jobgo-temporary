@@ -50,15 +50,34 @@ public class MainController {
         return "login";
     }
 
-    @GetMapping(value={"/home"})
+    @GetMapping("/home")
     public String main(HttpSession session, Model model) {
-        Admin admin = (Admin)session.getAttribute("loggedInAdmin");
-        model.addAttribute("isAdmin", (Object)(admin != null ? 1 : 0));
+        Admin admin = (Admin) session.getAttribute("loggedInAdmin");
+
+        // 1) 로그인 여부
+        model.addAttribute("isAdmin", admin != null ? 1 : 0);
+
         if (admin != null) {
-            model.addAttribute("adminName", (Object)admin.getAdminName());
+            // 2) 화면 표시에 쓸 이름
+            model.addAttribute("adminName", admin.getAdminName());
+
+            // 3) 권한 ID/이름(널 가드)
+            Integer authorityId = null;
+            String authorityName = null;
+            if (admin.getAuthorityType() != null) {
+                authorityId = admin.getAuthorityType().getAuthorityId();
+                authorityName = admin.getAuthorityType().getAuthorityName();
+            }
+            model.addAttribute("authorityId", authorityId);     // ✅ 토글 분기용
+            model.addAttribute("authorityName", authorityName); // (선택)
+            
+            // (선택) adminId도 쓸 일이 있으면 함께 내려두기
+            model.addAttribute("adminId", admin.getAdminId());
         }
+
         return "main";
     }
+
 
     @GetMapping(value={"/companyInfo"})
     public String companyInfo(HttpSession session, Model model) {
@@ -90,24 +109,35 @@ public class MainController {
         ProfilePage maskedPage = this.profileUserService.getMaskedProfilePage(page, size, desiredLocation, nationality, gender, visaType, keyword, nationalityType, excludeNationalities);
         model.addAttribute("profileList", (Object)maskedPage.getMaskedProfiles());
         model.addAttribute("pageInfo", (Object)maskedPage);
-        model.addAttribute("isAdmin", (Object)false);
         model.addAttribute("desiredLocation", (Object)desiredLocation);
         model.addAttribute("nationality", (Object)nationality);
         model.addAttribute("gender", (Object)gender);
         model.addAttribute("visaType", (Object)visaType);
         model.addAttribute("keyword", (Object)keyword);
+        model.addAttribute("isAdmin", false);
         return "userProfileList";
     }
 
-    @GetMapping(value={"/profileDetail/{profileId}"})
-    public String maskedProfileDetail(@PathVariable Long profileId, Model model) {
-        MaskedProfileDto maskedProfile = this.profileUserService.getMaskedProfileDetail(profileId);
-        if (maskedProfile == null) {
+    @GetMapping("/profileDetail/{profileId}")
+    public String maskedProfileDetail(@PathVariable Long profileId,
+                                      @RequestParam(required = false) Integer page,
+                                      Model model) {
+        MaskedProfileDto masked = profileUserService.getMaskedProfileDetail(profileId);
+        if (masked == null) {
             return "redirect:/profileList";
         }
-        model.addAttribute("profileDto", (Object)maskedProfile);
-        model.addAttribute("isAdmin", (Object)false);
-        return "userProfile";
+
+        model.addAttribute("profileDto", masked);
+        model.addAttribute("isAdmin", false);
+
+        // 목록으로 돌아가기 버튼을 위해 현재 페이지 유지(선택)
+        if (page != null) {
+            ProfilePage pageInfo = new ProfilePage();
+            pageInfo.setCurrentPage(page);
+            model.addAttribute("pageInfo", pageInfo);
+        }
+
+        return "userProfile"; // ✅ 항상 마스킹된 public 상세 템플릿
     }
 
     @GetMapping(value={"/matchingPage"})

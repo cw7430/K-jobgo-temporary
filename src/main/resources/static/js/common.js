@@ -21,19 +21,4 @@ window.addEventListener("DOMContentLoaded", function () {
       menu.classList.add("hidden-menu");
     }
   });
-  
-  const isAdmin = document.body.getAttribute('data-is-admin') === 'true';
-
-  // 로그인 버튼 동작 정의
-  const loginBtn = document.getElementById("loginBtn");
-  if (loginBtn) {
-    loginBtn.addEventListener("click", function () {
-      if (isAdmin) {
-        // 로그아웃 요청
-        location.href = "/logout";  // 로그아웃 경로 설정 필요
-      } else {
-        document.getElementById("loginModal").style.display = 'flex';
-      }
-    });
-  }
 });

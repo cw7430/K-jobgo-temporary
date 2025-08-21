@@ -1,0 +1,26 @@
+<!-- src/main/resources/templates/fragments/visaFragments.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <th:block th:fragment="row (r)">
+	  <tr th:attr="data-id=${r.visaId}"
+	      th:attrappend="data-deleted=${(r.visaDeleted != null && r.visaDeleted) ? 'true' : 'false'}"
+	      th:classappend="${(r.visaDeleted != null && r.visaDeleted) ? 'is-deleted' : ''}">
+      <td><input type="checkbox" class="row-check" th:value="${r.visaId}"></td>
+      <td th:text="${r.companyName}">회사명</td>
+      <td th:text="${r.companyAddress}">회사주소</td>
+      <td th:text="${r.companyContact}">회사담당자</td>
+      <td th:text="${r.headcount}">인원</td>
+      <td th:text="${r.nationality}">국적</td>
+      <td th:text="${r.jobCode}">직무코드</td>
+      <td th:text="${r.workerName}">외국인 근로자</td>
+      <td th:text="${r.immigrationOffice}">출입국 사무소</td>
+      <td th:text="${r.applicationDate != null ? #temporals.format(r.applicationDate, 'yyyy-MM-dd') : ''}">접수일자</td>
+      <td th:text="${r.approvalStatus != null ? r.approvalStatus.label() : ''}">승인여부</td>
+       <td class="col-agent" th:text="${r.agent != null ? r.agent.adminName : ''}"></td>
+      <td th:text="${r.remarks}">비고란</td>
+      <td th:text="${r.createdAt != null ? #temporals.format(r.createdAt, 'yyyy-MM-dd HH:mm') : ''}">등록일</td>
+      <td th:text="${r.updatedAt != null ? #temporals.format(r.updatedAt, 'yyyy-MM-dd HH:mm') : ''}">수정일</td>
+    </tr>
+  </th:block>
+</html>
+

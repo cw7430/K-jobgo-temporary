@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="_csrf" th:if="${_csrf != null}" th:content="${_csrf.token}" />	
+	<meta name="_csrf_header" th:if="${_csrf != null}" th:content="${_csrf.headerName}" />
+
+    
+<!-- ✅ SEO 최적화 메타 태그 -->
+<meta name="title" content="(주)한국경영지원사업단 - 유학생, 외국인 근로자 매칭 플랫폼 K-jobgo">
+<meta name="description" content="(주)한국경영지원사업단  공식 플랫폼 K-jobgo. 유학생, 외국인 근로자와 기업을 연결하는 취업 매칭 서비스">
+<meta name="keywords" content="(주)한국경영지원사업단, 유학생, 외국인 고용, 외국인 근로자, 인력 매칭, 취업알선, kjobgo, k-jobgo, 광명기업, 김포기업, 구인, 구직, 취업 플랫폼">
+<meta name="robots" content="index, follow">
+
+<!-- Open Graph (SNS 공유용) -->
+<meta property="og:title" content="(주)한국경영지원사업단  - 유학생, 외국인 근로자 매칭 플랫폼 K-jobgo">
+<meta property="og:description" content="(주)한국경영지원사업단 - 유학생, 외국인 근로자와 한국 기업을 연결하는 공식 웹사이트 K-jobgo">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://kjobgo.com/">
+<meta property="og:image" content="https://k-jobgo-profile-photos-seoul.s3.ap-northeast-2.amazonaws.com/img/favicon.png">
+
+
+	<title>K-jobgo VISA Register Page | 외국인 근로자 visa 현황</title>
+
+    <!-- Favicon -->
+<link rel="icon" href="https://k-jobgo-profile-photos-seoul.s3.ap-northeast-2.amazonaws.com/img/favicon.png" />
+
+    <!-- CSS 연결 -->
+	<!-- ✅ 공통 먼저, 상세 후 -->
+ <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet" />
+
+    <link rel="stylesheet" th:href="@{/css/layout.css}">
+    <link rel="stylesheet" th:href="@{/css/toggle.css}">
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+    <link rel="stylesheet" th:href="@{/css/login.css}">
+    <link rel="stylesheet" th:href="@{/css/erp-layout.css}">
+	<link rel="stylesheet" th:href="@{/css/visaRecord.css}">
+  
+</head>
+
+<body class="all-page" th:attr="data-is-admin=${isAdmin}, data-authority=${authorityId}, 
+data-admin-name=${adminName}, data-super=${isSuper}">
+<div th:replace="~{fragments/header :: siteHeader}"></div>
+
+  <!-- ✅ K-jobgo 로고 전용 중앙 박스 (about-section 위에 배치) -->
+<div class="center-kjobgo-logo">
+<a th:href="@{/}">
+  <img src="/img/k-jobgo_company.png" alt="K-jobgo | 외국인 인재 매칭 플랫폼" class="k-jobgologo" />
+</a>
+</div>
+
+<div class="wrap">
+  <h1>VISA 관리 페이지</h1>
+
+  <!-- 🔎 검색 폼 -->
+  <form id="visaSearchForm" method="get" th:action="@{/admin/visa}"
+        class="search-bar" style="justify-content:center;">
+    <input type="text" name="keyword" class="inp"
+           placeholder="회사명/근로자/담당자/행정사/승인여부 등 통합 검색"
+           th:value="${keyword}">
+    <input type="hidden" name="includeDeleted" id="includeDeletedHidden" th:value="${includeDeleted}">
+    <button type="submit" class="btn btn--primary">검색</button>
+
+    <!-- ✅ 추천 B: 전체보기 토글 -->
+    <label class="toggle-all" style="margin-left:8px;">
+      <input id="toggleAllResults" type="checkbox"
+             th:checked="${#strings.isEmpty(keyword)}">
+      <span>전체보기</span>
+    </label>
+  </form>
+
+  <!-- ✍️ 권한 5(AGENT_VISA) 전용 툴바 -->
+  <div class="visa_toolbar toolbar--visa" th:if="${authorityId == 5}">
+    <button id="btnPrimary" class="btn btn--primary">등록</button>
+    <button id="btnEdit" class="btn btn--secondary">수정</button>
+    <button id="btnDelete" class="btn btn--danger">삭제</button>
+    <button id="btnCancel" class="btn btn--neutral" hidden>취소</button>
+  </div>
+
+  <!-- 🧰 최고권한(1,2) 전용: 삭제포함 토글 -->
+  <div class="visa_toolbar toolbar--visa" th:if="${isSuper}">
+    <label class="toggle-include-del">
+      <input id="toggleIncludeDeleted" type="checkbox" th:checked="${includeDeleted}">
+      <span>삭제포함</span>
+    </label>
+  </div>
+
+  <!-- 메인 폼 -->
+  <form th:action="${mode=='edit'} ? @{/admin/visa/{id}(id=${id})} : @{/admin/visa}"
+        method="post" th:object="${registerForm}" id="visaForm">
+
+    <div class="table-scroll" role="region" aria-label="VISA 등록 테이블" tabindex="0">
+      <table class="table wide-table">
+        <colgroup>
+          <col style="width: 46px;">              <!-- ✅ 선택(체크박스) -->
+          <col style="width: 60px;">               <!-- No -->
+          <col style="min-width: 200px;">          <!-- 회사명 -->
+          <col style="min-width: 260px;">          <!-- 회사주소 -->
+          <col style="min-width: 220px;">          <!-- 회사담당자 -->
+          <col style="width: 70px;">               <!-- 인원 -->
+          <col style="min-width: 140px;">          <!-- 국적 -->
+          <col style="min-width: 120px;">          <!-- 직무코드 -->
+          <col style="min-width: 200px;">          <!-- 외국인 근로자 이름 -->
+          <col style="min-width: 200px;">          <!-- 출입국 사무소 -->
+          <col style="min-width: 160px;">          <!-- 접수일자 -->
+          <col style="min-width: 160px;">          <!-- 승인여부 -->
+          <col class="col-agent" style="min-width: 180px;"> <!-- 행정사이름(슈퍼 전용) -->
+          <col style="min-width: 260px;">          <!-- 비고란 -->
+          <col style="min-width: 160px;">          <!-- 등록일 -->
+          <col style="min-width: 160px;">          <!-- 수정일 -->
+        </colgroup>
+
+        <thead>
+        <tr>
+          <th>선택</th> 
+          <th>No</th>
+          <th>회사명</th>
+          <th>회사주소</th>
+          <th>회사담당자</th>
+          <th>인원</th>
+          <th>국적</th>
+          <th>직무코드</th>
+          <th>외국인<br/>근로자 이름</th>
+          <th>출입국 사무소</th>
+          <th>접수일자</th>
+          <th>승인여부</th>
+          <th class="col-agent">행정사이름</th> <!-- 슈퍼만 보임 -->
+          <th>비고란</th>
+          <th>등록일</th>
+          <th>수정일</th>
+        </tr>
+        </thead>
+
+        <!-- ✅ 목록 전용 tbody -->
+        <tbody id="rows" th:fragment="tbodyRows">
+          <!-- ✅ 서버에서 조회결과 0건이면 메시지 행 출력 -->
+		  <tr th:if="${#lists.isEmpty(records)}" class="no-result">
+		    <td colspan="15" class="noresult-cell">
+		      검색 결과가 없습니다.
+		    </td>
+		  </tr>
+		  <tr th:each="r, stat : ${records}"
+		      th:attr="data-id=${r.visaId}"
+		      th:attrappend="data-deleted=${(r.visaDeleted != null && r.visaDeleted) ? 'true' : 'false'}"
+		      th:classappend="${(r.visaDeleted != null && r.visaDeleted) ? 'is-deleted' : ''}">
+		    <!-- ✅ 인덱스 0: 체크박스 -->
+		    <td><input type="checkbox" class="row-check" th:value="${r.visaId}"></td>
+		
+		    <!-- ✅ 인덱스 1: 넘버링 (페이지 반영) -->
+		    <td th:text="${pageObj != null} ? ${pageObj.number * pageObj.size + stat.index + 1} : ${stat.index + 1}"></td>
+
+          <td th:text="${r.companyName}"></td>
+          <td th:text="${r.companyAddress}"></td>
+          <td th:text="${r.companyContact}"></td>
+          <td th:text="${r.headcount}"></td>
+          <td th:text="${r.nationality}"></td>
+          <td th:text="${r.jobCode}"></td>
+          <td th:text="${r.workerName}"></td>
+          <td th:text="${r.immigrationOffice}"></td>
+          <td th:text="${#temporals.format(r.applicationDate,'yyyy-MM-dd')}"></td>
+          <td th:text="${r.approvalStatus != null ? r.approvalStatus.label() : ''}"></td>
+          <td class="col-agent" th:text="${r.agent != null ? r.agent.adminName : ''}"></td> <!-- 슈퍼만 보임 -->
+          <td th:text="${r.remarks}"></td>
+          <td th:text="${#temporals.format(r.createdAt,'yyyy-MM-dd HH:mm')}"></td>
+          <td th:text="${#temporals.format(r.updatedAt,'yyyy-MM-dd HH:mm')}"></td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 입력용 빈 행 템플릿 (권한5가 실제로 사용) -->
+    <template id="visaRowTemplate">
+      <tr data-new="true">
+        <td><!-- 선택 체크박스 없음(신규행은 선택 불가) --></td> 
+    	<td><!-- No 자동 --></td>         
+        <td><input name="companyName" class="inp" placeholder="예) ㈜한국경영지원사업단" required></td>
+        <td><input name="companyAddress" class="inp" placeholder="예) 경기도 광명시 일직로 43 GIDC A1706호" required></td>
+        <td><input name="companyContact" class="inp" placeholder="담당자 성함/(연락처)" required></td>
+        <td><input name="headcount" class="inp" type="number" min="1" placeholder="0명" required></td>
+        <td><input name="nationality" class="inp" placeholder="예) 대한민국" required></td>
+        <td><input name="jobCode" class="inp" placeholder="예) E-9, E-7, D-2, D-10 등" required></td>
+        <td><input name="workerName" class="inp" placeholder="예) Lee Jun Hee" required></td>
+        <td><input name="immigrationOffice" class="inp" placeholder="예) 서울출입국" required></td>
+        <td><input name="applicationDate" class="inp" type="date" required></td>
+        <td>
+          <select name="approvalStatus" class="sel" required>
+            <option th:each="s : ${statuses}" th:value="${s}" th:text="${s.label()}"></option>
+          </select>
+        </td>
+        <!-- 🔒 열은 항상 존재하지만, 비표시는 CSS에서 처리됨. 값은 JS에서 로그인 이름으로 채움 -->
+        <td class="col-agent">
+          <input name="agentName" class="inp" placeholder="행정사 이름" required readonly>
+        </td>
+        <td><textarea name="remarks" class="txt" placeholder="특이사항/주의사항/불허사유 등"></textarea></td>
+        <td><input class="inp readonly" placeholder="등록 시 자동 생성" readonly></td>
+        <td><input class="inp readonly" placeholder="수정 시 자동 갱신" readonly></td>
+      </tr>
+    </template>
+  </form>
+
+  <!-- 페이징 -->
+  <div class="pagination" th:if="${pageObj != null and pageObj.totalPages > 0}">
+    <ul>
+      <li th:classappend="${pageObj.first} ? 'disabled'">
+        <a th:if="${!pageObj.first}"
+           th:href="@{/admin/visa(page=${pageObj.number-1}, size=${pageObj.size}, keyword=${keyword}, includeDeleted=${includeDeleted})}">« 이전</a>
+        <span th:if="${pageObj.first}">« 이전</span>
+      </li>
+
+      <li th:each="i : ${#numbers.sequence(0, pageObj.totalPages-1)}"
+          th:classappend="${i == pageObj.number} ? 'active'">
+        <a th:href="@{/admin/visa(page=${i}, size=${pageObj.size}, keyword=${keyword}, includeDeleted=${includeDeleted})}"
+           th:text="${i+1}">1</a>
+      </li>
+
+      <li th:classappend="${pageObj.last} ? 'disabled'">
+        <a th:if="${!pageObj.last}"
+           th:href="@{/admin/visa(page=${pageObj.number+1}, size=${pageObj.size}, keyword=${keyword}, includeDeleted=${includeDeleted})}">다음 »</a>
+        <span th:if="${pageObj.last}">다음 »</span>
+      </li>
+    </ul>
+  </div>
+</div>
+
+
+    <footer class="foot-var">		
+         <div>
+  		<p> 
+  		<span>(주)한국경영지원사업단&nbsp; 대표이사 : 이준희 <span class="divider">|</span> 사업자등록번호 : 887-81-00124</span><br>
+        본사_경기도 김포시 김포한강4로 125 월드타워 705호 <span class="divider">|</span> 본부_경기도 광명시 일직로 43 GIDC A1706호<br>
+        국내지사_김해지사, 대구지사, 천안지사, 광주지사, 원주지사 <span class="divider">|</span> 해외지사_베트남, 필리핀, 인도네시아, 인도, 몽골, 네팔, 우즈베키스탄<br>
+        유료직업소개업 등록번호 : 제2025-4090515-14-5-00012호 <span class="divider">|</span> 
+        Tel_ 031-983-0942 <span class="divider">|</span>  Fax_ 031-624-1540  <span class="divider">|</span> Email_ k-jobgo@naver.com<br>
+ 		ⓒ 2025 K-jobgo. All rights reserved.</p>
+ 		</div>
+    </footer>
+    <!-- JS 연결 -->
+    <script th:src="@{/js/common.js}"></script>
+    <script th:src="@{/js/login.js}"></script>
+    <!-- 권장: Thymeleaf 유틸로 현재시간 -->
+	<script th:src="@{/js/visaRecord.js}"></script>
+
+<!-- 또는 그냥 버전 파라미터 제거 -->
+<!-- <script th:src="@{/js/visaRecord.js}"></script> -->
+
+</body>
+</html>

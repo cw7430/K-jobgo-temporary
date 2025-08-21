@@ -1,0 +1,268 @@
+/* visaRecord.css */
+
+/* ================================
+   ✅ 중앙 K-jobgo 로고: 완전 독립 스타일
+   ================================ */
+.center-kjobgo-logo {
+  position: relative;             /* 독립적 위치지정 */
+  width: 100%;                    /* 전체 너비 */
+  display: flex;                  /* 가로 중앙 정렬용 */
+  justify-content: center;       /* 가운데 정렬 */
+  align-items: center;           /* 수직 가운데 정렬 */
+  margin: 60px auto 10px auto;   /* 위아래 여백 */
+  z-index: 10;                    /* 다른 요소 위에 */
+}
+
+/* 슈퍼(1,2)가 아니면 행정사 열 감추기 */
+body[data-super="false"] th.col-agent,
+body[data-super="false"] td.col-agent,
+body[data-super="false"] col.col-agent {
+  display: none;
+}
+
+/* 섹션 타이틀 여백 보정 */
+.wrap .section-title {
+  font-weight: 700;
+  margin: 8px 0 10px;
+}
+
+/* -----------------------------
+   검색 바 (상단 중앙 배치)
+   ----------------------------- */
+#visaSearchForm.search-bar {
+  display: flex;
+  justify-content: center; /* 중앙 정렬 */
+  align-items: center;
+  gap: 8px;
+  margin: 12px 0 14px;
+}
+#visaSearchForm .inp {
+  width: 320px;
+  height: 42px;
+}
+#visaSearchForm .btn {
+  height: 42px;
+  padding: 0 16px;
+}
+
+/* =============================
+   VISA Record 전용 버튼 스타일
+   ============================= */
+.toolbar--visa .btn {
+  gap: 10px;            /* 기본 정의 유지 + 여백 재확인 */
+  justify-content: flex-end;
+  margin: 8px 0 18px;
+  height: 38px;
+  padding: 6px 14px;
+  font-size: 14px;
+  font-weight: bold;
+  border-radius: 6px;
+  border: none;
+  transition: background-color 0.2s ease, transform 0.15s ease;
+}
+
+/* 등록(Primary) - hover에서만 색 */
+.toolbar--visa .btn--primary {
+  background: transparent;
+  color: var(--accent);
+  border: 2px solid var(--accent);
+}
+.toolbar--visa .btn--primary:hover {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* 수정(Secondary) - 기본 회색 */
+.toolbar--visa .btn--secondary {
+  background: var(--muted);
+  color: #fff;
+}
+.toolbar--visa .btn--secondary:hover {
+  background: #5a6268;
+}
+
+/* 삭제(Danger) - 기본 빨강 */
+.toolbar--visa .btn--danger {
+  background: #dc3545;
+  color: #fff;
+}
+.toolbar--visa .btn--danger:hover {
+  background: #c82333;
+}
+
+/* 취소(Neutral) - 연회색 */
+.toolbar--visa .btn--neutral {
+  background: #f8f9fa;
+  color: #333;
+  border: 1px solid var(--line);
+}
+.toolbar--visa .btn--neutral:hover {
+  background: #e2e6ea;
+}
+
+.visa_toolbar.toolbar--visa button[hidden],
+.visa_toolbar.toolbar--visa .btn[hidden] { display: none !important; }
+
+/* === 툴바: 버튼 줄바꿈 방지 + 토글 우측 정렬 === */
+.visa_toolbar.toolbar--visa {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+  flex-wrap: nowrap;      /* 줄바꿈 금지 */
+  white-space: nowrap;    /* 버튼 텍스트 줄바꿈 방지 */
+}
+
+.visa_toolbar.toolbar--visa .btn,
+.visa_toolbar.toolbar--visa button {
+  display: inline-flex !important;  /* 공통 .btn의 block/100% 폭 무력화 */
+  width: auto !important;
+  flex: 0 0 auto;
+}
+
+.table.wide-table tr.is-deleted td {
+  color: #70757a;
+  background: #f5f6f8;
+  text-decoration: line-through;
+}
+.table.wide-table tr.is-deleted td:nth-child(2)::before {
+  content: "[삭제] ";
+  color: #b42318;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+/* -----------------------------
+   입력 테이블(가로/세로 스크롤)
+   - 공통 .table/.table-scroll 기반으로 미세 튜닝
+   ----------------------------- */
+.table-scroll {
+  max-height: 62vh;   /* 필요시 숫자 조절 */
+  overflow: auto;     /* 좌우+상하 스크롤 모두 허용 */
+}
+
+/* 헤더(공통에 sticky 있음) 높이/정렬 */
+.table.wide-table thead th {
+  white-space: nowrap;
+  text-align: center;
+}
+
+/* 본문 셀 정렬/여백 */
+.table.wide-table tbody td {
+  vertical-align: middle;
+  /* 공통 padding 10px 유지 */
+}
+
+/* 폼 입력류 높이/일관성 */
+.table.wide-table .inp,
+.table.wide-table .sel,
+.table.wide-table .txt {
+  width: 100%;
+  height: 40px;
+  padding: 8px 10px;
+  font-size: 14px;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  background: #fff;
+  outline: none;
+}
+
+/* textarea는 필요 시 세로로만 늘릴 수 있게 */
+.table.wide-table .txt {
+  min-height: 40px;
+  height: 40px;     /* 한 줄 기본 */
+  resize: vertical; /* 드래그로 높이 조절 가능 */
+}
+
+/* 숫자/날짜 입력 가독성 */
+.table.wide-table input[type="number"],
+.table.wide-table input[type="date"] {
+  text-align: left;
+}
+
+/* 읽기 전용 인풋(행정사 이름) 배경 톤 */
+.table.wide-table input[readonly] {
+  background: #f8f9fa;
+}
+
+/* 스크롤바 스타일 (웹킷 계열) */
+.table-scroll::-webkit-scrollbar {
+  height: 10px;
+  width: 10px;
+}
+.table-scroll::-webkit-scrollbar-thumb {
+  background: #c9d4ef;
+  border-radius: 8px;
+}
+.table-scroll::-webkit-scrollbar-track {
+  background: #f1f3f9;
+}
+
+.pagination {
+    text-align: center;
+    margin-top : 30px;
+}
+
+.pagination ul {
+    display: inline-flex;
+    list-style: none;
+    padding: 0;
+    gap: 6px;
+    align-items: center; /* 세로 정렬 */
+}
+
+/* 숫자 페이지 버튼 */
+.pagination li a {
+    display: block;
+    padding: 6px 12px;
+    background: #f2f2f2;
+    color: #333;
+    text-decoration: none;
+    border-radius: 4px;
+}
+
+/* 현재 페이지 강조 */
+.pagination li.active a {
+    background: #007bff;
+    color: white;
+    font-weight: bold;
+}
+
+/* 이전 / 다음은 텍스트 강조만 */
+.pagination li.prev a,
+.pagination li.next a {
+    background: none;
+    color: #007bff;
+    font-weight: bold;
+    padding: 6px 8px;
+    border: none;
+}
+
+/* 비활성 상태는 클릭 안되고 색 연하게 */
+.pagination li.disabled span {
+    color: #bbb;
+    padding: 6px 8px;
+}
+
+/* ✅ footer를 항상 바닥으로 밀어내기 */
+footer.foot-var {
+  margin-top: 100px; /* footer 위쪽에 여백 (기존 auto 대신 고정 값) */
+  padding: 24px 0 0 0; /* footer 안쪽 여백 */
+  text-align: center;
+  color: black;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+/* 반응형 보정 */
+@media (max-width: 900px) {
+  #visaSearchForm .inp { width: 240px; }
+  .table.wide-table { min-width: 1100px; } /* 최소 가로폭을 살짝 줄여 모바일 스크롤 유도 */
+}
+@media (max-width: 640px) {
+  #visaSearchForm.search-bar {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  #visaSearchForm .inp { width: 100%; }
+}

@@ -23,4 +23,5 @@ public class AuthorityType {
 
     @Column(name = "authority_name", nullable = false, unique = true)
     private String authorityName;
+
 }

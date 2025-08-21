@@ -45,4 +45,5 @@ public class Admin {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "authority_id", nullable = false)
     private AuthorityType authorityType;
+
 }

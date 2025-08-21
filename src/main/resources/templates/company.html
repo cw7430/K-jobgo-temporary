@@ -31,45 +31,10 @@
 
 </head>
 
-<body class="all-page" th:attr="data-is-admin=${isAdmin}">
+<body class="all-page" th:attr="data-is-admin=${isAdmin}, data-authority=${authorityId}">
+<div th:replace="~{fragments/header :: siteHeader}"></div>
+ 
 <div th:replace="~{login :: loginModal}"></div>
-<header class="top-var">
-  <!-- ✅ 로고 + 슬로건 + 회사소개를 하나의 묶음으로 감싸기 -->
-<div class="brand-header">
-  <div class="logo-slogan">
-    <img src="/img/favicon.png" class="logo" alt="K-jobgo | 외국인 인재 매칭 플랫폼" />
-    <p class="about-slogan"> KOREAMSA Inc.</p>
-  </div>
-      <!-- SEO 및 브랜드 노출 -->
-    <div class="company-info">
-      <p class="sr-only">(주)한국경영지원사업단</p>
-    </div>
-</div>
-  
-<div class="menu-wrapper">
-	    <!-- 로그인 상태 라벨 -->
-  <div class="login-info">
-    <span th:if="${isAdmin}" th:text="${adminName + '님'}"></span>
-    <button id="loginBtn" th:text="${isAdmin} ? '로그아웃' : '로그인'"></button>
-  </div>
-  
-  <div class="menu-toggle" onclick="toggleMenu()">☰</div>
-
-  <!-- 토글 메뉴 -->
-  <div id="menu" class="menu-popup hidden-menu">
-    <ul>
-     <!-- <li onclick="location.href='/PartnerCompanyInsight'">Partner Company Insight</li> -->
-      <li onclick="alert('페이지 준비 중입니다.')">Partner Company Insight</li>
-      <li onclick="alert('페이지 준비 중입니다.')">Q&A board</li>
-
-      <!-- 관리자 전용 -->
-      <li th:if="${isAdmin}" class="menu-divider"></li>
-      <li th:if="${isAdmin}" class="admin-label">관리자 전용</li>
-      <li th:if="${isAdmin}" onclick="location.href='/admin/profileList'">프로필 전체 보기</li>
-    </ul>
-  </div>
-</div>  
-</header>
   
   <!-- ✅ K-jobgo 로고 전용 중앙 박스 (about-section 위에 배치) -->
 <div class="center-kjobgo-logo">
