@@ -3,7 +3,6 @@ package com.spring.dto.response;
 import lombok.*;
 
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

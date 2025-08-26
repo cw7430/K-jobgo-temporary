@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:if="${_csrf != null}" th:content="${_csrf.token}" />	
+    <meta name="_csrf_header" th:if="${_csrf != null}" th:content="${_csrf.headerName}" />
+    <meta name="page-size" th:content="${pageObj != null ? pageObj.size : 10}">
+    <meta name="robots" content="index, follow">
+
+    <title>K-jobgo ProfileList Page | 외국인 근로자 Profile List </title>
+
+    <!-- Favicon -->
+    <link rel="icon" href="https://k-jobgo-profile-photos-seoul.s3.ap-northeast-2.amazonaws.com/img/favicon.png" />
+
+    <!-- CSS 연결 (공통 → 상세) -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" th:href="@{/css/layout.css}">
+    <link rel="stylesheet" th:href="@{/css/toggle.css}">
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+    <link rel="stylesheet" th:href="@{/css/login.css}">
+    <link rel="stylesheet" th:href="@{/css/erp-layout.css}">
+    <link rel="stylesheet" th:href="@{/css/agencyList.css}">
+	<link rel="stylesheet" th:href="@{/css/visaRecord.css}">
+</head>
+
+<body class="all-page"
+      th:attr="data-is-admin=${isAdmin}, data-authority=${authorityId}, 
+               data-admin-name=${adminName}, data-super=${isSuper}">
+<div th:replace="~{fragments/header :: siteHeader}"></div>
+
+<!-- ✅ K-jobgo 로고 전용 중앙 박스 -->
+<div class="center-kjobgo-logo">
+  <a th:href="@{/}">
+    <img src="/img/k-jobgo_company.png" alt="K-jobgo | 외국인 인재 매칭 플랫폼" class="k-jobgologo" />
+  </a>
+</div>
+
+<main class="wrap">
+<th:block th:with="isSuper=${authorityId == 1 or authorityId == 2},
+                   isAgent=${authorityId == 5},
+                   isPublic=${authorityId == null}">
+
+  <h1>Sending Agency ProfileList(송출업체 프로필 현황)</h1>
+
+<!-- 🔎 검색 툴바 (관리자/권한5만) -->
+<form id="AgencySearchForm" method="get" th:action="@{/agency/List}" th:if="${!isPublic}">
+  <div class="search-bar">
+    <input type="text" name="keyword" class="inp"
+           placeholder="국적, 직무코드, 비자타입 등 통합 검색"
+           th:value="${keyword}" />
+    <button type="submit" class="btn btn--primary">검색</button>
+    <!-- ✅ 추천 B: 전체보기 토글 -->
+    <label class="toggle-all" style="margin-left:8px;">
+      <input id="toggleAllResults" type="checkbox"
+             th:checked="${#strings.isEmpty(keyword)}">
+      <span>전체보기</span>
+    </label>
+  </div>
+</form>
+
+  <!-- 🛠 관리 툴바 -->
+	<!-- 권한 1 또는 2: 삭제 + 다운로드 -->
+	<div class="toolbar" th:if="${isSuper}">
+	  <button id="btnDelete"   type="button" class="btn btn--secondary">삭제</button>
+	  <button id="btnDownload" type="button" class="btn btn--primary">다운로드</button>
+	</div>
+	
+	<!-- 권한 5: 다운로드 -->
+	<div class="toolbar" th:if="${isAgent}">
+	  <button id="btnDownload" type="button" class="btn btn--primary">다운로드</button>
+	</div>
+
+  <!-- 목록 테이블 (스크롤 없음) -->
+  <form id="agencyListForm" method="post">
+    <!-- (선택) 등록/상세 모달이 정말 필요할 때만 주입
+    <div th:replace="~{fragments/registerModal :: agencyModal}"></div>
+    -->
+
+    <div class="table-container">
+   <!-- ✅ 1·2: SUPER/ADMIN 전용 테이블 (송출업체명/상태/선택 포함) -->
+  <table class="table erp-table table-fixed" th:if="${isSuper}">
+    <colgroup>
+      <col style="width:46px" />   <!-- 선택 -->
+      <col style="width:50px" />   <!-- No -->
+      <col style="min-width:200px" /> <!-- 송출업체명 -->
+      <col style="min-width:80px" />  <!-- 비자타입 -->
+      <col style="min-width:100px" /> <!-- 직무코드 -->
+      <col style="min-width:200px" /> <!-- 근로자이름 -->
+      <col style="min-width:150px" /> <!-- 국적 -->
+      <col style="min-width:80px" />  <!-- 상태 -->
+      <col style="min-width:100px" /> <!-- 등록일 -->
+    </colgroup>
+    <thead>
+      <tr>
+        <th>선택</th>
+        <th>No</th>
+        <th>송출업체명</th>
+        <th>비자타입</th>
+        <th>직무코드</th>
+        <th>근로자이름</th>
+        <th>국적</th>
+        <th>상태</th>
+        <th>등록일</th>
+      </tr>
+    </thead>
+    
+   <tbody id="rows-super">
+      <tr th:each="r, stat : ${pageObj != null ? pageObj.content : rows}">
+        <td><input type="checkbox" class="row-check" th:value="${r.profileId}" /></td>
+        <!-- 페이지 기준 No -->
+        <td th:text="${(pageObj != null ? pageObj.number : 0) * (pageObj != null ? pageObj.size : 10) + stat.index + 1}">1</td>
+        <td th:text="${r.agencyName}">업체명</td>
+	    <td th:text="${r.visaType}">비자타입</td>
+	    <td th:text="${r.jobCode}">직무코드</td>
+	    <td th:text="${r.employeeNameEn}">근로자이름</td>
+	    <td th:text="${r.nationalityEn}">국적</td>
+		<td class="status-cell"
+		    th:attr="data-status=${r.statusLabel != null ? r.statusLabel : '미배정'}"
+		    th:text="${r.statusLabel != null ? r.statusLabel : '미배정'}">
+		  미배정
+		</td>
+ 		<td th:text="${#temporals.format(r.createdAt, 'yyyy-MM-dd')}"></td>
+		  </tr>
+		  <!-- 데이터 없을 때 -->
+	      <tr th:if="${pageObj == null or #lists.isEmpty(pageObj.content)}">
+	        <td colspan="9" style="text-align:center;">표시할 데이터가 없습니다.</td>
+	      </tr>
+        </tbody>
+      </table>
+
+  <!-- ✅ 5: AGENT 전용 테이블 (송출업체명 없음, 선택/상태 포함) -->
+  <table class="table erp-table table-fixed" th:if="${isAgent}">
+    <colgroup>
+      <col style="width:46px" />   <!-- 선택 -->
+      <col style="width:50px" />   <!-- No -->
+      <col style="min-width:80px" />  <!-- 비자타입 -->
+      <col style="min-width:100px" /> <!-- 직무코드 -->
+      <col style="min-width:200px" /> <!-- 근로자이름 -->
+      <col style="min-width:150px" /> <!-- 국적 -->
+      <col style="min-width:80px" />  <!-- 상태 -->
+      <col style="min-width:100px" /> <!-- 등록일 -->
+    </colgroup>
+    <thead>
+      <tr>
+        <th>선택</th>
+        <th>No</th>
+        <th>비자타입</th>
+        <th>직무코드</th>
+        <th>근로자이름</th>
+        <th>국적</th>
+        <th>상태</th>
+        <th>등록일</th>
+      </tr>
+    </thead>
+    
+     <tbody id="rows-agent">
+      <tr th:each="r, stat : ${pageObj != null ? pageObj.content : rows}">
+        <td><input type="checkbox" class="row-check" th:value="${r.profileId}" /></td>
+        <td th:text="${(pageObj != null ? pageObj.number : 0) * (pageObj != null ? pageObj.size : 10) + stat.index + 1}">1</td>
+        <td th:text="${r.visaType}">비자타입</td>
+        <td th:text="${r.jobCode}">직무코드</td>
+        <td th:text="${r.employeeNameEn}">근로자이름</td>
+        <td th:text="${r.nationalityEn}">국적</td>
+		<td class="status-cell"
+		    th:attr="data-status=${r.statusLabel != null ? r.statusLabel : '미배정'}"
+		    th:text="${r.statusLabel != null ? r.statusLabel : '미배정'}">
+		  미배정
+		</td>
+        <td th:text="${#temporals.format(r.createdAt, 'yyyy-MM-dd')}"></td>
+      </tr>
+      <tr th:if="${pageObj == null or #lists.isEmpty(pageObj.content)}">
+        <td colspan="8" style="text-align:center;">표시할 데이터가 없습니다.</td>
+      </tr>
+    </tbody>
+  </table>
+  
+    <!-- ✅ Public(비로그인) 전용 테이블 (선택/상태/송출업체명 전부 미노출) -->
+  <table class="table erp-table table-fixed" th:if="${isPublic}">
+    <colgroup>
+      <col style="width:50px" />     <!-- No -->
+      <col style="min-width:80px" />  <!-- 비자타입 -->
+      <col style="min-width:100px" /> <!-- 직무코드 -->
+      <col style="min-width:200px" /> <!-- 근로자이름 -->
+      <col style="min-width:150px" /> <!-- 국적 -->
+      <col style="min-width:100px" /> <!-- 등록일 -->
+    </colgroup>
+    <thead>
+      <tr>
+        <th>No</th>
+        <th>비자타입</th>
+        <th>직무코드</th>
+        <th>근로자이름</th>
+        <th>국적</th>
+        <th>등록일</th>
+      </tr>
+    </thead>
+    <tbody id="rows-public">
+      <tr th:each="r, stat : ${pageObj != null ? pageObj.content : rows}">
+        <td th:text="${(pageObj != null ? pageObj.number : 0) * (pageObj != null ? pageObj.size : 10) + stat.index + 1}">1</td>
+        <td th:text="${r.visaType}">VISA Type</td>
+        <td th:text="${r.jobCode}">Job Code</td>
+        <td th:text="${r.employeeNameEn}">EmployeeName</td>
+        <td th:text="${r.nationalityEn}">Nationality</td>
+        <td th:text="${#temporals.format(r.createdAt, 'yyyy-MM-dd')}"></td>
+      </tr>
+      <tr th:if="${pageObj == null or #lists.isEmpty(pageObj.content)}">
+        <td colspan="6" style="text-align:center;">표시할 데이터가 없습니다.</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+ </form>
+  <!-- 페이징 -->
+  <nav class="pagination" th:if="${pageObj != null and pageObj.totalPages > 0}">
+    <ul>
+      <li th:classappend="${pageObj.first} ? 'disabled'">
+        <a th:if="${!pageObj.first}"
+           th:href="@{/agency/List(page=${pageObj.number-1}, size=${pageObj.size}, keyword=${keyword})}">« 이전</a>
+        <span th:if="${pageObj.first}">« 이전</span>
+      </li>
+
+      <li th:each="i : ${#numbers.sequence(0, pageObj.totalPages-1)}"
+          th:classappend="${i == pageObj.number} ? 'active'">
+        <a th:href="@{/agency/List(page=${i}, size=${pageObj.size}, keyword=${keyword})}"
+           th:text="${i+1}">1</a>
+      </li>
+
+      <li th:classappend="${pageObj.last} ? 'disabled'">
+        <a th:if="${!pageObj.last}"
+           th:href="@{/agency/List(page=${pageObj.number+1}, size=${pageObj.size}, keyword=${keyword})}">다음 »</a>
+        <span th:if="${pageObj.last}">다음 »</span>
+      </li>
+    </ul>
+  </nav>
+</main>
+
+<footer class="foot-var">		
+  <div>
+    <p> 
+      <span>(주)한국경영지원사업단&nbsp; 대표이사 : 이준희 <span class="divider">|</span> 사업자등록번호 : 887-81-00124</span><br>
+      본사_경기도 김포시 김포한강4로 125 월드타워 705호 <span class="divider">|</span> 본부_경기도 광명시 일직로 43 GIDC A1706호<br>
+      국내지사_김해지사, 대구지사, 천안지사, 광주지사, 원주지사 <span class="divider">|</span> 해외지사_베트남, 필리핀, 인도네시아, 인도, 몽골, 네팔, 우즈베키스탄<br>
+      유료직업소개업 등록번호 : 제2025-4090515-14-5-00012호 <span class="divider">|</span> 
+      Tel_ 031-983-0942 <span class="divider">|</span>  Fax_ 031-624-1540  <span class="divider">|</span> Email_ k-jobgo@naver.com<br>
+      ⓒ 2025 K-jobgo. All rights reserved.
+    </p>
+  </div>
+</footer>
+
+<!-- JS 연결 -->
+<script th:src="@{/js/common.js}"></script>
+<script th:src="@{/js/login.js}"></script>
+<script th:src="@{/js/agencyList.js}"></script>
+</body>
+</html>

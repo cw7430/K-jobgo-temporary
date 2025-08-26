@@ -30,44 +30,37 @@ public class AuthApiController {
         System.out.println("✅ 전달받은 password: [" + loginDTO.getAdminPassword() + "]");
 
         Admin admin = adminService.authenticate(loginDTO.getAdminLoginId(), loginDTO.getAdminPassword());
+        if (admin == null) return ResponseEntity.badRequest().build();
 
-        if (admin != null) {
-            // 세션에 관리자 정보 저장
-            session.setAttribute("loggedInAdmin", admin);
-
-            // ✅ 권한번호 → ROLE 매핑
-            int authId = admin.getAuthorityType().getAuthorityId();
-            List<GrantedAuthority> authorities = switch (authId) {
-                case 1 -> List.of(new SimpleGrantedAuthority("ROLE_SUPERADMIN"));
-                case 2 -> List.of(new SimpleGrantedAuthority("ROLE_ADMIN"));
-                case 5 -> List.of(new SimpleGrantedAuthority("ROLE_AGENT_VISA"));
-                default -> List.of(new SimpleGrantedAuthority("ROLE_ADMIN_GENERIC")); // 나머지 관리용 기본 롤(선택)
-            };
-            
-            // Spring Security에 인증 정보 설정
-            UsernamePasswordAuthenticationToken authentication =
-                    new UsernamePasswordAuthenticationToken(admin, null, authorities);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
-
-            // 권한 제한 (예: 4번 권한은 접근 불가)
-            if (admin.getAuthorityType().getAuthorityId() == 4) {
-                return ResponseEntity.status(403).body(null);
-            }
-
-            // 로그인 응답 생성
-            LoginResponseDto responseDto = new LoginResponseDto(
-                    admin.getAdminId(),
-                    admin.getAdminName(),
-                    admin.getAuthorityType().getAuthorityName(),
-                    session.getId()
-            );
-            System.out.println("LoginResponseDto 생성 후 반환: " + responseDto);
-            return ResponseEntity.ok(responseDto);
+        int authId = admin.getAuthorityType().getAuthorityId();
+        // ✅ 1,2,5만 허용
+        if (!(authId == 1 || authId == 2 || authId == 5)) {
+            return ResponseEntity.status(403).build();
         }
 
-        // 인증 실패
-        return ResponseEntity.badRequest().build();
+        // 세션 키 저장 (AgencyController에서 사용)
+        session.setAttribute("loggedInAdmin", admin);
+        session.setAttribute("adminId", admin.getAdminId());
+        session.setAttribute("adminName", admin.getAdminName());
+        session.setAttribute("authorityId", authId);
+        session.setAttribute("authorityName", admin.getAuthorityType().getAuthorityName());
+
+        // ROLE 매핑
+        List<GrantedAuthority> authorities = switch (authId) {
+            case 1 -> List.of(new SimpleGrantedAuthority("ROLE_SUPERADMIN"));
+            case 2 -> List.of(new SimpleGrantedAuthority("ROLE_ADMIN"));
+            case 5 -> List.of(new SimpleGrantedAuthority("ROLE_AGENT_VISA"));
+            default -> List.of();
+        };
+
+        var authentication = new UsernamePasswordAuthenticationToken(admin, null, authorities);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
+
+        var resp = new LoginResponseDto(
+            admin.getAdminId(), admin.getAdminName(), admin.getAuthorityType().getAuthorityName(), session.getId()
+        );
+        return ResponseEntity.ok(resp);
     }
 
     @GetMapping("/api/keep-alive")

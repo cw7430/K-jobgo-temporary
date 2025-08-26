@@ -6,6 +6,8 @@
 	      th:attrappend="data-deleted=${(r.visaDeleted != null && r.visaDeleted) ? 'true' : 'false'}"
 	      th:classappend="${(r.visaDeleted != null && r.visaDeleted) ? 'is-deleted' : ''}">
       <td><input type="checkbox" class="row-check" th:value="${r.visaId}"></td>
+      <!-- ✅ 인덱스 1: No (여기서 번호 계산이 어려우면 그냥 '-'라도 채움) -->
+      <td>-</td>
       <td th:text="${r.companyName}">회사명</td>
       <td th:text="${r.companyAddress}">회사주소</td>
       <td th:text="${r.companyContact}">회사담당자</td>
@@ -19,7 +21,6 @@
        <td class="col-agent" th:text="${r.agent != null ? r.agent.adminName : ''}"></td>
       <td th:text="${r.remarks}">비고란</td>
       <td th:text="${r.createdAt != null ? #temporals.format(r.createdAt, 'yyyy-MM-dd HH:mm') : ''}">등록일</td>
-      <td th:text="${r.updatedAt != null ? #temporals.format(r.updatedAt, 'yyyy-MM-dd HH:mm') : ''}">수정일</td>
     </tr>
   </th:block>
 </html>

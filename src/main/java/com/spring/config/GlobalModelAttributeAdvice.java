@@ -19,33 +19,41 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 
 @ControllerAdvice
 public class GlobalModelAttributeAdvice {
+	   @ModelAttribute
+	    public void addLoginInfo(Model model, HttpSession session) {
+	        Admin loginAdmin = (Admin) session.getAttribute("loggedInAdmin");
 
-    @ModelAttribute
-    public void addLoginInfo(Model model, HttpSession session) {
-        Admin loginAdmin = (Admin) session.getAttribute("loggedInAdmin");
+	        boolean isAdmin = (loginAdmin != null);
+	        model.addAttribute("isAdmin", isAdmin);
+	        model.addAttribute("adminName", isAdmin ? loginAdmin.getAdminName() : "");
 
-        boolean isAdmin = (loginAdmin != null);
-        model.addAttribute("isAdmin", isAdmin);
+	        Integer authorityId = (isAdmin && loginAdmin.getAuthorityType() != null)
+	                ? loginAdmin.getAuthorityType().getAuthorityId()
+	                : null;
+	        model.addAttribute("authorityId", authorityId);
 
-        // 로그인 이름 (없으면 빈 문자열)
-        model.addAttribute("adminName", isAdmin ? loginAdmin.getAdminName() : "");
+	        boolean isSuper = (authorityId != null) && (authorityId == 1 || authorityId == 2);
+	        model.addAttribute("isSuper", isSuper);
 
-        // 권한 ID (없으면 null)
-        Integer authorityId = (isAdmin && loginAdmin.getAuthorityType() != null)
-                ? loginAdmin.getAuthorityType().getAuthorityId()
-                : null;
-        model.addAttribute("authorityId", authorityId);
+	        // Public 등록 완료 플래그
+	        Boolean registeredOnce = (Boolean) session.getAttribute("registeredOnce");
 
-        // (선택) adminId도 전역 제공
-        Long adminId = isAdmin ? loginAdmin.getAdminId() : null;
-        model.addAttribute("adminId", adminId);
-        
-        // ✅ Visa 등록 가능 여부 전역 제공
-        boolean canRegisterVisa = (loginAdmin != null)
-                && loginAdmin.getAuthorityType() != null
-                && (authorityId == 1 || authorityId == 2 || authorityId == 5);
-        model.addAttribute("canRegisterVisa", canRegisterVisa);
+	        // 현황 메뉴: 1/2/5는 항상 true, Public은 등록 완료 시 true
+	        boolean canListAgency =
+	                (authorityId != null && (authorityId == 1 || authorityId == 2 || authorityId == 5))
+	                || (authorityId == null && Boolean.TRUE.equals(registeredOnce));
+	        model.addAttribute("canListAgency", canListAgency);
 
-    }
+	        // 전용(등록) 메뉴: 오직 Public만 노출
+	        boolean showAgencyRegister = (authorityId == null);
+	        model.addAttribute("showAgencyRegister", showAgencyRegister);
+
+	        // (기존) 비자 등록 메뉴
+	        boolean canRegisterVisa = (authorityId != null) && (authorityId == 1 || authorityId == 2 || authorityId == 5);
+	        model.addAttribute("canRegisterVisa", canRegisterVisa);
+
+	        // (선택) adminId 전역 제공
+	        model.addAttribute("adminId", isAdmin ? loginAdmin.getAdminId() : null);
+	    }
 }
 

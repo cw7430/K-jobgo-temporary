@@ -10,49 +10,73 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 public class SecurityConfig {
 
-  @Bean
-  public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-    http
-      .csrf(csrf -> csrf.disable())
-      .authorizeHttpRequests(auth -> auth
-        .requestMatchers("/", "/home", "/loginPage",
-                         "/profileList", "/profileDetail/**",
-                         "/css/**", "/js/**", "/img/**").permitAll()
+	 @Bean
+	  public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+	    http
+	      .csrf(csrf -> csrf.disable())
+	      .authorizeHttpRequests(auth -> auth
+	    		  // 공개 페이지 & 정적 리소스
+	    		  .requestMatchers("/", "/home", "/loginPage",
+	    		                   "/profileList", "/profileDetail/**",
+	    		                   "/css/**", "/js/**", "/img/**").permitAll()
 
-        .requestMatchers(HttpMethod.POST, "/api/login").permitAll()
+	    		  // 등록: Public 허용
+	    		  .requestMatchers(HttpMethod.GET,  "/agency/register").permitAll()
+	    		  .requestMatchers(HttpMethod.POST, "/agency/register").permitAll()
 
-        // VISA
-        .requestMatchers(HttpMethod.GET, "/admin/visa/my/**").hasRole("AGENT_VISA")
-        .requestMatchers(HttpMethod.GET, "/admin/visa/**")
-          .hasAnyRole("SUPERADMIN","ADMIN","AGENT_VISA")
-        .requestMatchers(HttpMethod.POST,   "/admin/visa/**").hasRole("AGENT_VISA")
-        .requestMatchers(HttpMethod.DELETE, "/admin/visa/**").hasRole("AGENT_VISA")
+	    		  // 목록: 공개 (컨트롤러에서 registeredOnce로 가드)
+	    		  .requestMatchers(HttpMethod.GET, "/agency/List", "/agency/agencyList").permitAll()
 
-        .anyRequest().permitAll()
-      )
-      .formLogin(login -> login
-        .loginPage("/loginPage")
-        .loginProcessingUrl("/login")
-        .successHandler((req, res, authn) -> {
-          var auths = authn.getAuthorities().toString();
-          if (auths.contains("ROLE_AGENT_VISA")) {
-        	  res.sendRedirect("/admin/visa/my"); // ✅ 권한5는 내 전용 페이지
-          } else if (auths.contains("ROLE_SUPERADMIN") || auths.contains("ROLE_ADMIN")) {
-        	  res.sendRedirect("/admin/visa");    // 슈퍼/관리자: 전체 페이지
-          } else {
-            res.sendRedirect("/home");
-          }
-        })
-        .permitAll()
-      )
-      .logout(logout -> logout.logoutUrl("/logout").logoutSuccessUrl("/home"))
-      .httpBasic(basic -> basic.disable());
+	    		  // ✅ 배정/다운로드: 1,2,5만
+	    		  .requestMatchers(HttpMethod.POST, "/agency/*/assign")
+	    		      .hasAnyRole("SUPERADMIN","ADMIN","AGENT_VISA")
 
-    return http.build();
-  }
+	    		  // 파일 다운로드 엔드포인트가 있다면 동일하게 보호
+	    		  .requestMatchers(HttpMethod.GET, "/agency/files/**")
+	    		      .hasAnyRole("SUPERADMIN","ADMIN","AGENT_VISA")
 
-  @Bean
-  public BCryptPasswordEncoder passwordEncoder() {
-    return new BCryptPasswordEncoder();
-  }
-}
+	    		  // 삭제: 1,2만
+	    		  .requestMatchers(HttpMethod.DELETE, "/agency/**")
+	    		      .hasAnyRole("SUPERADMIN","ADMIN")
+	    		  .requestMatchers(HttpMethod.POST, "/agency/*/delete")
+	    		      .hasAnyRole("SUPERADMIN","ADMIN")
+
+	    		  // 로그인 API
+	    		  .requestMatchers(HttpMethod.POST, "/api/login").permitAll()
+
+	    		  // VISA 영역 (기존 유지)
+	    		  .requestMatchers(HttpMethod.GET, "/admin/visa/my/**").hasRole("AGENT_VISA")
+	    		  .requestMatchers(HttpMethod.GET, "/admin/visa/**")
+	    		      .hasAnyRole("SUPERADMIN","ADMIN","AGENT_VISA")
+	    		  .requestMatchers(HttpMethod.POST,   "/admin/visa/**").hasRole("AGENT_VISA")
+	    		  .requestMatchers(HttpMethod.DELETE, "/admin/visa/**").hasRole("AGENT_VISA")
+
+	    		  .requestMatchers("/admin/**").authenticated()
+	    		  .anyRequest().permitAll()
+	    		)
+	      .formLogin(login -> login
+	        .loginPage("/loginPage")
+	        .loginProcessingUrl("/login")
+	        .successHandler((req, res, authn) -> {
+	          var auths = authn.getAuthorities().toString();
+	          if (auths.contains("ROLE_AGENT_VISA")) {
+	            res.sendRedirect("/admin/visa/my");
+	          } else if (auths.contains("ROLE_SUPERADMIN") || auths.contains("ROLE_ADMIN")) {
+	            res.sendRedirect("/admin/visa");
+	          } else {
+	            res.sendRedirect("/home");
+	          }
+	        })
+	        .permitAll()
+	      )
+	      .logout(logout -> logout.logoutUrl("/logout").logoutSuccessUrl("/home"))
+	      .httpBasic(basic -> basic.disable());
+
+	    return http.build();
+	  }
+
+	  @Bean
+	  public BCryptPasswordEncoder passwordEncoder() {
+	    return new BCryptPasswordEncoder();
+	  }
+	}

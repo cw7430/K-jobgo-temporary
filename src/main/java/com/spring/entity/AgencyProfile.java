@@ -6,6 +6,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 @Entity
 @Table(name = "agency_profile")
 @Getter
@@ -14,44 +17,62 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class AgencyProfile {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="profile_id")
     private Long profileId;
 
     @Column(nullable = false, length = 200)
     private String agencyName; // 송출업체명 (권한 1,2만 노출)
 
     @Column(nullable = false, length = 50)
-    private String visaType;   // 비자타입 (Visa Type)
+    private String visaType;   // 비자타입
 
     @Column(nullable = false, length = 50)
-    private String jobCode;    // 직무코드 (Job Code)
+    private String jobCode;    // 직무코드 (ISCO 4자리)
 
     @Column(nullable = false, length = 150)
-    private String employeeNameEn; // 근로자 이름 (영문)
+    private String employeeNameEn; // 근로자 이름
 
     @Column(nullable = false, length = 100)
-    private String nationalityEn;  // 국적 (영문)
+    private String nationalityEn;  // 국적
 
-    @Enumerated(EnumType.STRING)  // enum 이름 그대로 DB에 저장 (ex: READY, ASSIGNED)
+    @Builder.Default
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private ProfileStatus status = ProfileStatus.READY;
 
-    @Column(nullable = false)
-    private boolean isDeleted = false;
+    @Builder.Default
+    @Column(name = "is_deleted", nullable = false)
+    private boolean deleted = false;
 
-    @Column(updatable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
+    // 운영 추적
+    @Column(name = "created_by_admin_id")
+    private Long createdByAdminId;
 
-    private LocalDateTime updatedAt = LocalDateTime.now();
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
 
     // 연관관계: Profile 1 ↔ N Files
-    @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    @OneToMany(mappedBy = "profile",
+               cascade = CascadeType.ALL,
+               orphanRemoval = true,
+               fetch = FetchType.LAZY)
+    @ToString.Exclude
     private List<AgencyProfileFile> files = new ArrayList<>();
 
-    @PreUpdate
-    public void preUpdate() {
-        this.updatedAt = LocalDateTime.now();
+    /** 양방향 고정 헬퍼 */
+    public void addFile(AgencyProfileFile f) {
+        if (f == null) return;
+        f.setProfile(this);
+        this.files.add(f);
+    }
+
+    public void removeFile(AgencyProfileFile f) {
+        if (f == null) return;
+        f.setProfile(null);
+        this.files.remove(f);
     }
 }

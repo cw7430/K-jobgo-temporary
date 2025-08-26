@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta name="_csrf" th:if="${_csrf != null}" th:content="${_csrf.token}" />	
 	<meta name="_csrf_header" th:if="${_csrf != null}" th:content="${_csrf.headerName}" />
+	<meta name="page-size" th:content="${pageObj != null ? pageObj.size : 10}">
 
     
 <!-- ✅ SEO 최적화 메타 태그 -->
@@ -36,7 +37,7 @@
     <link rel="stylesheet" th:href="@{/css/login.css}">
     <link rel="stylesheet" th:href="@{/css/erp-layout.css}">
 	<link rel="stylesheet" th:href="@{/css/visaRecord.css}">
-  
+ 
 </head>
 
 <body class="all-page" th:attr="data-is-admin=${isAdmin}, data-authority=${authorityId}, 
@@ -148,7 +149,7 @@ data-admin-name=${adminName}, data-super=${isSuper}">
 		    <td><input type="checkbox" class="row-check" th:value="${r.visaId}"></td>
 		
 		    <!-- ✅ 인덱스 1: 넘버링 (페이지 반영) -->
-		    <td th:text="${pageObj != null} ? ${pageObj.number * pageObj.size + stat.index + 1} : ${stat.index + 1}"></td>
+		   <td th:text="${pageObj != null} ? ${pageObj.number * pageObj.size + stat.index + 1} : ${stat.index + 1}"></td>
 
           <td th:text="${r.companyName}"></td>
           <td th:text="${r.companyAddress}"></td>

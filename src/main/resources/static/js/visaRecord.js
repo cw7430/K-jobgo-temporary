@@ -85,24 +85,53 @@
 
   /** 응답 html에서 tbody#rows 추출 (서버 규약: 반드시 tbody#rows) */
   function extractRowsTbody(html) {
-	  const src = (html || '').trim();
+    const src = (html || '').trim();
+    const t = document.createElement('template');
 
-	  // <template> 안에서 강제로 <table>로 감싸 파싱 (tbody 단독/ tr만 오는 경우 모두 처리)
-	  const t = document.createElement('template');
+    if (src.startsWith('<tbody')) {
+      t.innerHTML = `<table>${src}</table>`;
+    } else if (src.startsWith('<tr')) {
+      t.innerHTML = `<table><tbody id="rows">${src}</tbody></table>`;
+    } else {
+      t.innerHTML = `<table>${src}</table>`;
+    }
 
-	  if (src.startsWith('<tbody')) {
-	    t.innerHTML = `<table>${src}</table>`;
-	  } else if (src.startsWith('<tr')) {
-	    t.innerHTML = `<table><tbody id="rows">${src}</tbody></table>`;
-	  } else {
-	    // 혹시 전체 페이지가 내려온 경우에도 안전
-	    t.innerHTML = `<table>${src}</table>`;
-	  }
+    return t.content.querySelector('tbody#rows') || t.content.querySelector('tbody') || null;
+  }
 
-	  // id가 있으면 우선, 없으면 첫 번째 tbody
-	  const tb = t.content.querySelector('tbody#rows') || t.content.querySelector('tbody');
-	  return tb || null;
-	}
+  /** URL/메타에서 page/size 읽기 */
+  function getPageInfo() {
+    const u = new URL(location.href);
+    const page = parseInt(u.searchParams.get('page') || '0', 10);
+
+    let size;
+    const sizeFromUrl = u.searchParams.get('size');
+    if (sizeFromUrl) size = parseInt(sizeFromUrl, 10);
+    if (!size || Number.isNaN(size)) {
+      const metaSize = document.querySelector('meta[name="page-size"]')?.content;
+      if (metaSize) size = parseInt(metaSize, 10);
+    }
+    if (!size || Number.isNaN(size)) {
+      size = tbody ? Math.max(1, tbody.querySelectorAll('tr').length) : 10;
+    }
+    return { page, size };
+  }
+
+  /** ✅ 보이는 행 기준으로 No 재계산 */
+  function renumberVisibleRows() {
+    if (!tbody) return;
+
+    const { page, size } = getPageInfo();
+    let visibleIndex = 0;
+
+    tbody.querySelectorAll('tr').forEach(tr => {
+      if (tr.style.display === 'none') return; // 필터로 숨겨진 행은 건너뜀
+      const noCell = tr.children[1];           // 0=체크박스, 1=No
+      if (noCell) {
+        noCell.textContent = String(page * size + (++visibleIndex));
+      }
+    });
+  }
 
   /** 부분 갱신 (취소/삭제/토글 후 목록 복구) — includeDeleted 유지 */
   async function reloadTableBodyPartial() {
@@ -122,7 +151,7 @@
       res = await fetch(requestUrl.toString(), withCsrf({
         headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'text/html' },
         credentials: 'same-origin'
-      }));
+      })); 
     } catch (err) {
       console.error('[VISA] fetch 실패:', err);
       return;
@@ -146,10 +175,15 @@
       return; // 기존 tbody 유지
     }
 
-    // 정상 fragment면 교체
+    // ✅ 정상 fragment면 교체
     tbody.innerHTML = fresh.innerHTML;
-	applyClientFilter(); 
-	
+
+    // ✅ 이벤트/필터/넘버링 재바인딩
+    bindRowCheckboxSingleSelect();
+    applyClientFilter();
+    renumberVisibleRows();
+    syncIncludeDeletedToPagination();
+
     // 현재 페이지가 비면 이전 페이지로 보정
     if (!tbody.querySelector('tr') && hadAnyBefore) {
       const u = new URL(location.href);
@@ -161,10 +195,6 @@
         return;
       }
     }
-
-    bindRowCheckboxSingleSelect();
-    applyClientFilter();
-    syncIncludeDeletedToPagination(); // 부분갱신 후 페이지네이션도 상태 반영
 
     // 주소창 정리
     const historyUrl = new URL(window.location.href);
@@ -242,7 +272,7 @@
     if (visaId) editTr.dataset.id = visaId;
     editTr.dataset.new = 'false';
 
-    // 컬럼 순서에 맞춰 매핑 (0~14)
+    // 컬럼 순서에 맞춰 매핑 (0~15) — 0: 체크, 1:No → 데이터는 2부터
     editTr.querySelector('input[name="companyName"]').value       = getCellText(displayTr, 2);
     editTr.querySelector('input[name="companyAddress"]').value    = getCellText(displayTr, 3);
     editTr.querySelector('input[name="companyContact"]').value    = getCellText(displayTr, 4);
@@ -301,6 +331,10 @@
 
     if (tbody.firstElementChild) tbody.insertBefore(tr, tbody.firstElementChild);
     else tbody.appendChild(tr);
+
+    // ✅ 신규행 추가 직후에도 번호 재계산 (임시 번호 부여)
+    renumberVisibleRows();
+
     return tr;
   }
 
@@ -443,8 +477,9 @@
       toggleToolbarForEdit(false);
       newTr.scrollIntoView({ block: 'nearest' });
 
-      // 저장 후 현재 토글 상태 유지하며 클라 필터 재적용
+      // ✅ 저장 후 즉시 넘버링 동기화
       applyClientFilter();
+      renumberVisibleRows();
     } catch (e) {
       console.error(e);
       alert(e.message || '저장 중 문제가 발생했습니다.');
@@ -514,6 +549,8 @@
       editingRow.remove();
       editingRow = null;
       toggleToolbarForEdit(false);
+      // 신규행 제거 후에도 번호 갱신
+      renumberVisibleRows();
       return;
     }
 
@@ -541,6 +578,7 @@
           editingRow.remove();
           editingRow = null;
           toggleToolbarForEdit(false);
+          renumberVisibleRows(); // ✅
         }
         return;
       }
@@ -553,18 +591,6 @@
       try {
         await deleteOnServer(id);
         await reloadTableBodyPartial(); // includeDeleted 유지
-
-        // 삭제 후 현재 페이지에 행이 하나도 없으면 이전 페이지로 이동
-        let hasAny = !!tbody.querySelector('tr');
-        if (!hasAny) {
-          const u = new URL(location.href);
-          const cur = parseInt(u.searchParams.get('page') || '0', 10);
-          if (cur > 0) {
-            u.searchParams.set('page', String(cur - 1));
-            history.replaceState(null, '', u.toString());
-            await reloadTableBodyPartial(); // 이전 페이지 기준으로 다시 부분 갱신
-          }
-        }
         alert('삭제되었습니다.');
       } catch (e) {
         console.error(e);
@@ -592,6 +618,9 @@
 
       // 1) 낙관적 제거
       tr.remove();
+
+      // ✅ 제거 직후 번호 재계산
+      renumberVisibleRows();
 
       // 2) 페이지가 비면 이전 페이지로 보정
       if (!tbody.querySelector('tr')) {
@@ -683,7 +712,7 @@
       applyReadOnlyToolbar();
     }
 
-    // ✅ (4) 여기! 검색폼의 “전체보기” 체크박스 바인딩
+    // (4) 검색폼 “전체보기” 체크박스 바인딩
     const searchForm   = document.getElementById('visaSearchForm');
     const keywordInput = searchForm?.querySelector('input[name="keyword"]');
     const toggleAll    = document.getElementById('toggleAllResults');
@@ -697,9 +726,7 @@
         }
         u.searchParams.set('page', '0');
         history.replaceState(null, '', u.toString());
-
-        // 네이티브 제출 → 페이지네이션/상태 전부 서버에서 일관 렌더
-        searchForm.submit();
+        searchForm.submit(); // 서버 렌더로 일관 유지
       });
     }
 
@@ -715,6 +742,7 @@
         syncIncludeDeletedToForm();
         syncIncludeDeletedToPagination();
         applyClientFilter();
+        renumberVisibleRows(); // ✅ 토글 후에도 번호 유지
 
         try {
           await reloadTableBodyPartial();
@@ -729,6 +757,7 @@
     toggleToolbarForEdit(false);
     bindRowCheckboxSingleSelect();
     applyClientFilter();
+    renumberVisibleRows();           // ✅ 최초 진입 시에도 번호 계산
     syncIncludeDeletedToForm();
     syncIncludeDeletedToPagination();
   }

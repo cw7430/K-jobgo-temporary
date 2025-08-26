@@ -24,10 +24,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class TestController {
+	
     @Autowired
     private AdminRepository adminRepository;
+    
     @Autowired
     private AuthorityTypeRepository authorityTypeRepository;
+    
+    
 
     @GetMapping(value={"/api/hello"})
     public String hello() {
