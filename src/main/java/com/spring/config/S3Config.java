@@ -26,7 +26,7 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.S3ClientBuilder;
 
 @Configuration
-@Profile(value={"prod"})
+@Profile({"prod", "test"}) 
 public class S3Config {
     @Value(value="${aws.region}")
     private String region;

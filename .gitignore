@@ -1,5 +1,12 @@
+# 빌드 결과물
 target/
+*.jar
+
+# IDE 설정 파일
 .classpath
 .project
 .settings/
 *.iml
+
+# DB 덤프 파일
+*.sql
