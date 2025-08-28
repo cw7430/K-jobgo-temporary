@@ -75,6 +75,7 @@ public class VisaRecord {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
     
+    @Builder.Default
     @Column(name = "visa_deleted", nullable = false)
     private Boolean visaDeleted = Boolean.FALSE;
 

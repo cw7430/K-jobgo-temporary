@@ -33,7 +33,11 @@
 
 </head>
 
-<body class="all-page" th:attr="data-is-admin=${isAdmin}, data-authority=${authorityId}">
+<body class="all-page"
+      th:attr="data-is-admin=${isAdmin}, 
+               data-authority=${authorityId}, 
+               data-env=${@environment.getActiveProfiles()[0]}">
+
 <div th:replace="~{fragments/header :: siteHeader}"></div>
  
 <div th:replace="~{login :: loginModal}"></div>
@@ -71,8 +75,10 @@
     <footer class="foot-var">
     <p>
 		<a th:href="@{/companyInfo}" class="link-page">About Us</a> |
-		<a href="#" class="link-page" onclick="alert('준비 중입니다'); return false;">Privacy Policy</a> |
-		<a href="#" class="link-page" onclick="alert('준비 중입니다'); return false;">Terms of Service</a> 
+		<!-- 개인정보처리방침 -->
+		<a th:href="@{/privacy}" class="link-page" target="_blank">Privacy Policy</a> |
+		<!-- 이용약관 -->
+		<a th:href="@{/terms}" class="link-page" target="_blank">Terms of Service</a>
 	</p>
 		
          <div>

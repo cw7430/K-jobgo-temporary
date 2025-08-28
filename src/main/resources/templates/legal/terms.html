@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <title>이용약관 | K-jobgo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root { --brand:#003366; --muted:#666; }
+    body { font-family: "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; line-height:1.6; margin:32px; color:#222; }
+    h1 { color:var(--brand); border-bottom:2px solid var(--brand); padding-bottom:8px; margin-bottom:16px; }
+    h2 { color:var(--brand); margin-top:28px; }
+    .meta { color:var(--muted); margin:8px 0 24px; }
+    .tabs { display:flex; gap:8px; margin:12px 0 20px; }
+    .tabbtn { border:1px solid var(--brand); background:#fff; color:var(--brand); padding:8px 14px; border-radius:10px; cursor:pointer; }
+    .tabbtn[aria-selected="true"] { background:var(--brand); color:#fff; }
+    .panel { display:none; }
+    .panel[aria-hidden="false"] { display:block; animation:fade .15s ease-in; }
+    @keyframes fade { from{opacity:0} to{opacity:1} }
+    .note { font-size:.95rem; color:var(--muted); }
+    .divider { margin:24px 0; border-top:1px dashed #ddd; }
+    .actions { margin:16px 0 8px; }
+    .actions button { padding:6px 10px; border-radius:8px; border:1px solid #bbb; background:#fafafa; cursor:pointer; }
+    ul { padding-left:20px; }
+    a { color:#0b62d6; text-decoration:none; }
+    a:hover { text-decoration:underline; }
+  </style>
+</head>
+<body>
+  <h1>K-jobgo 이용약관 / Terms of Service</h1>
+
+  <p class="meta">
+    버전 <span th:text="${version}">v1.0.0</span> · 시행일자 <span th:text="${effectiveDate}">2025-08-27</span><br/>
+    Version <span th:text="${version}">v1.0.0</span> · Effective <span th:text="${effectiveDate}">2025-08-27</span>
+  </p>
+
+  <div class="actions">
+    <button onclick="window.print()">인쇄 / Print</button>
+  </div>
+
+  <!-- Lang Tabs -->
+  <div class="tabs" role="tablist" aria-label="Language Tabs">
+    <button id="tab-ko" class="tabbtn" role="tab" aria-selected="true" aria-controls="panel-ko">한국어</button>
+    <button id="tab-en" class="tabbtn" role="tab" aria-selected="false" aria-controls="panel-en">English</button>
+  </div>
+
+  <!-- Korean Panel -->
+  <section id="panel-ko" class="panel" role="tabpanel" aria-labelledby="tab-ko" aria-hidden="false">
+    <p class="note">본 약관은 (주)한국경영지원사업단(이하 “회사”)이 제공하는 K-jobgo 서비스에 적용됩니다. 개인정보 처리에 관한 사항은
+      <a th:href="@{/privacy}" href="/privacy" target="_blank">개인정보처리방침</a>을 따릅니다.</p>
+
+    <h2>제1조 (목적)</h2>
+    <p>본 약관은 회사가 제공하는 외국인 인재 매칭 관련 서비스(상담 신청, 구직자 프로필 열람/추천, 안내 제공 등)의 이용 조건·절차 및 회사와 이용자의 권리·의무를 규정함을 목적으로 합니다.</p>
+
+    <h2>제2조 (정의)</h2>
+    <ul>
+      <li>“서비스”란 회사가 제공하는 외국인 인재 매칭 관련 일체의 온라인/모바일 기능을 말합니다.</li>
+      <li>“이용자”란 사이트에 접속하여 본 서비스를 이용하는 자(기업 이용자, 근로자 이용자 포함)를 말합니다.</li>
+      <li>“기업 이용자”란 상담 신청 등을 통해 채용 목적의 매칭 서비스를 이용하는 사업체를 의미합니다.</li>
+      <li>“근로자 이용자”란 매칭 매니저와의 상담, 채용 지원 등 서비스를 이용하는 외국인 구직자를 의미합니다.</li>
+    </ul>
+
+    <h2>제3조 (약관의 효력 및 변경)</h2>
+    <p>① 본 약관은 사이트에 게시하거나 기타 방법으로 공지함으로써 효력이 발생합니다.<br/>
+       ② 회사는 관련 법령을 위반하지 않는 범위에서 약관을 변경할 수 있으며, 중요한 변경의 경우 시행일
+       <strong>7일 전</strong>(이용자에게 중대한 불이익을 초래하는 경우 <strong>30일 전</strong>)까지 공지합니다.</p>
+
+    <h2>제4조 (서비스 제공 내용)</h2>
+    <ul>
+      <li>기업 이용자를 위한 외국인 인재 상담 신청 접수 및 매칭 지원</li>
+      <li>근로자 이용자를 위한 상담 연결(예: QR 코드 등) 및 채용 지원</li>
+      <li>기타 회사가 정하는 관련 정보 제공 서비스</li>
+    </ul>
+
+    <h2>제5조 (이용 조건 및 동의)</h2>
+    <p>① 본 서비스는 회원가입 없이 이용할 수 있으나, 상담 신청 등 특정 기능 이용 시 필요한 최소한의 정보를 제공해야 합니다.<br/>
+       ② 이용자가 페이지/버튼을 통해 서비스를 사용한 경우 본 약관에 동의한 것으로 봅니다.</p>
+
+    <h2>제6조 (개인정보 보호)</h2>
+    <p>회사는 관계 법령을 준수하며, 개인정보의 수집·이용·제공·보관·파기에 관한 사항은
+      <a th:href="@{/privacy}" href="/privacy" target="_blank">개인정보처리방침</a>에 따릅니다.</p>
+
+    <h2>제7조 (서비스의 변경·중단 및 불가항력)</h2>
+    <p>① 회사는 시스템 점검, 서비스 정책 변경 등 필요한 경우 서비스의 전부 또는 일부를 변경하거나 중단할 수 있습니다. 가능한 한 사전 또는 사후 공지합니다.<br/>
+       ② 천재지변, 정전, 통신 장애, 서버/네트워크 장애, 법령/정부 명령 등 <strong>불가항력</strong> 사유로 인한 서비스 장애에 대하여 회사는 책임을 지지 않습니다.</p>
+
+    <h2>제8조 (이용자의 의무와 금지행위)</h2>
+    <ul>
+      <li>허위 정보 입력, 타인 정보 도용</li>
+      <li>서비스 운영 방해, 비정상적 접근(스크래핑/크롤링 등) 또는 보안 침해 시도</li>
+      <li>저작권 침해, 명예훼손 등 관련 법령 위반 행위</li>
+    </ul>
+
+    <h2>제9조 (지식재산권)</h2>
+    <p>서비스에 포함된 콘텐츠와 자료의 저작권 및 권리는 회사 또는 해당 권리자에게 있으며, 이용자는 사전 동의 없이 이를 복제·배포·변형·상업적 이용할 수 없습니다.</p>
+
+    <h2>제10조 (책임 제한)</h2>
+    <p>① 회사는 이용자 간 또는 이용자와 제3자 간 발생한 분쟁에 관여하지 않으며 이에 대한 책임을 지지 않습니다.<br/>
+       ② 본 서비스는 무상이므로, 관련 법령에서 허용되는 한도 내에서 회사는 직접·간접 손해에 대한 책임을 부담하지 않습니다.</p>
+
+    <h2>제11조 (준거법 및 관할)</h2>
+    <p>본 약관은 대한민국 법률을 준거법으로 하며, 분쟁의 관할법원은 서울중앙지방법원으로 합니다.</p>
+
+    <h2>제12조 (기타)</h2>
+    <p>① 본 약관 일부가 무효이거나 집행 불가능하더라도 나머지 조항의 효력에는 영향을 미치지 않습니다(분리가능성).<br/>
+       ② 한글과 영문 본문 사이에 해석 차이가 있는 경우 <strong>한글본을 우선</strong>합니다.</p>
+
+    <div class="divider"></div>
+    <p class="note">시행일자: <span th:text="${effectiveDate}">2025-08-27</span> · 버전: <span th:text="${version}">v1.0.0</span></p>
+  </section>
+
+  <!-- English Panel -->
+  <section id="panel-en" class="panel" role="tabpanel" aria-labelledby="tab-en" aria-hidden="true">
+    <p class="note">These Terms apply to the K-jobgo services provided by Korea Business Support Co., Ltd. (“Company”). For personal data matters, see our
+      <a th:href="@{/privacy}" href="/privacy" target="_blank">Privacy Policy</a>.</p>
+
+    <h2>Article 1 (Purpose)</h2>
+    <p>These Terms set forth the terms, procedures, and the rights and obligations of users and the Company for using foreign talent matching services (e.g., consultation requests, profile viewing/recommendation, and related information).</p>
+
+    <h2>Article 2 (Definitions)</h2>
+    <ul>
+      <li>“Services” mean all online/mobile features related to foreign talent matching provided by the Company.</li>
+      <li>“User” means any person who accesses the site and uses the Services (including Employer Users and Worker Users).</li>
+      <li>“Employer User” means a business entity using matching services for recruitment purposes.</li>
+      <li>“Worker User” means a foreign jobseeker using consultation/assistance (e.g., via QR code) for job application.</li>
+    </ul>
+
+    <h2>Article 3 (Effect and Amendment)</h2>
+    <p>(1) These Terms become effective upon posting or otherwise notifying users on the site.<br/>
+       (2) The Company may amend these Terms to the extent permitted by law and will notify material changes at least <strong>7 days</strong> prior to the effective date (or <strong>30 days</strong> if unfavorable to users).</p>
+
+    <h2>Article 4 (Services)</h2>
+    <ul>
+      <li>Receiving consultation requests and supporting matching for Employer Users</li>
+      <li>Providing consultation connection (e.g., via QR code) and job application support for Worker Users</li>
+      <li>Providing other information services determined by the Company</li>
+    </ul>
+
+    <h2>Article 5 (Use Conditions & Consent)</h2>
+    <p>(1) Services may be used without sign-up; certain functions require minimal information submission.<br/>
+       (2) By using the Services (e.g., clicking buttons/links to proceed), the user is deemed to have agreed to these Terms.</p>
+
+    <h2>Article 6 (Privacy)</h2>
+    <p>The Company complies with applicable laws. Collection/use/provision/retention/disposal of personal data follow the
+      <a th:href="@{/privacy}" href="/privacy" target="_blank">Privacy Policy</a>.
+    </p>
+
+    <h2>Article 7 (Change/Suspension & Force Majeure)</h2>
+    <p>(1) The Company may change or suspend all or part of the Services (e.g., maintenance, policy changes) and will notify where practicable.<br/>
+       (2) The Company is not liable for service failures caused by <strong>force majeure</strong> (acts of God, power/network outages, system failures, legal/governmental orders, etc.).</p>
+
+    <h2>Article 8 (User Obligations & Prohibited Acts)</h2>
+    <ul>
+      <li>Submitting false information; identity theft</li>
+      <li>Disrupting operations, abnormal access (scraping/crawling), or security breaches</li>
+      <li>Violating laws (e.g., copyright infringement, defamation)</li>
+    </ul>
+
+    <h2>Article 9 (Intellectual Property)</h2>
+    <p>All content and materials in the Services belong to the Company or respective right holders. Users shall not reproduce, distribute, modify, or commercially use them without prior consent.</p>
+
+    <h2>Article 10 (Limitation of Liability)</h2>
+    <p>(1) The Company is not involved in disputes between users or between a user and any third party and bears no liability therefor.<br/>
+       (2) To the maximum extent permitted by law, the Company disclaims liability for direct/indirect damages arising from the free Services.</p>
+
+    <h2>Article 11 (Governing Law & Jurisdiction)</h2>
+    <p>These Terms are governed by the laws of the Republic of Korea. The competent court shall be the Seoul Central District Court.</p>
+
+    <h2>Article 12 (Miscellaneous)</h2>
+    <p>(1) If any provision is held invalid or unenforceable, the remaining provisions remain in full force (severability).<br/>
+       (2) In case of any discrepancy between Korean and English, the <strong>Korean version prevails</strong>.</p>
+
+    <div class="divider"></div>
+    <p class="note">Effective: <span th:text="${effectiveDate}">2025-08-27</span> · Version: <span th:text="${version}">v1.0.0</span></p>
+  </section>
+
+  <script>
+    const koBtn = document.getElementById('tab-ko');
+    const enBtn = document.getElementById('tab-en');
+    const koPanel = document.getElementById('panel-ko');
+    const enPanel = document.getElementById('panel-en');
+    function selectTab(lang){
+      const isKo = lang === 'ko';
+      koBtn.setAttribute('aria-selected', isKo);
+      enBtn.setAttribute('aria-selected', !isKo);
+      koPanel.setAttribute('aria-hidden', !isKo);
+      enPanel.setAttribute('aria-hidden', isKo);
+      (isKo ? koBtn : enBtn).focus();
+    }
+    koBtn.addEventListener('click',()=>selectTab('ko'));
+    enBtn.addEventListener('click',()=>selectTab('en'));
+  </script>
+</body>
+</html>

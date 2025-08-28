@@ -17,7 +17,11 @@
     <link rel="stylesheet" th:href="@{/css/profile.css}">
 </head>
 
-<body class="all-page" th:attr="data-is-admin=${isAdmin}, data-authority=${authorityId}">
+<body class="all-page"
+      th:attr="data-is-admin=${isAdmin},
+               data-authority=${authorityId},
+               data-env=${@environment.getActiveProfiles()[0]}">
+
 <div th:replace="~{fragments/header :: siteHeader}"></div>
 
   <!-- ✅ K-jobgo 로고 전용 중앙 박스 (about-section 위에 배치) -->

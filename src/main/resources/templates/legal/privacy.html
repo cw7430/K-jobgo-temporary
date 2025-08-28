@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <title>개인정보처리방침 | K-jobgo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- SEO -->
+  <meta name="title" content="K-jobgo 개인정보처리방침" />
+  <meta name="description" content="K-jobgo(주)한국경영지원사업단의 개인정보 처리방침: 수집 항목, 이용 목적, 보유기간, 제3자 제공, 권리행사, 보안조치, 책임자 정보를 안내합니다." />
+  <meta name="robots" content="index, follow" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="K-jobgo 개인정보처리방침" />
+  <meta property="og:description" content="K-jobgo의 개인정보 처리 원칙과 보호 조치를 확인하세요." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://kjobgo.com/privacy" />
+  <meta property="og:image" content="https://k-jobgo-profile-photos-seoul.s3.ap-northeast-2.amazonaws.com/img/favicon.png" />
+
+  <!-- Favicon -->
+  <link rel="icon" href="https://k-jobgo-profile-photos-seoul.s3.ap-northeast-2.amazonaws.com/img/favicon.png" />
+
+  <!-- (선택) 폰트 - terms.html 과 동일 톤 유지 -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet" />
+
+  <!-- 페이지 전용 스타일: terms.html 과 동일한 스케일/팔레트 -->
+  <style>
+    :root { --brand:#003366; --muted:#666; }
+    body { font-family: "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; line-height:1.6; margin:32px; color:#222; }
+    h1 { color:var(--brand); border-bottom:2px solid var(--brand); padding-bottom:8px; margin-bottom:16px; }
+    h2, h3 { color:var(--brand); margin-top:28px; }
+    .meta { color:var(--muted); margin:8px 0 24px; }
+    .tabs { display:flex; gap:8px; margin:12px 0 20px; }
+    .tabbtn { border:1px solid var(--brand); background:#fff; color:var(--brand); padding:8px 14px; border-radius:10px; cursor:pointer; }
+    .tabbtn[aria-selected="true"] { background:var(--brand); color:#fff; }
+    .panel { display:none; }
+    .panel[aria-hidden="false"] { display:block; animation:fade .15s ease-in; }
+    @keyframes fade { from{opacity:0} to{opacity:1} }
+    .note { font-size:.95rem; color:var(--muted); }
+    .divider { margin:24px 0; border-top:1px dashed #ddd; }
+    .actions { margin:16px 0 8px; display:flex; gap:8px; }
+    .actions button, .actions a.btn { padding:6px 10px; border-radius:8px; border:1px solid #bbb; background:#fafafa; cursor:pointer; text-decoration:none; color:#222; display:inline-block; }
+    ul { padding-left:20px; }
+    a { color:#0b62d6; text-decoration:none; }
+    a:hover { text-decoration:underline; }
+  </style>
+</head>
+<body>
+  <h1>K-jobgo 개인정보처리방침 / Privacy Policy</h1>
+
+  <p class="meta">
+    버전 <span th:text="${version}">v1.0.0</span> · 시행일자 <span th:text="${effectiveDate}">2025-08-27</span><br/>
+    Version <span th:text="${version}">v1.0.0</span> · Effective <span th:text="${effectiveDate}">2025-08-27</span>
+  </p>
+
+  <div class="actions">
+    <button onclick="window.print()">인쇄 / Print</button>
+    <!-- 필요 시 약관 바로가기(새탭) -->
+    <a th:href="@{/terms}" href="/terms" target="_blank" class="btn" rel="noopener">이용약관 보기</a>
+  </div>
+
+  <!-- Lang Tabs (terms.html 과 동일한 탭 UI) -->
+  <div class="tabs" role="tablist" aria-label="Language Tabs">
+    <button id="tab-ko" class="tabbtn" role="tab" aria-selected="true" aria-controls="panel-ko">한국어</button>
+    <button id="tab-en" class="tabbtn" role="tab" aria-selected="false" aria-controls="panel-en">English</button>
+  </div>
+
+  <!-- Korean Panel -->
+  <section id="panel-ko" class="panel" role="tabpanel" aria-labelledby="tab-ko" aria-hidden="false">
+    <p>
+      (주)한국경영지원사업단(K-jobgo, 이하 “회사”)은 「개인정보 보호법」 등 관계 법령을 준수하며,
+      이용자의 개인정보를 안전하게 보호합니다. 본 방침은 K-jobgo 서비스에서 수집·이용·보관·파기·제공되는 개인정보 처리 기준을 설명합니다.
+    </p>
+
+    <h2>1. 수집하는 개인정보 항목 및 수집 방법</h2>
+    <p>회사는 회원가입 없이 서비스 이용 과정에서 아래 정보를 수집합니다.</p>
+    <ul>
+      <li><u>외국인 인재 매칭 신청서</u>: 회사명, 담당자명, 전화번호, 이메일</li>
+      <li><u>프로필 등록</u>: 성명, 연락처, 학력, 경력, 희망 근무지, 비자정보 등</li>
+      <li>보안/접속 관리: 접속 로그, IP, 브라우저/기기 정보</li>
+    </ul>
+
+    <h2>2. 개인정보의 이용 목적</h2>
+    <ul>
+      <li>외국인 인재 매칭 상담 및 적합도 분석</li>
+      <li>관리자의 프로필 열람 및 매칭 진행</li>
+      <li>고객 문의 응대 및 개별 연락</li>
+      <li>법령상 의무 이행 및 분쟁 대응</li>
+    </ul>
+
+    <h2>3. 보유 및 이용 기간</h2>
+    <p>원칙적으로 목적 달성 시 지체 없이 파기합니다. 단, 법령에서 정한 기간은 그에 따릅니다.</p>
+    <ul>
+      <li>계약/청약철회 기록: 5년</li>
+      <li>대금결제 및 재화·용역 공급 기록: 5년</li>
+      <li>소비자 불만 및 분쟁처리 기록: 3년</li>
+      <li>접속 기록: 3개월(통신비밀보호법)</li>
+    </ul>
+
+    <h2>4. 제3자 제공</h2>
+    <p>이용자 동의 없이 제3자에게 제공하지 않습니다. 다만 다음의 경우 예외입니다.</p>
+    <ul>
+      <li>이용자가 사전에 명시적으로 동의한 경우</li>
+      <li>법령에 근거한 경우(수사·조사 등)</li>
+    </ul>
+
+    <h2>5. 처리 위탁</h2>
+    <p>현재 개인정보 처리를 외부에 위탁하지 않습니다. 향후 위탁 시 수탁업체 및 업무내용, 보호조치를 고지하고 계약을 통해 안전하게 관리합니다.</p>
+
+    <h2>6. 안전성 확보 조치</h2>
+    <ul>
+      <li>프로필 마스킹 처리 및 권한 있는 사용자만 열람</li>
+      <li>신청서 접수번호+비밀번호 기반 조회</li>
+      <li>전송 구간 HTTPS/SSL 암호화</li>
+      <li>DB 접근권한 최소화, 접근기록 보관</li>
+      <li>방화벽·보안솔루션 적용 및 정기 점검</li>
+    </ul>
+
+    <h2>7. 정보주체의 권리</h2>
+    <p>
+      이용자는 열람·정정·삭제·처리정지 요구 및 동의 철회를 요청할 수 있습니다.
+      이메일 또는 서면으로 신청 시, 회사는 지체 없이 조치합니다.
+    </p>
+
+    <h2>8. 쿠키 등 자동수집 장치</h2>
+    <p>
+      맞춤형 서비스 제공을 위해 쿠키를 사용할 수 있습니다.
+      브라우저 설정에서 쿠키 저장을 거부할 수 있으나 일부 기능이 제한될 수 있습니다.
+    </p>
+
+    <h2>9. 개인정보 보호책임자</h2>
+    <p>
+      - 책임자: 한국경영지원사업단 운영자<br/>
+      - 이메일: <a href="mailto:k-jobgo@naver.com">k-jobgo@naver.com</a><br/>
+    </p>
+
+    <h2>10. 고지의무</h2>
+    <p>
+      본 방침 내용 추가·삭제·수정이 있는 경우 최소 7일 전부터 공지하며,
+      이용자에게 중대한 변경 시 30일 전부터 별도 고지합니다.
+    </p>
+
+    <div class="divider"></div>
+    <p class="note">시행일자: <span th:text="${effectiveDate}">2025-08-27</span> · 버전: <span th:text="${version}">v1.0.0</span></p>
+  </section>
+
+  <!-- English Panel -->
+  <section id="panel-en" class="panel" role="tabpanel" aria-labelledby="tab-en" aria-hidden="true">
+    <p>
+      Korea Business Support Co., Ltd. (“Company”) complies with applicable privacy laws and protects users’ personal data.
+      This Policy explains how K-jobgo collects, uses, retains, discloses, and safeguards personal data.
+    </p>
+
+    <h2>1) Data We Collect & How</h2>
+    <ul>
+      <li><u>Matching Request</u>: Company name, contact person, phone, email</li>
+      <li><u>Profile Submission</u>: Name, contact, education, work history, preferred workplace, visa info</li>
+      <li>Security/Access: access logs, IP, browser/device info</li>
+    </ul>
+
+    <h2>2) Purposes of Use</h2>
+    <ul>
+      <li>Consultation and suitability analysis for foreign talent matching</li>
+      <li>Profile review by admins and matching process</li>
+      <li>Customer support and individual contact</li>
+      <li>Compliance with laws and dispute resolution</li>
+    </ul>
+
+    <h2>3) Retention</h2>
+    <p>We delete personal data without undue delay once the purposes are fulfilled, unless retention is required by law.</p>
+    <ul>
+      <li>Contract/withdrawal records: 5 years</li>
+      <li>Payment & supply records: 5 years</li>
+      <li>Consumer complaints & dispute records: 3 years</li>
+      <li>Access logs: 3 months</li>
+    </ul>
+
+    <h2>4) Sharing with Third Parties</h2>
+    <p>No sharing without your explicit consent, except as required by law.</p>
+
+    <h2>5) Processing by Vendors</h2>
+    <p>No outsourcing at present. If any, we will notify vendor info and safeguards in advance.</p>
+
+    <h2>6) Safeguards</h2>
+    <ul>
+      <li>Profile masking; access limited to authorized users</li>
+      <li>Ticket number + password required for application lookup</li>
+      <li>HTTPS/SSL encryption in transit</li>
+      <li>Least-privileged DB access & access logging</li>
+      <li>Firewalls/security solutions and periodic audits</li>
+    </ul>
+
+    <h2>7) Your Rights</h2>
+    <p>
+      You may request access, correction, deletion, restriction, or withdrawal of consent at any time via email or in writing.
+      We will respond without undue delay.
+    </p>
+
+    <h2>8) Cookies</h2>
+    <p>
+      Cookies may be used for better services. You may refuse cookies in your browser settings; some features may be limited.
+    </p>
+
+    <h2>9) Data Protection Officer</h2>
+    <p>
+      DPO: K-jobgo Operations<br/>
+      Email: <a href="mailto:k-jobgo@naver.com">k-jobgo@naver.com</a><br/>
+    </p>
+
+    <h2>10) Notice of Changes</h2>
+    <p>We will notify changes at least 7 days prior to the effective date (30 days for material changes).</p>
+
+    <div class="divider"></div>
+    <p class="note">Effective: <span th:text="${effectiveDate}">2025-08-27</span> · Version: <span th:text="${version}">v1.0.0</span></p>
+  </section>
+
+  <script>
+    const koBtn = document.getElementById('tab-ko');
+    const enBtn = document.getElementById('tab-en');
+    const koPanel = document.getElementById('panel-ko');
+    const enPanel = document.getElementById('panel-en');
+
+    function selectTab(lang){
+      const isKo = lang === 'ko';
+      koBtn.setAttribute('aria-selected', isKo);
+      enBtn.setAttribute('aria-selected', !isKo);
+      koPanel.setAttribute('aria-hidden', !isKo);
+      enPanel.setAttribute('aria-hidden', isKo);
+      (isKo ? koBtn : enBtn).focus();
+    }
+    koBtn.addEventListener('click',()=>selectTab('ko'));
+    enBtn.addEventListener('click',()=>selectTab('en'));
+  </script>
+</body>
+</html>

@@ -144,5 +144,21 @@ public class MainController {
     public String partnerCompany() {
         return "MatchingPage";
     }
+    
+    // 이용약관 페이지
+    @GetMapping("/terms")
+    public String terms(Model model) {
+      model.addAttribute("effectiveDate", "2025-08-27");
+      model.addAttribute("version", "v1.0.0");
+      return "legal/terms"; // templates/legal/terms.html
+    }
+
+    // 개인정보처리방침 페이지
+    @GetMapping("/privacy")
+    public String privacy(Model model) {
+      model.addAttribute("effectiveDate", "2025-08-27");
+      model.addAttribute("version", "v1.0.0");
+      return "legal/privacy"; // templates/legal/privacy.html
+    }
 }
 

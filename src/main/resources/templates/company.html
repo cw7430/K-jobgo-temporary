@@ -31,7 +31,11 @@
 
 </head>
 
-<body class="all-page" th:attr="data-is-admin=${isAdmin}, data-authority=${authorityId}">
+<body class="all-page"
+      th:attr="data-is-admin=${isAdmin}, 
+               data-authority=${authorityId}, 
+               data-env=${@environment.getActiveProfiles()[0]}">
+
 <div th:replace="~{fragments/header :: siteHeader}"></div>
  
 <div th:replace="~{login :: loginModal}"></div>
