@@ -10,3 +10,5 @@ target/
 
 # DB 덤프 파일
 *.sql
+/bin/
+/NUL
