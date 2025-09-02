@@ -22,7 +22,8 @@ header.top-var {
 
 /* 로고+슬로건+링크 묶음 */
 .brand-header {
-  display: flex;
+  display: block;  
+  text-decoration: none;
   flex-direction: column;
   align-items: flex-start;
   gap: 4px;

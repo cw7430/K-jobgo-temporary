@@ -1,12 +1,12 @@
 <!-- templates/fragments/header.html -->
 <header class="top-var" th:fragment="siteHeader" th:with="loggedIn=${isAdmin == true}">
   <!-- ✅ 로고 + 슬로건 -->
-  <div class="brand-header">
+  <a th:href="@{/}" class="brand-header">
     <div class="logo-slogan">
       <img src="/img/favicon.png" class="logo" alt="K-jobgo | 외국인 인재 매칭 플랫폼" />
       <p class="about-slogan">KOREAMSA Inc.</p>
     </div>
-  </div>
+  </a>
 
   <div class="menu-wrapper">
     <!-- 로그인 상태 표시 -->
@@ -33,15 +33,24 @@
 	      <!-- 🔻 송출업체 메뉴 분리 (배타적 노출) -->
 	      <!-- (1,2,5) 전용: 현황(목록) -->
 	      <li th:if="${canListAgency}" onclick="location.href='/agency/List'">
-	        송출업체 프로필 현황
+	        송출업체 현황
 	      </li>
+	      
 	      <!-- 일반/타권한/미로그인: 등록만 -->
-	      <li th:if="${showAgencyRegister}" onclick="location.href='/agency/register'">
-	        송출업체 전용 페이지
+	      <li onclick="location.href='/agency/register'">
+	        송출업체 프로필 등록
 	      </li>       
 	      <!-- 권한 1,2,5 전용 GlobalModelAttributeAdvice.java -->
-			<li th:if="${canRegisterVisa}" onclick="location.href='/admin/visa/register'">
-			  Visa 현황 등록
+			<!-- 권한 5 → 자기 전용 비자 등록/관리 -->
+			<li th:if="${canRegisterVisa and authorityId == 5}" 
+			    onclick="location.href='/admin/visa/register'">
+			  내 비자 등록·관리
+			</li>
+			
+			<!-- 권한 1,2 → 전체 비자 현황 -->
+			<li th:if="${canRegisterVisa and (authorityId == 1 or authorityId == 2)}" 
+			    onclick="location.href='/admin/visa/register'">
+			  전체 비자 현황
 			</li>
       </ul>
     </div>

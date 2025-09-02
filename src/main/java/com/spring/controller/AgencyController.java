@@ -62,6 +62,13 @@ public class AgencyController {
     }
 
     // 등록 페이지 뷰 반환
+    
+    @GetMapping("/register")
+    public String showAgencyRegisterPage() {
+        return "agency/agencyRegister";  // 세션 체크 없이 항상 등록 페이지 열기
+    }
+
+    /*
     @GetMapping("/register")
     public String showAgencyRegisterPage(HttpSession session) {
         Integer authorityId = (Integer) session.getAttribute("authorityId");
@@ -71,7 +78,8 @@ public class AgencyController {
         }
         return "agency/agencyRegister";
     }
-
+*/
+    
     // 2) 등록 처리 (multipart/form-data) — 단일 파일 업로드 기본
     @PostMapping(value = "/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseBody
