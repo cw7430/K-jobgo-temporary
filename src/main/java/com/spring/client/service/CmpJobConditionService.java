@@ -37,6 +37,25 @@ public interface CmpJobConditionService {
     default void applyComplete(Long jobId, String completedBy) {
         complete(jobId, completedBy);
     }
-	Page<CmpJobCondition> searchForAdmin(Object object, JobStatus status, LocalDate from, LocalDate to,
-			boolean includeDeleted, Long mineAdminId, Pageable pageable);
+    // 관리자 검색(페이지)
+    Page<CmpJobCondition> searchForAdmin(
+        String q,
+        JobStatus status,
+        LocalDate from,
+        LocalDate to,
+        boolean includeDeleted,
+        Long mineAdminId,           // null이면 미적용
+        Pageable pageable
+    );
+    
+    // 고객 검색(페이지) – 본인 회사 건만
+    Page<CmpJobCondition> searchForClient(
+        Long cmpId,
+        String q,
+        JobStatus status,
+        Pageable pageable
+    );
+    
+    // 고객 상세(소유권 검사 포함)
+    CmpJobCondition loadByIdForCompany(Long jobId, Long cmpId);
 }

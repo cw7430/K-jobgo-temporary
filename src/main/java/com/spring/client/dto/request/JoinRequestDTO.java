@@ -67,12 +67,10 @@ public class JoinRequestDTO {
 
     /** 첨부파일 확인 동의 여부 */
     private Boolean fileConfirm;
-    @AssertTrue(message = "대리 가입일 경우 첨부파일 확인 동의가 필요합니다.")
-    public boolean isFileConfirmValid() {
-        // prxJoin == null → 아직 선택 안 했을 때도 true 처리해서 다른 검증에 맡김
-        // prxJoin == false → 직접가입 → fileConfirm 체크 불필요
-        // prxJoin == true  → 대리가입 → 반드시 fileConfirm = true
-        return prxJoin == null || !prxJoin || fileConfirm;
+
+    @AssertTrue(message = "첨부파일 내용을 확인하고 동의해 주세요.")
+    public boolean isFileConfirmChecked() {
+        return Boolean.TRUE.equals(fileConfirm);
     }
 
     /** 이용약관 동의 여부 */
@@ -86,6 +84,14 @@ public class JoinRequestDTO {
     @NotNull(message = "담당자 명함을 첨부해 주세요.")
     private MultipartFile bizFileCard;
 
+    @AssertTrue(message = "사업자등록증 파일을 첨부해 주세요.")
+    public boolean isBizFileLicenseNotEmpty(){
+        return bizFileLicense != null && !bizFileLicense.isEmpty();
+    }
+    @AssertTrue(message = "담당자 명함 파일을 첨부해 주세요.")
+    public boolean isBizFileCardNotEmpty(){
+        return bizFileCard != null && !bizFileCard.isEmpty();
+    }
 
     // ===== 담당자 정보 =====
     @NotBlank(message = "담당자 성명을 입력해 주세요.")
@@ -98,6 +104,16 @@ public class JoinRequestDTO {
     @NotBlank(message = "담당자 연락처를 입력해 주세요.")
     private String empPhone;
 
+    private Boolean withJobRequest; // 폼 체크박스 name과 일치
+
+    @AssertTrue(message = "구인조건을 제출하려면 직종/근무시간/형태는 필수입니다.")
+    public boolean isJobRequestValid() {
+        if (Boolean.TRUE.equals(withJobRequest)) {
+            return notBlank(jobType) && notBlank(workingHours) && notBlank(employmentType);
+        }
+        return true; // 미선택이면 통과
+    }
+    private boolean notBlank(String s){ return s!=null && !s.isBlank(); }
 
     // ===== 구인조건 (선택 입력) =====
     private String jobType;

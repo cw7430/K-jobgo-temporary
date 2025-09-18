@@ -242,8 +242,20 @@ public class CmpJobConditionServiceImpl implements CmpJobConditionService {
     }
 
 	@Override
-	public Page<CmpJobCondition> searchForAdmin(Object object, JobStatus status, LocalDate from, LocalDate to,
+	public Page<CmpJobCondition> searchForAdmin(String q, JobStatus status, LocalDate from, LocalDate to,
 			boolean includeDeleted, Long mineAdminId, Pageable pageable) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Page<CmpJobCondition> searchForClient(Long cmpId, String q, JobStatus status, Pageable pageable) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public CmpJobCondition loadByIdForCompany(Long jobId, Long cmpId) {
 		// TODO Auto-generated method stub
 		return null;
 	}

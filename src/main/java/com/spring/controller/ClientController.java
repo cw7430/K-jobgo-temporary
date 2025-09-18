@@ -15,7 +15,13 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Map;
+
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -54,7 +60,8 @@ public class ClientController {
     @PostMapping("/join")
     public String submitJoin(@ModelAttribute("joinReq") @Valid JoinRequestDTO req,
                              BindingResult br,
-                             RedirectAttributes ra) {
+                             RedirectAttributes ra, Model model) {
+  
         if (br.hasErrors()) {
         	log.warn("[JOIN] hasErrors -> client/join");
             return "client/join";
@@ -106,6 +113,66 @@ public class ClientController {
      *  - 상태: 관리자 처리(COMPLETED/CANCELLED 등)면 읽기 전용
      *  - ?new=1 로 진입 시 항상 "새 요청" 작성 모드로 렌더링
      * -------------------------------------------------------------------- */
+
+    /** ✅ 고객용 구직신청 목록 (공용 프래그먼트 렌더링) */
+    @GetMapping("/client/applyEmp/list")
+    public String clientApplyList(
+            @RequestParam(required=false) String q,
+            @RequestParam(required=false) JobStatus status,
+            @RequestParam(defaultValue="0") int page,
+            @RequestParam(defaultValue="20") int size,
+            HttpSession session,
+            Model model
+    ) {
+        // 로그인/승인 가드
+        CmpInfo cli = (CmpInfo) session.getAttribute("loggedInClient");
+        if (cli == null) return "redirect:/loginPage";
+        String appr = (String) session.getAttribute("clientApprStatus");
+        if (appr == null || !"APPROVED".equals(appr)) return "redirect:/my/join-status";
+
+        Pageable pageable = PageRequest.of(Math.max(0, page), Math.max(1, size),
+                Sort.by(Sort.Direction.DESC, "jobId"));
+
+        Page<CmpJobCondition> result = jobConditionService.searchForClient(
+                cli.getCmpId(),
+                (q == null ? "" : q.trim()),
+                status,
+                pageable
+        );
+
+        model.addAttribute("applyList", result.getContent());
+        model.addAttribute("pageObj", result);
+        model.addAttribute("filterStatus", status);
+        // 프래그먼트/페이징 링크에서 그대로 쓰는 param 바인딩
+        model.addAttribute("param", Map.of(
+                "q", q,
+                "status", status == null ? null : status.name()
+        ));
+
+        // 헤더 토글 등에 쓰는 플래그(선택)
+        model.addAttribute("isClient", true);
+
+        return "client/applyEmpList"; // ✅ 너가 만든 고객용 목록 HTML
+    }
+
+    /** ✅ 고객용 상세 (행 클릭 이동 경로에 맞춤) */
+    @GetMapping("/client/applyEmp/detail/{id}")
+    public String clientApplyDetail(@PathVariable Long id, HttpSession session, Model model) {
+        CmpInfo cli = (CmpInfo) session.getAttribute("loggedInClient");
+        if (cli == null) return "redirect:/loginPage";
+
+        // 소유권 체크+조회 (없는 경우 예외/404 → 서비스에서 처리)
+        var form = jobConditionService.loadByIdForCompany(id, cli.getCmpId());
+
+        // 완료/취소 등이면 읽기 전용
+        boolean readOnly = form.getStatus() != JobStatus.ACTIVE;
+        model.addAttribute("form", form);
+        model.addAttribute("readOnly", readOnly);
+
+        // 별도 상세 템플릿을 쓰거나, 기존 작성 폼을 재사용해도 됨
+        // return "client/applyEmpDetail";
+        return "client/applyEmp"; // 작성 폼을 상세로 재사용(읽기 전용 처리)
+    }
 
     /**
      * 구직요청 작성/수정 폼
