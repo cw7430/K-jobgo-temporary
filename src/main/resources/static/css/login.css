@@ -6,64 +6,71 @@
   z-index: 1000;
   left: 0;
   top: 0;
+  padding: 24px;            /* 작은 화면에서 여백 */
   width: 100%;
   height: 100%;
   overflow: auto;
   background-color: rgba(0,0,0,0.6); /* 반투명 배경 */
+  justify-content: center; /* flex를 사용하면 중앙정렬 가능 */
+  align-items: center;
 }
 
 /* 모달창 콘텐츠 박스 */
-
-.modal-note {
-  font-size: 14px;
-  color: #888;
-  margin-bottom: 15px;
-  text-align: center;
-}
-
 .modal-content {
   background-color: #fff;
-  height: 350px;
-  margin: 10% auto;
-  padding: 30px;
+  min-height: 650px; /* 최소 높이 지정 */
+  max-height: 92vh; /* 화면 최대 80% 높이 */
+  margin: auto; /* 수직/수평 중앙 정렬 */
+  padding: 32px 28px;
   border-radius: 10px;
-  width: 400px;
+  width: 450px;  /* 기본 가로폭 */
   box-shadow: 0 5px 15px rgba(0,0,0,0.3);
   animation: fadeIn 0.3s ease;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow-y: auto; /* 세로 스크롤 필요 시 나타남 */
 }
 
 /* 닫기 버튼 */
 .close {
   color: #aaa;
-  float: right;
   font-size: 24px;
   font-weight: bold;
   cursor: pointer;
+  position: absolute;
+  right: 15px;
+  top: 15px;
+  user-select: none;
 }
 .close:hover {
   color: black;
 }
 
 /* 로그인 폼 내부 요소 스타일 */
-#loginForm {
+#loginForm, #clientLoginForm {
   display: flex;
   flex-direction: column;
+  flex-grow: 1;
+  justify-content: center;
 }
 
-#loginForm label {
+#loginForm label, #clientLoginForm label {
   margin-top: 10px;
   font-weight: bold;
 }
 
-#loginForm input {
+#loginForm input, #clientLoginForm input {
   padding: 8px;
   margin-top: 5px;
   border: 1px solid #ccc;
   border-radius: 5px;
+  font-size: 14px;
+  box-sizing: border-box;
 }
 
-#loginForm button,
-#loginForm input[type="button"]  {
+#loginForm input[type="button"], #clientLoginForm input[type="submit"] {
   margin-top: 20px;
   padding: 10px;
   background-color: #0054a8;
@@ -71,45 +78,181 @@
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
 }
-#loginForm button:hover,
-#loginForm input[type="button"]  {
+
+#loginForm input[type="button"]:hover, #clientLoginForm input[type="submit"]:hover {
   background-color: #003f82;
 }
 
-/* 간단한 fade 애니메이션 */
+.modal-note {
+  font-size: 15px;
+  color: #888;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+/* 탭 관련 스타일 */
+.tab-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 380px;  /* 관리자 로그인 탭과 비슷한 최소 높이로 고정 */
+}
+
+.tabs {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 15px;
+  gap: 10px;
+}
+
+.tab-btn {
+  background-color: #eee;
+  border: none;
+  border-radius: 5px;
+  padding: 8px 18px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  color: #555;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.tab-btn.active {
+  background-color: #0054a8;
+  color: white;
+}
+
+.tab-content {
+  display: none;
+  flex-grow: 1;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+/* 고객 기업 회원가입 스타일 */ 
+.signup-info {
+  text-align: center;
+  font-family: 'Noto Sans KR', sans-serif;
+  color: #004a99;
+}
+
+.signup-info p {
+  font-size: 14px;
+  margin-bottom: 15px;
+  font-weight: 500;
+}
+
+.btn-signup-link {
+  color: #004a99;
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.btn-signup-link:hover,
+.btn-signup-link:focus {
+  padding: 10px 25px;
+  background-color: #005f99;
+  color: #ffffff;
+  outline: none;
+  border-radius: 25px;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+}
+
+/* 비밀번호 찾기 링크 */
+.passwd-info{ margin: 6px 0 12px; }
+
+.passwd-link{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  font-size:13px;          /* 글씨 크기 축소 */
+  color:#1E58A8;           /* 로그인 UI와 어울리는 딥블루 */
+  text-decoration:none;    /* 밑줄 제거 */
+  font-weight:500;
+}
+
+.passwd-link:hover{ color:#174A8B; } /* 살짝 어두운 블루로 호버 */
+
+.passwd-link .icon-arrow{
+  stroke: currentColor;                /* 텍스트와 동일 색상 */
+  transition: transform .15s ease;
+}
+
+.passwd-link:hover .icon-arrow{ transform: translateX(2px); }
+
+/* 키보드 접근성 */
+.passwd-link:focus{
+  outline:2px solid #CFE3FF;
+  outline-offset:2px;
+  border-radius:4px;
+}
+
+
+/* 외국인 근로자 안내 영역 스타일 개선 */
+.worker-info {
+  margin-top: 20px;
+  padding-top: 12px;
+  padding-bottom: 8px;
+  border-top: 1px solid #ccc;  /* 위쪽에 선으로 구분 */
+  font-size: 13px;
+  color: #ffa74f;
+  font-weight: 600;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.worker-info p {
+  margin: 0 0 8px 0;
+}
+
+.worker-info a.btn-match-link {
+  font-weight: 700;
+  font-size: 13px;
+  color: #fc821d;
+  text-decoration: none;
+  padding-left: 5px;
+  border-bottom: 2px solid transparent;
+  transition: border-color 0.3s ease;
+}
+
+.worker-info a.btn-match-link:hover {
+  border-color: #fc821d;
+  text-decoration: none;
+}
+
+
+/* fade-in 애니메이션 */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(-10px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
+/* 반응형 - 모바일 대응 */
 @media screen and (max-width: 768px) {
   .modal-content {
     width: 90%;
     max-width: 320px;
-    height: 300px;
+    height: auto;
     padding: 20px;
   }
-
-  .login-container {
-    width: 100%;
-    padding: 20px;
-  }
-
-  .login-box {
-    width: 100%;
-    margin: 0 auto;
-  }
-
-  .login-input {
-    width: 100%;
+  #loginForm input, #clientLoginForm input {
     font-size: 16px;
   }
-  
-#loginForm input[type="button"] {
-  margin-top: 35px;
-  font-size: 16px;
-  height: 44px;
-  width: 100%;
-}
+  #loginForm input[type="button"], #clientLoginForm input[type="submit"] {
+    margin-top: 30px;
+    height: 44px;
+  }
+  .tab-btn {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
 }

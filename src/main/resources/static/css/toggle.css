@@ -1,3 +1,9 @@
+/* toggle.css */
+
+.menu-wrapper { z-index:10000; }
+.menu-toggle  { z-index:10001; position:relative; }
+.menu-popup   { z-index:10002; }
+
 /* ✅ 메뉴 묶음: header 안에서 절대 위치 고정 */
 .menu-wrapper {
   height: 30px;
@@ -30,25 +36,18 @@
   padding: 10px 0;
   width: 220px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-  z-index: 1000;
+  z-index: 1002;
 }
 
-.menu-popup ul {
-  list-style: none;
+.menu-popup ul { margin: 0; padding: 0; list-style: none; }
+.menu-popup li {
   margin: 0;
   padding: 0;
-}
-
-.menu-popup li {
-  padding: 10px 20px;
-  font-size: 15px;
-  cursor: pointer;
   border-bottom: 1px solid #eee;
+  cursor: default;
 }
 
-.menu-popup li:hover {
-  background-color: #f8f8f8;
-}
+.menu-popup li:last-child { border-bottom: 0; }
 
 .menu-divider {
   border-bottom: 1px solid #ccc;
@@ -56,13 +55,15 @@
   height: 1px;
 }
 
-.admin-label {
+.menu-item.admin {
   font-weight: bold;
   padding: 10px 20px;
   color: #0E2C54;
   background-color: #f0f0f0;
-  cursor: default;
+  cursor: pointer;
   font-size: 14px;
+  display: block;
+  border-radius: 6px;
 }
 
 .login-info {
@@ -72,6 +73,19 @@
   font-weight: bold;
 }
 
+/* 관리자 전용 메뉴 리스트 */
+.menu-item {
+  display: block;
+  width: 100%;
+  padding: 10px 20px;      /* ⬅️ 패딩을 a로 이동 */
+  box-sizing:border-box; 
+  text-decoration: none;
+  color: #004080;
+  cursor: pointer;       /* ⬅️ 커서는 a에만 */
+}
+
+.menu-item:hover { background-color:#f8f8f8; }
+	
 /* ✅ 토글 메뉴 리스트 */
 .hidden-menu {
   display: none;

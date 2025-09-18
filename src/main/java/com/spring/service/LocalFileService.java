@@ -50,7 +50,7 @@ public class LocalFileService implements FileService {
     @Override
     public String upload(MultipartFile file) throws IOException {
         if (file == null || file.isEmpty()) {
-            return null; // 선택 파일 없음
+            return null; // 선택 파일 없음(필수면 예외로 바꿔도 됨)
         }
 
         String original = StringUtils.cleanPath(file.getOriginalFilename() == null ? "" : file.getOriginalFilename());
@@ -58,11 +58,11 @@ public class LocalFileService implements FileService {
             throw new IllegalArgumentException("Empty filename");
         }
 
-        // 검증
+        // 검증(확장자/크기)
         validateExt(original);
         validateSize(file);
 
-        // 저장 파일명: uuid + .ext
+        // 저장키: uuid.ext  (DB에는 이 값을 저장)
         String ext = getExtLower(original);
         String storeName = UUID.randomUUID() + (ext != null ? "." + ext : "");
 
@@ -72,7 +72,7 @@ public class LocalFileService implements FileService {
         }
 
         file.transferTo(target);
-        return "/uploads/" + storeName; // LocalWebConfig 매핑 필요
+        return storeName;  // ⬅️ "/uploads/..." 대신 '키'만 반환
     }
 
     private void validateSize(MultipartFile file) {

@@ -50,6 +50,7 @@ public class MainController {
         return "login";
     }
 
+    /*
     @GetMapping("/home")
     public String main(HttpSession session, Model model) {
         Admin admin = (Admin) session.getAttribute("loggedInAdmin");
@@ -77,8 +78,31 @@ public class MainController {
 
         return "main";
     }
+*/
+    
+    @GetMapping("/home")
+    public String main(HttpSession session, Model model) {
+        Admin admin = (Admin) session.getAttribute("loggedInAdmin");
 
+        // ❌ model.addAttribute("isAdmin", admin != null ? 1 : 0);
+        // ✅ 전역(GlobalModelAttributeAdvice)과 형 맞추기: 굳이 덮어쓰지 않음 (권장)
+        // model.addAttribute("isAdmin", admin != null);
 
+        if (admin != null) {
+            model.addAttribute("adminName", admin.getAdminName());
+            Integer authorityId = null;
+            String authorityName = null;
+            if (admin.getAuthorityType() != null) {
+                authorityId = admin.getAuthorityType().getAuthorityId();
+                authorityName = admin.getAuthorityType().getAuthorityName();
+            }
+            model.addAttribute("authorityId", authorityId);
+            model.addAttribute("authorityName", authorityName);
+            model.addAttribute("adminId", admin.getAdminId());
+        }
+        return "main";
+    }
+    
     @GetMapping(value={"/companyInfo"})
     public String companyInfo(HttpSession session, Model model) {
         Admin admin = (Admin)session.getAttribute("loggedInAdmin");

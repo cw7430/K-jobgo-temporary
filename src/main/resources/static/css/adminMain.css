@@ -1,0 +1,277 @@
+/* adminMain.css */
+@charset "UTF-8";
+/* ================================
+   ✅ 중앙 K-jobgo 로고: 완전 독립 스타일
+   ================================ */
+.center-kjobgo-logo {
+  position: relative;             /* 독립적 위치지정 */
+  width: 100%;                    /* 전체 너비 */
+  display: flex;                  /* 가로 중앙 정렬용 */
+  justify-content: center;       /* 가운데 정렬 */
+  align-items: center;           /* 수직 가운데 정렬 */
+  margin: 60px auto 10px auto;   /* 위아래 여백 */
+  z-index: 10;                    /* 다른 요소 위에 */
+}
+
+/* ✅ 로고 이미지 */
+.k-jobgologo {
+  width: 380px;
+  height: auto;
+  object-fit: contain;
+  display: block;
+}
+
+/* ================================
+   브랜드 토큰 (공통 색/그림자)
+   ================================ */
+:root{
+  --brand-blue:#0054a8;
+  --brand-blue-dk:#003f82;
+  --brand-yellow:#ffd54f;
+  --ink:#1f2937;
+  --muted:#6b7280;
+  --card:#ffffff;
+  --line:#e5e7eb;
+  --shadow-sm:0 4px 12px rgba(0,84,168,.08);
+  --shadow:0 10px 24px rgba(0,84,168,.12);
+  --shadow-lg:0 16px 36px rgba(0,84,168,.18);
+}
+
+/* 다크모드 자동 대응 */
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#0b1320;
+    --card:#111827;
+    --line:#1f2a44;
+    --ink:#e5e7eb;
+    --muted:#9aa6bd;
+    --shadow-sm:0 4px 12px rgba(0,0,0,.25);
+    --shadow:0 10px 24px rgba(0,0,0,.35);
+    --shadow-lg:0 16px 36px rgba(0,0,0,.45);
+  }
+}
+
+/* ========= 페이지 배경/전반 ========= */
+body.all-page{
+  background:
+    radial-gradient(1200px 600px at 80% -10%, rgba(0,84,168,.08), transparent 60%),
+    radial-gradient(800px 400px at -10% 10%, rgba(255,213,79,.10), transparent 60%),
+    var(--bg);
+  min-height: 100dvh;
+}
+
+/* ================================
+   상단 로고 중앙 박스
+   ================================ */
+.center-kjobgo-logo{
+  position:relative;
+  width:100%;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  margin:56px auto 18px;
+  z-index:10;
+}
+
+.k-jobgologo{
+  width: 360px;
+  max-width: 68vw;
+  height:auto;
+  object-fit:contain;
+  display:block;
+  filter: drop-shadow(0 4px 20px rgba(0,0,0,.08));
+}
+
+/* ================================
+   Admin Hub: 카드 타일 그리드
+   (HTML 변경 없이 동작)
+   ================================ */
+
+/* 1) UL → 그리드 (조건부 렌더 UL & 수동 클래스 둘 다 지원) */
+.all-page ul[th\:if],
+.admin-menu-grid{
+  max-width:1200px;
+  margin:18px auto 32px;
+  padding:0 16px;
+  display:grid;
+  grid-template-columns:repeat(3, minmax(0,1fr));
+  gap:18px;
+  list-style:none;
+}
+@media (max-width:1024px){
+  .all-page ul[th\:if], .admin-menu-grid{
+    grid-template-columns:repeat(2, minmax(0,1fr));
+  }
+}
+@media (max-width:640px){
+  .all-page ul[th\:if], .admin-menu-grid{
+    grid-template-columns:1fr;
+  }
+}
+
+/* 2) LI → 카드 타일 */
+.all-page ul[th\:if] > li,
+.admin-menu-grid > li{
+  background:linear-gradient(180deg, var(--card) 0%, color-mix(in srgb, var(--card) 92%, #cde0ff 8%)) padding-box;
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:18px 16px;
+  box-shadow:var(--shadow);
+  transition:
+    transform .18s ease,
+    box-shadow .18s ease,
+    border-color .18s ease,
+    background .18s ease,
+    outline-color .18s ease;
+  position:relative;
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  gap:14px;
+  cursor:pointer;
+  isolation:isolate; /* 배지/효과 겹침 방지 */
+}
+
+/* 카드 상단 은은한 하이라이트 */
+.all-page ul[th\:if] > li::after,
+.admin-menu-grid > li::after{
+  content:"";
+  position:absolute; inset:0;
+  background:linear-gradient(180deg, rgba(255,255,255,.35), rgba(255,255,255,0));
+  pointer-events:none;
+  opacity:.6;
+  mix-blend-mode:soft-light;
+}
+
+/* Hover/Focus */
+.all-page ul[th\:if] > li:hover,
+.admin-menu-grid > li:hover{
+  transform:translateY(-3px);
+  box-shadow:var(--shadow-lg);
+  border-color:#d7e4f8;
+}
+.all-page ul[th\:if] > li:focus-within,
+.admin-menu-grid > li:focus-within{
+  outline:2px solid color-mix(in srgb, var(--brand-blue) 85%, white 15%);
+  outline-offset:2px;
+}
+
+/* 3) 내부 링크 타이포 + 오른쪽 화살표 */
+.all-page ul[th\:if] a.menu-link,
+.admin-menu-grid a.menu-link{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  text-decoration:none;
+  color:var(--ink);
+  font-weight:700;
+  font-size:16px;
+  line-height:1.25;
+  flex:1 1 auto;
+  letter-spacing:.1px;
+}
+.all-page ul[th\:if] a.menu-link:hover,
+.admin-menu-grid a.menu-link:hover{
+  color:var(--brand-blue-dk);
+}
+
+/* 우측 화살표(CTA) */
+.all-page ul[th\:if] a.menu-link::after,
+.admin-menu-grid a.menu-link::after{
+  content:"";
+  width:18px; height:18px; flex:0 0 auto; opacity:.6;
+  mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23000" d="M8.59 16.59 13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>') center/contain no-repeat;
+  -webkit-mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23000" d="M8.59 16.59 13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>') center/contain no-repeat;
+  background:currentColor;
+  margin-left:auto;
+  transition:transform .18s ease, opacity .18s ease;
+}
+.all-page ul[th\:if] > li:hover a.menu-link::after,
+.admin-menu-grid > li:hover a.menu-link::after{
+  transform:translateX(2px);
+  opacity:.9;
+}
+
+/* 4) 아이콘 캡슐 (a 또는 li[onclick] 모두 적용) */
+.all-page ul[th\:if] a.menu-link::before,
+.all-page ul[th\:if] > li[onclick]::before,
+.admin-menu-grid a.menu-link::before,
+.admin-menu-grid > li[onclick]::before{
+  content:"";
+  width:48px; height:48px; border-radius:12px; flex:0 0 auto;
+  background:#eef4ff;
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.02);
+  mask-size:24px 24px; mask-repeat:no-repeat; mask-position:center;
+  -webkit-mask-size:24px 24px; -webkit-mask-repeat:no-repeat; -webkit-mask-position:center;
+}
+
+/* 기능별 아이콘 매핑 */
+.all-page ul[th\:if] a.menu-link[href="/admin/profileList"]::before,
+.admin-menu-grid a.menu-link[href="/admin/profileList"]::before{
+  mask-image:url('data:image/svg+xml;utf8,<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="%230054a8" d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5Zm0 2c-5 0-9 2.5-9 5.5V22h18v-2.5C21 16.5 17 14 12 14Z"/></svg>');
+  -webkit-mask-image:url('data:image/svg+xml;utf8,<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="%230054a8" d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5Zm0 2c-5 0-9 2.5-9 5.5V22h18v-2.5C21 16.5 17 14 12 14Z"/></svg>');
+}
+.all-page ul[th\:if] > li[onclick*="/agency/List"]::before,
+.admin-menu-grid > li[onclick*="/agency/List"]::before{
+  mask-image:url('data:image/svg+xml;utf8,<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="%230054a8" d="M3 21V7l9-4 9 4v14h-7v-6H10v6H3Z"/></svg>');
+  -webkit-mask-image:url('data:image/svg+xml;utf8,<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="%230054a8" d="M3 21V7l9-4 9 4v14h-7v-6H10v6H3Z"/></svg>');
+}
+.all-page ul[th\:if] > li[onclick*="/admin/visa/register"]::before,
+.admin-menu-grid > li[onclick*="/admin/visa/register"]::before{
+  mask-image:url('data:image/svg+xml;utf8,<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="%230054a8" d="M7 2h10a2 2 0 0 1 2 2v16l-7-3-7 3V4a2 2 0 0 1 2-2Z"/></svg>');
+  -webkit-mask-image:url('data:image/svg+xml;utf8,<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="%230054a8" d="M7 2h10a2 2 0 0 1 2 2v16l-7-3-7 3V4a2 2 0 0 1 2-2Z"/></svg>');
+}
+
+/* 5) 부가설명(선택) */
+.all-page ul[th\:if] a.menu-link .sub,
+.admin-menu-grid a.menu-link .sub{
+  display:block; margin-top:2px; font-size:12px; font-weight:500; color:var(--muted);
+}
+
+/* 6) 배지(핵심/최근 등) */
+.badge{
+  position:absolute; top:10px; right:10px;
+  font-size:11px; font-weight:800; letter-spacing:.2px;
+  background:var(--brand-yellow); color:#5a4100;
+  padding:4px 8px; border-radius:999px; border:1px solid #f2c94c;
+  z-index:2;
+}
+.all-page ul[th\:if] a.menu-link[href="/admin/profileList"]::after,
+.admin-menu-grid a.menu-link[href="/admin/profileList"]::after{
+  content:"핵심";
+  position:absolute; top:10px; right:10px;
+  font-size:11px; font-weight:800;
+  background:var(--brand-yellow); color:#5a4100;
+  padding:4px 8px; border-radius:999px; border:1px solid #f2c94c;
+}
+
+/* 7) 포커스/접근성 */
+.all-page ul[th\:if] > li:focus-visible,
+.admin-menu-grid > li:focus-visible{
+  outline:3px solid color-mix(in srgb, var(--brand-blue) 80%, white 20%);
+  outline-offset:2px;
+}
+
+/* ↓ 모션 최소화 접근성 */
+@media (prefers-reduced-motion: reduce){
+  .all-page ul[th\:if] > li,
+  .admin-menu-grid > li{
+    transition:none;
+  }
+}
+
+/* (선택) 관리 카드의 ‘관리자 전용’ 강조 스타일이 필요하면
+   토글 메뉴 <a class="menu-item admin">와 톤을 맞추려 이렇게도 추가 가능
+   (현재 adminMain.html에는 사용 X, 향후 재사용 대비)
+*/
+.menu-item.admin{
+  font-weight:800;
+  color:var(--brand-blue);
+}
+.menu-item.admin::before{
+  content:"";
+  width:16px;height:16px;margin-right:6px;vertical-align:-3px;
+  background:currentColor;
+  mask:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23000" d="M12 2 2 7l10 5 10-5-10-5Zm0 7.27L4.24 7 12 3.73 19.76 7 12 9.27Zm-8 4.46L12 17l8-5.27V17l-8 5-8-5v-3.27Z"/></svg>') center/contain no-repeat;
+  -webkit-mask:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23000" d="M12 2 2 7l10 5 10-5-10-5Zm0 7.27L4.24 7 12 3.73 19.76 7 12 9.27Zm-8 4.46L12 17l8-5.27V17l-8 5-8-5v-3.27Z"/></svg>') center/contain no-repeat;
+}

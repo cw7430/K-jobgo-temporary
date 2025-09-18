@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- CSRF (Spring Security) -->
+  <meta name="_csrf" th:content="${_csrf.token}" />
+  <meta name="_csrf_header" th:content="${_csrf.headerName}" />
+  <meta name="page-size" th:content="${pageObj != null ? pageObj.size : 10}">
+
+  <title>회원 관리 페이지</title>
+
+  <!-- Favicon -->
+  <link rel="icon" href="https://k-jobgo-profile-photos-seoul.s3.ap-northeast-2.amazonaws.com/img/favicon.png" />
+
+  <!-- CSS -->
+  <link rel="stylesheet" th:href="@{/css/layout.css}" />
+  <link rel="stylesheet" th:href="@{/css/toggle.css}" />
+  <link rel="stylesheet" th:href="@{/css/main.css}" />
+  <link rel="stylesheet" th:href="@{/css/login.css}" />
+  <link rel="stylesheet" th:href="@{/css/erp-layout.css}" />
+  <link rel="stylesheet" th:href="@{/css/confirmClient.css}" />
+
+  <style>
+    /* 탭 네비 (간단 스타일) */
+    .erp-tabs { display:flex; gap:8px; margin: 12px 0 18px; }
+    .erp-tabs a {
+      display:inline-flex; align-items:center; gap:6px;
+      padding:8px 14px; border:1px solid var(--line); border-radius:9999px;
+      background:#fff; color:#0E2C54; font-weight:700; font-size:13px; text-decoration:none;
+      transition: background .2s ease, color .2s ease, transform .15s ease;
+    }
+    .erp-tabs a:hover { transform: translateY(-1px); background: #eef3ff; }
+    .erp-tabs a.is-active { background: var(--accent); color:#fff; border-color: var(--accent); }
+    .erp-tabs .count {
+      display:inline-flex; min-width:20px; height:20px; padding:0 6px; border-radius:9999px;
+      align-items:center; justify-content:center; font-weight:800; font-size:12px; background:rgba(255,255,255,.2);
+    }
+    /* 편집 가능한 셀 시각 표시 */
+    .editable input.ed:not([disabled]) { background:#fffdf5; border-color:#ffd48a; }
+    .editable input.ed.is-dirty { box-shadow: 0 0 0 2px rgba(255,184,61,.35) inset; }
+  </style>
+</head>
+
+<body
+  class="all-page"
+  th:attr="data-is-admin=${isAdmin}, data-authority=${authorityId}, data-env=${@environment.getActiveProfiles()[0]}">
+
+ <!-- 관리자 전용, 고객 전용 토글 메뉴 -->
+ <div th:replace="${isClient} ? ~{fragments/clientHeader :: siteHeader} : ~{fragments/header :: siteHeader}"></div>
+  <div th:replace="~{login :: loginModal}"></div>
+
+  <!-- 로고 -->
+  <div class="center-kjobgo-logo">
+    <a th:href="@{/}">
+      <img src="/img/k-jobgo_company.png" alt="K-jobgo | 외국인 인재 매칭 플랫폼" class="k-jobgologo" />
+    </a>
+  </div>
+
+  <main class="wrap">
+    <h1>회원 관리</h1>
+    <p class="sub">가입 신청 기업의 승인/반려 상태를 확인하고 첨부파일을 검토하세요.</p>
+
+    <!-- 탭 네비게이션: 상태별 분리 -->
+    <nav class="erp-tabs" aria-label="신청 상태 필터">
+      <a th:href="@{/admin/confirmClient(status='PENDING')}"
+         th:classappend="${filterStatus.name() == 'PENDING'} ? ' is-active'">
+        대기
+        <!-- 필요 시 서버에서 내려주는 카운트가 있다면 th:text 바인딩 -->
+        <span class="count" th:if="${pendingCount != null}" th:text="${pendingCount}">0</span>
+      </a>
+      <a th:href="@{/admin/confirmClient(status='APPROVED')}"
+         th:classappend="${filterStatus.name() == 'APPROVED'} ? ' is-active'">
+        승인
+        <span class="count" th:if="${approvedCount != null}" th:text="${approvedCount}">0</span>
+      </a>
+      <a th:href="@{/admin/confirmClient(status='REJECTED')}"
+         th:classappend="${filterStatus.name() == 'REJECTED'} ? ' is-active'">
+        반려
+        <span class="count" th:if="${rejectedCount != null}" th:text="${rejectedCount}">0</span>
+      </a>
+    </nav>
+
+    <!-- 상단 툴바 -->
+    <div class="toolbar" style="display:flex;justify-content:flex-end;gap:8px;margin-bottom:8px;">
+      <button type="button" class="btn small" id="btnEdit">수정</button>
+      <button type="button" class="btn small" id="btnSave" style="display:none;">저장</button>
+      <button type="button" class="btn small" id="btnCancel" style="display:none;">취소</button>
+    </div>
+
+    <div class="table-scroll">
+      <table class="table wide-table erp-table" id="client-approval-table">
+        <!-- 열 넓이 -->
+        <colgroup>
+          <col style="width:44px" />
+          <col style="width:60px" />
+          <col style="width:200px" />
+          <col style="width:160px" />
+          <col style="width:100px" />
+          <col style="width:200px" />
+          <col style="width:150px" />
+          <col style="width:100px" />
+          <col style="width:180px" />
+          <col style="width:100px" />
+          <col style="width:400px" />
+          <col style="width:140px" />
+          <col style="width:140px" />
+          <col style="width:280px" />
+        </colgroup>
+
+        <thead>
+          <tr>
+            <th><input type="checkbox" id="checkAll" /></th>
+            <th>No</th>
+            <th>업체명</th>
+            <th>사업자등록번호</th>
+            <th>담당자 이름</th>
+            <th>담당자 연락처</th>
+            <th>사업자등록증</th>
+            <th>담당자 명함</th>
+            <th>대리 가입</th>
+            <th>상태</th>
+            <th>반려 사유</th>
+            <th>신청일</th>
+            <th>처리일</th>
+            <th>가입처리</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr th:each="row, st : ${companies}"
+              th:with="statusName=${row.apprStatus != null ? row.apprStatus.name() : 'PENDING'}"
+              th:attr="data-cmp-id=${row.cmpId}">
+            <!-- 1 체크박스 -->
+            <td><input type="checkbox" class="row-check" th:value="${row.cmpId}" /></td>
+
+            <!-- 2 No -->
+            <td th:text="${st.index + 1}">1</td>
+
+            <!-- 3 업체명 (편집 가능) -->
+            <td class="editable">
+              <input name="cmpName" class="inp ed" type="text" th:value="${row.cmpName}" disabled />
+            </td>
+
+            <!-- 4 사업자등록번호 -->
+            <td th:text="${row.bizNo}">000-00-00000</td>
+
+            <!-- 5 담당자 이름 (편집 가능) -->
+            <td class="editable">
+              <input name="contactName" class="inp ed" type="text" th:value="${row.contactName}" disabled />
+            </td>
+
+            <!-- 6 담당자 연락처 (편집 가능) -->
+            <td class="editable">
+              <input name="contactPhone" class="inp ed phone" type="text" th:value="${row.contactPhone}" disabled />
+            </td>
+
+            <!-- 7 사업자등록증 -->
+            <td>
+              <div class="file-actions" th:if="${row.licenseFileId}">
+                <button type="button" class="btn-link file-preview"
+                        th:attr="data-id=${row.licenseFileId}, data-mime=${row.licenseMime}, data-title=${'사업자등록증 사본'}">
+                  미리보기
+                </button>
+              </div>
+              <span th:unless="${row.licenseFileId}">-</span>
+            </td>
+
+            <!-- 8 담당자 명함 -->
+            <td>
+              <div class="file-actions" th:if="${row.cardFileId}">
+                <button type="button" class="btn-link file-preview"
+                        th:attr="data-id=${row.cardFileId}, data-mime=${row.cardMime}, data-title=${'담당자 명함'}">
+                  미리보기
+                </button>
+              </div>
+              <span th:unless="${row.cardFileId}">-</span>
+            </td>
+
+            <!-- 9 대리/직접 -->
+            <td>
+              <span th:if="${row.prxJoin}" class="badge badge-proxy"
+                    th:title="${row.proxyExecutor != null ? '대리 가입 · 담당자: ' + row.proxyExecutor : '대리 가입'}">
+                대리가입 <span th:if="${row.proxyExecutor}" th:text="| · ${row.proxyExecutor}|"></span>
+              </span>
+              <span th:unless="${row.prxJoin}" class="badge badge-direct" title="직접 가입">직접가입</span>
+            </td>
+
+            <!-- 10 상태 -->
+            <td class="status-cell">
+              <span class="chip"
+                    th:classappend="${statusName == 'APPROVED' ? ' chip--approved' :
+                                     (statusName == 'REJECTED' ? ' chip--rejected' : ' chip--pending')}"
+                    th:attr="data-status=${statusName}"
+                    th:text="${statusName == 'APPROVED' ? '승인' :
+                             (statusName == 'REJECTED' ? '반려' : '대기')}">
+                대기
+              </span>
+            </td>
+
+            <!-- 11 반려 사유 (반려일 때만 활성) -->
+            <td>
+              <input type="text" class="reject-reason" placeholder="반려 사유 입력"
+                     th:value="${row.rejectReason}"
+                     th:disabled="${statusName != 'REJECTED'}" />
+            </td>
+
+            <!-- 12 신청일 -->
+            <td th:text="${row.createdAt == null ? '-' : #temporals.format(row.createdAt, 'yyyy-MM-dd')}">-</td>
+
+            <!-- 13 처리일 -->
+            <td th:text="${row.processedAt == null ? '-' : #temporals.format(row.processedAt,'yyyy-MM-dd')}">-</td>
+
+            <!-- 14 조치 -->
+            <td class="row-actions" th:with="isPending=${statusName == 'PENDING'}">
+              <a class="confirmBtn"
+                 th:href="@{/admin/confirmClient/files/{cmpId}/downloadAll(cmpId=${row.cmpId})}">
+                첨부 다운로드
+              </a>
+
+              <!-- 대기에서만 승인/반려 -->
+              <button type="button" class="confirmBtn btn-approve" th:if="${isPending}">승인</button>
+              <button type="button" class="confirmBtn btn-reject"  th:if="${isPending}">반려</button>
+            </td>
+          </tr>
+
+          <!-- 데이터 없음 -->
+          <tr th:if="${#lists.isEmpty(companies)}">
+            <td colspan="14" style="text-align:center;color:#666;background:#fafafa;">
+              <span th:switch="${filterStatus.name()}">
+                <span th:case="'PENDING'">대기 중인 신청이 없습니다.</span>
+                <span th:case="'APPROVED'">승인된 신청이 없습니다.</span>
+                <span th:case="'REJECTED'">반려된 신청이 없습니다.</span>
+                <span th:case="*">표시할 데이터가 없습니다.</span>
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <!-- 파일 미리보기 모달 -->
+  <dialog id="previewDialog" aria-labelledby="pvTitle">
+    <div class="pv-head">
+      <div id="pvTitle" class="pv-title">파일 미리보기</div>
+      <button type="button" class="pv-close" aria-label="닫기">✕</button>
+    </div>
+    <div class="pv-body"></div>
+  </dialog>
+
+  <!-- 승인/반려 결정 모달 (메일 발송 여부) -->
+  <dialog id="decisionDialog" aria-labelledby="ddTitle">
+    <div class="pv-head">
+      <div id="ddTitle" class="pv-title">확인</div>
+      <button type="button" class="pv-close" aria-label="닫기">✕</button>
+    </div>
+    <div class="pv-body">
+      <p id="ddMsg" style="margin:12px 0;"></p>
+    </div>
+    <div style="display:flex; gap:8px; justify-content:flex-end; padding:0 12px 12px;">
+      <button type="button" class="btn small" id="ddNo">발송 안함</button>
+      <button type="button" class="btn small" id="ddYes">메일 발송</button>
+    </div>
+  </dialog>
+
+  <!-- JS -->
+  <script th:src="@{/js/common.js}"></script>
+  <script th:src="@{/js/login.js}"></script>
+  <script th:src="@{/js/confirmClient.js}"></script>
+</body>
+</html>

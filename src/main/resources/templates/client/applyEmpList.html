@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>(주)한국경영지원사업단 | 구직신청 목록</title>
+
+  <link rel="icon" href="https://k-jobgo-profile-photos-seoul.s3.ap-northeast-2.amazonaws.com/img/favicon.png" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet" />
+  <!-- 공용 스타일 -->
+  <link rel="stylesheet" th:href="@{/css/layout.css}" />
+  <link rel="stylesheet" th:href="@{/css/toggle.css}" />
+  <link rel="stylesheet" th:href="@{/css/erp-layout.css}" />
+</head>
+
+<body class="all-page"
+      th:attr="data-is-admin=${false}, data-env=${@environment.getActiveProfiles()[0]}">
+
+  <!-- 헤더 -->
+  <div th:replace="${isClient} ? ~{fragments/clientHeader :: siteHeader} : ~{fragments/header :: siteHeader}"></div>
+
+  <!-- 로고 -->
+  <div class="center-kjobgo-logo">
+    <a th:href="@{/}">
+      <img src="/img/k-jobgo_company.png" alt="K-jobgo | 외국인 인재 매칭 플랫폼" class="k-jobgologo" />
+    </a>
+  </div>
+
+  <!-- ▷ 로컬 툴바 프래그먼트 정의 (파일 추가 없이 페이지 내부에서 정의) -->
+  <th:block th:fragment="toolbar">
+    <div class="toolbar"
+         style="display:flex; align-items:center; gap:12px; justify-content:space-between; flex-wrap:wrap;">
+      <!-- 좌측: 신청서 작성 -->
+      <div class="toolbar-left" style="flex:0 0 auto;">
+        <a class="btn btn--primary" th:href="@{/client/applyEmp(new=1)}">신청서 작성하기</a>
+      </div>
+
+      <!-- 중앙: 검색/필터 -->
+      <form class="toolbar-center"
+            method="get" th:action="@{/client/applyEmp/list}"
+            style="margin:0 auto; display:flex; align-items:center; gap:8px; flex:1 1 auto; justify-content:center;">
+        <select name="status" class="sel" style="width:160px">
+          <option value="" th:selected="${param.status == null}">전체 상태</option>
+          <option value="ACTIVE"     th:selected="${param.status == 'ACTIVE'}">대기</option>
+          <option value="COMPLETED"  th:selected="${param.status == 'COMPLETED'}">완료</option>
+          <option value="CANCELLED"  th:selected="${param.status == 'CANCELLED'}">취소</option>
+        </select>
+
+        <input class="inp" type="text" name="q"
+               placeholder="구인직종/국적/담당자 검색"
+               th:value="${param.q}" style="width:280px"/>
+
+        <button class="btn btn--secondary" type="submit">검색</button>
+      </form>
+    </div>
+  </th:block>
+
+  <div class="wrap"
+       th:with="toolbarFrag=~{::toolbar}">
+    <h1>나의 구직신청</h1>
+
+    <!-- 공용 테이블 프래그먼트 호출 (툴바=로컬프래그먼트, isAdmin=false, pageObj 전달) -->
+    <div th:replace="~{fragments/applyFragments :: applyEmpTable(${applyList}, ${false}, ${filterStatus}, ${toolbarFrag}, ${pageObj})}"></div>
+
+    <!-- 중앙 하단 페이징 -->
+    <div class="pagination" th:if="${pageObj != null and pageObj.totalPages > 0}"
+         style="display:flex; justify-content:center; margin:18px 0 6px;">
+      <ul style="display:flex; gap:6px; list-style:none; padding:0; margin:0;">
+        <!-- 이전 -->
+        <li th:classappend="${pageObj.first} ? 'disabled'">
+          <a th:if="${!pageObj.first}"
+             th:href="@{/client/applyEmp/list(page=${pageObj.number-1}, size=${pageObj.size}, q=${param.q}, status=${param.status})}">« 이전</a>
+          <span th:if="${pageObj.first}">« 이전</span>
+        </li>
+
+        <!-- 번호 -->
+        <li th:each="i : ${#numbers.sequence(0, pageObj.totalPages-1)}"
+            th:classappend="${i == pageObj.number} ? 'active'">
+          <a th:href="@{/client/applyEmp/list(page=${i}, size=${pageObj.size}, q=${param.q}, status=${param.status})}"
+             th:text="${i+1}">1</a>
+        </li>
+
+        <!-- 다음 -->
+        <li th:classappend="${pageObj.last} ? 'disabled'">
+          <a th:if="${!pageObj.last}"
+             th:href="@{/client/applyEmp/list(page=${pageObj.number+1}, size=${pageObj.size}, q=${param.q}, status=${param.status})}">다음 »</a>
+          <span th:if="${pageObj.last}">다음 »</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <footer class="foot-var">
+    <div>
+      <p>
+        <span>(주)한국경영지원사업단&nbsp; 대표이사 : 이준희 <span class="divider">|</span> 사업자등록번호 : 887-81-00124</span><br>
+        본사_경기도 김포시 김포한강4로 125 월드타워 705호 <span class="divider">|</span> 본부_경기도 광명시 일직로 43 GIDC A1706호<br>
+        국내지사_김해지사, 대구지사, 천안지사, 광주지사, 원주지사 <span class="divider">|</span> 해외지사_베트남, 필리핀, 인도네시아, 인도, 몽골, 네팔, 우즈베키스탄<br>
+        유료직업소개업 등록번호 : 제2025-4090515-14-5-00012호 <span class="divider">|</span>
+        Tel_ 031-983-0942 <span class="divider">|</span> Fax_ 031-624-1540 <span class="divider">|</span> Email_ k-jobgo@naver.com<br>
+        ⓒ 2025 K-jobgo. All rights reserved.
+      </p>
+    </div>
+  </footer>
+
+  <!-- JS -->
+  <script th:src="@{/js/common.js}"></script>
+  <script th:src="@{/js/login.js}"></script>
+  <script>
+    // 행 전체 클릭 → 상세 이동(링크 보강)
+    document.addEventListener('DOMContentLoaded', function () {
+      document.querySelectorAll('table.erp-table tbody tr').forEach(tr => {
+        const link = tr.querySelector('a.row-link');
+        if (!link) return;
+        tr.style.cursor = 'pointer';
+        tr.addEventListener('click', (e) => {
+          if (e.target.closest('a, button, input, label, select')) return;
+          link.click();
+        });
+      });
+    });
+  </script>
+</body>
+</html>

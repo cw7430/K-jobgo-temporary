@@ -2,37 +2,97 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8">
- <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="_csrf" th:content="${_csrf.token}"/>
+<meta name="_csrf_header" th:content="${_csrf.headerName}"/>
 <title>K-jobgo login</title>
-     <!-- Favicon -->
 <link rel="icon" href="https://k-jobgo-profile-photos-seoul.s3.ap-northeast-2.amazonaws.com/img/favicon.png" />
-	
-	<link rel="stylesheet" th:href="@{/css/login.css}">
+<link rel="stylesheet" th:href="@{/css/login.css}">
 </head>
 <body>
 
-<!-- 모달창 -->
+<!-- 모달 fragment -->
 <div th:fragment="loginModal">
-<div id="loginModal" class="modal">
-  <div class="modal-content">
-    <span class="close">&times;</span>
-    
-    <p class="modal-note">※ 이 로그인은 관리자 전용입니다 ※</p>
-    
-    <form id="loginForm" method="post">
-      <label for="userId">아이디</label>
-      <input type="text" id="userId" name="userId"  placeholder="아이디를 입력하세요" required>
-      
-      <label for="password">비밀번호</label>
-      <input type="password" id="password" name="password"  placeholder="비밀번호를 입력하세요" required>
+  <div id="loginModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
 
-      <input type="button" id="submitLoginBtn" value="로그인">
-    </form>
+      <div class="tab-container">
+        <div class="tabs">
+          <button class="tab-btn active" data-tab="adminLogin">관리자 로그인</button>
+          <button class="tab-btn" data-tab="clientLogin">고객 기업 로그인</button>
+        </div>
+
+        <!-- 관리자 -->
+        <div id="adminLogin" class="tab-content active">
+          <p class="modal-note">※ 관리자 전용입니다 ※</p>
+          <form id="loginForm" method="post">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+            <label for="userId">아이디</label>
+            <input type="text" id="userId" name="userId" placeholder="아이디를 입력하세요" required>
+            <label for="loginPassword">비밀번호</label>
+            <input type="password" id="loginPassword" name="password" placeholder="비밀번호를 입력하세요" required>
+            <input type="button" id="submitLoginBtn" value="로그인">
+          </form>
+
+          <div class="worker-info">
+            <p>취업 희망자는 로그인 없이 이용할 수 있습니다.<br>빠르고 간편하게 Matching 기회를 찾아보세요.</p>
+            <a href="/MatchingPage" class="btn-match-link" role="button" tabindex="0">
+              MatchingPage 바로 가기
+              <svg class="btn-icon signup-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" stroke="#f08c00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" style="vertical-align: middle; margin-left: 6px;">
+                <path d="M5 12h14M13 5l7 7-7 7"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- 고객 기업 -->
+        <div id="clientLogin" class="tab-content">
+          <p class="modal-note">※ 고객 기업 전용입니다 ※</p>
+
+          <div class="signup-info">
+            <p>아직 회원가입이 안 되셨나요?<br> 고객 기업 회원가입을 통해 다양한 서비스를 이용하세요.</p>
+            <a href="/client/joinPage" class="btn-signup-link" role="button" tabindex="0">
+              회원가입 하기
+              <svg class="btn-icon match-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" stroke="#007ACC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" style="vertical-align: middle; margin-left: 6px;">
+                <path d="M5 12h14M13 5l7 7-7 7"/>
+              </svg>
+            </a>
+          </div>
+
+          <!-- ★ 기업 로그인: /login 으로 제출 (Spring Security 처리) -->
+          <form id="clientLoginForm" method="post" th:action="@{/login}">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+            <label for="clientUserId">아이디(메일주소)</label>
+            <input type="text" id="clientUserId" name="bizEmail" placeholder="예) k-jobgo@naver.com" required />
+            <label for="clientPassword">비밀번호</label>
+            <input type="password" id="clientPassword" name="bizPwd" placeholder="비밀번호를 입력하세요" required />
+            <div class="passwd-info">
+              <a href="/pw_tem" class="passwd-link" role="button" tabindex="0">
+                비밀번호를 잊어버리셨나요?
+                <svg class="icon-arrow" xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24">
+                  <path d="M5 12h14M13 5l7 7-7 7"/>
+                </svg>
+              </a>
+            </div>
+            <input type="submit" id="submitClientLoginBtn" value="로그인" />
+          </form>
+
+          <div class="worker-info">
+            <p>취업 희망자는 로그인 없이 이용할 수 있습니다.<br>빠르고 간편하게 Matching 기회를 찾아보세요.</p>
+            <a href="/MatchingPage" class="btn-match-link" role="button" tabindex="0">
+              MatchingPage 바로 가기
+              <svg class="btn-icon signup-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" stroke="#f08c00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" style="vertical-align: middle; margin-left: 6px;">
+                <path d="M5 12h14M13 5l7 7-7 7"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div><!-- /tab-container -->
+    </div>
   </div>
 </div>
-</div>
-        <!-- JS 연결 -->
-    <script th:src="@{/js/login.js}"></script>
-    
+
+<script th:src="@{/js/login.js}"></script>
 </body>
 </html>

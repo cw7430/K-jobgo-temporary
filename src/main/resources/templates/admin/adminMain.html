@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<title>(주)한국경영지원사업단 | 관리자 전용 페이지</title>
+
+    <!-- Favicon -->
+<link rel="icon" href="https://k-jobgo-profile-photos-seoul.s3.ap-northeast-2.amazonaws.com/img/favicon.png" />
+
+    <!-- CSS 연결 -->
+	<!-- ✅ 공통 먼저, 상세 후 -->
+ <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet" />
+
+<link rel="stylesheet" th:href="@{/css/layout.css}">
+<link rel="stylesheet" th:href="@{/css/toggle.css}">
+<link rel="stylesheet" th:href="@{/css/main.css}">
+<link rel="stylesheet" th:href="@{/css/login.css}">
+<link rel="stylesheet" th:href="@{/css/adminMain.css}">
+
+</head>
+
+<body class="all-page" th:attr="data-is-admin=${isAdmin},  data-authority=${authorityId}, data-env=${@environment.getActiveProfiles()[0]}">
+
+ <!-- 관리자 전용, 고객 전용 토글 메뉴 -->
+ <div th:replace="${isClient} ? ~{fragments/clientHeader :: siteHeader} : ~{fragments/header :: siteHeader}"></div>
+ 
+<div th:replace="~{login :: loginModal}"></div>
+
+  <!-- ✅ K-jobgo 로고 전용 중앙 박스 (about-section 위에 배치) -->
+	<div class="center-kjobgo-logo">
+		<a th:href="@{/}">
+		  <img src="/img/k-jobgo_company.png" alt="K-jobgo | 외국인 인재 매칭 플랫폼" class="k-jobgologo" />
+		</a>
+	</div>
+
+	<!-- 관리자 전용 -->
+	<ul th:if="${authorityId == 1 or authorityId == 2}" class="admin-menu-grid">
+	  <li>
+	    <a class="menu-link" th:href="@{/admin/profileList}">국내 외국인 프로필보기</a>
+	  </li>
+	
+    <!-- 회원 관리 (confirmClient 권한 플래그가 있을 경우에만 노출) -->
+      <li th:if="${confirmAgency}">
+        <a class="menu-link" th:href="@{/admin/confirmClient}">회원 관리</a>
+      </li>
+	  
+	<!-- 관리자 전용: 채용요청 관리(목록)
+	  <li th:if="${applyEmp}">
+	    <a class="menu-link" th:href="@{/admin/applyEmp}" data-close-menu="true">채용요청 관리</a>
+	  </li>
+	   -->
+	  <li th:if="${canListAgency}">
+	    <a class="menu-link" th:href="@{/agency/List}">송출업체 현황</a>
+	  </li>
+	
+	  <!-- 권한 1,2 → 전체 비자 현황 -->
+	  <li th:if="${canRegisterVisa}">
+	    <a class="menu-link" th:href="@{/admin/visa/register}">전체 비자 현황</a>
+	  </li>
+     <!-- 권한 1,2: 구직신청 확인 메뉴 추가 -->
+      <li th:if="${applyEmp}">
+        <a class="menu-link" th:href="@{/admin/applyEmpList}" data-close-menu="true">구직 신청 확인</a>
+      </li>
+    </ul>
+	
+	        <!-- JS 연결 -->
+    <script th:src="@{/js/adminMain.js}"></script>
+    <script th:src="@{/js/common.js}"></script>
+    <script th:src="@{/js/login.js}"></script>
+</body>
+</html>

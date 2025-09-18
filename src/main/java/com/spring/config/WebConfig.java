@@ -13,7 +13,11 @@
  */
 package com.spring.config;
 
+import com.spring.interceptor.ApprovedCompanyInterceptor;
 import com.spring.interceptor.LoginCheckInterceptor;
+
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -22,18 +26,45 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
-public class WebConfig
-implements WebMvcConfigurer {
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/api/**").allowedOrigins(new String[]{"https://kjobgo.com", "https://www.kjobgo.com", "https://k-jobgo.com", "https://www.k-jobgo.com", "http://localhost:8081"}).allowedMethods(new String[]{"GET", "POST", "PUT", "DELETE"}).allowCredentials(true);
-    }
+@RequiredArgsConstructor
+public class WebConfig implements WebMvcConfigurer {
+	
+	  private final LoginCheckInterceptor loginCheckInterceptor;
+	  private final ApprovedCompanyInterceptor approvedCompanyInterceptor;
+	  
+	 @Override
+	  public void addCorsMappings(CorsRegistry registry) {
+	    registry.addMapping("/api/**")
+	        .allowedOrigins("https://kjobgo.com","https://www.kjobgo.com",
+	                        "https://k-jobgo.com","https://www.k-jobgo.com",
+	                        "http://localhost:8081")
+	        .allowedMethods("GET","POST","PUT","DELETE")
+	        .allowCredentials(true);
+	  }
 
-    public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor((HandlerInterceptor)new LoginCheckInterceptor()).addPathPatterns(new String[]{"/admin/**"}).excludePathPatterns(new String[]{"/home", "/loginPage", "/logout", "/api/login", "/css/**", "/js/**", "/img/**", "/companyInfo", "/"});
-    }
+	 @Override
+	 public void addInterceptors(InterceptorRegistry registry) {
+	     registry.addInterceptor(loginCheckInterceptor)
+	         .addPathPatterns("/client/**")
+	         .excludePathPatterns(
+	             // ✅ 회원가입(공개)
+	             "/client/joinPage", "/client/join-success", "/join",
+	             // ✅ 클라이언트 로그인 API(공개)
+	             "/api/client/login", "/api/client/logout",
+	             // ✅ 정적/에러
+	             "/css/**", "/js/**", "/img/**", "/images/**", "/favicon.ico", "/error"
+	         );
 
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler(new String[]{"/uploads/**"}).addResourceLocations(new String[]{"file:/home/ec2-user/uploads/"});
-    }
+	     registry.addInterceptor(approvedCompanyInterceptor)
+	         .addPathPatterns("/client/**")
+	         // ✅ 회원가입 화면은 승인검사 대상 아님
+	         .excludePathPatterns("/client/joinPage", "/client/join-success");
+	 }
+
+	  @Override
+	  public void addResourceHandlers(ResourceHandlerRegistry registry) {
+	    registry.addResourceHandler("/uploads/**")
+	            .addResourceLocations("file:/home/ec2-user/uploads/");
+	  } 
 }
 

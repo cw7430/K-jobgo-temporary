@@ -1,4 +1,4 @@
-package com.spring.controller;
+package com.spring.auth.controller;
 
 import com.spring.dto.LoginRequestDto;
 import com.spring.dto.LoginResponseDto;
@@ -13,6 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class AuthApiController {
@@ -30,12 +31,18 @@ public class AuthApiController {
         System.out.println("✅ 전달받은 password: [" + loginDTO.getAdminPassword() + "]");
 
         Admin admin = adminService.authenticate(loginDTO.getAdminLoginId(), loginDTO.getAdminPassword());
-        if (admin == null) return ResponseEntity.badRequest().build();
-
+        // ⛔ 아이디/비번 불일치 → 401
+        if (admin == null) {
+            return ResponseEntity.status(401)
+                    .body(new LoginResponseDto(null, null, null, session.getId(), List.of()));
+        }
         int authId = admin.getAuthorityType().getAuthorityId();
-        // ✅ 1,2,5만 허용
-        if (!(authId == 1 || authId == 2 || authId == 5)) {
-            return ResponseEntity.status(403).build();
+        String authName = admin.getAuthorityType().getAuthorityName(); // CEO, MANAGER, STAFF, RETIRE, AGENT
+
+        // ⛔ 퇴사/비활성만 403로 차단
+        if ("RETIRE".equalsIgnoreCase(authName) || authId == 4) {
+            return ResponseEntity.status(403)
+                    .body(new LoginResponseDto(admin.getAdminId(), admin.getAdminName(), authName, session.getId(), List.of()));
         }
 
         // 세션 키 저장 (AgencyController에서 사용)
@@ -43,24 +50,34 @@ public class AuthApiController {
         session.setAttribute("adminId", admin.getAdminId());
         session.setAttribute("adminName", admin.getAdminName());
         session.setAttribute("authorityId", authId);
-        session.setAttribute("authorityName", admin.getAuthorityType().getAuthorityName());
+        session.setAttribute("authorityName", authName);
 
-        // ROLE 매핑
-        List<GrantedAuthority> authorities = switch (authId) {
-            case 1 -> List.of(new SimpleGrantedAuthority("ROLE_SUPERADMIN"));
-            case 2 -> List.of(new SimpleGrantedAuthority("ROLE_ADMIN"));
-            case 5 -> List.of(new SimpleGrantedAuthority("ROLE_AGENT_VISA"));
-            default -> List.of();
+        // ✅ ROLE 매핑 (STAFF 포함)
+        List<GrantedAuthority> authorities = switch (authName) {
+            case "CEO"     -> List.of(new SimpleGrantedAuthority("ROLE_SUPERADMIN"));
+            case "MANAGER" -> List.of(new SimpleGrantedAuthority("ROLE_ADMIN"));
+            case "AGENT"   -> List.of(new SimpleGrantedAuthority("ROLE_AGENT_VISA"));
+            case "STAFF"   -> List.of(new SimpleGrantedAuthority("ROLE_STAFF"));
+            case "CALL-STAFF" -> List.of(new SimpleGrantedAuthority("ROLE_CALL-STAFF"));
+            default        -> List.of(new SimpleGrantedAuthority("ROLE_USER"));
         };
 
         var authentication = new UsernamePasswordAuthenticationToken(admin, null, authorities);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
 
-        var resp = new LoginResponseDto(
-            admin.getAdminId(), admin.getAdminName(), admin.getAuthorityType().getAuthorityName(), session.getId()
+        // ✅ 프런트 분기용 roles도 내려주기
+        List<String> roles = authorities.stream().map(GrantedAuthority::getAuthority).toList();
+
+        return ResponseEntity.ok(
+            new LoginResponseDto(
+                admin.getAdminId(),
+                admin.getAdminName(),
+                authName,
+                session.getId(),
+                roles
+            )
         );
-        return ResponseEntity.ok(resp);
     }
 
     @GetMapping("/api/keep-alive")

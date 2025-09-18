@@ -137,15 +137,21 @@ public class AgencyProfileServiceImpl implements AgencyProfileService {
     @Override
     @Transactional
     public void deleteById(Long id) {
-        // 하드 삭제 그대로 유지하거나, 소프트 삭제를 원하면 아래로 변경:
-        agencyProfileRepository.deleteById(id);
+        AgencyProfile p = agencyProfileRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("대상이 존재하지 않습니다. id=" + id));
 
-        /* 소프트 삭제로 바꾸려면:
-        AgencyProfile p = agencyProfileRepository.findById(id).orElse(null);
-        if (p != null) {
-            p.setDeleted(true);
+        p.setDeleted(true); // agency_profile.is_deleted = 1
+        if (p.getFiles() != null) {
+            // 파일 엔티티에도 is_deleted 컬럼을 둘 계획이면 같이 set
+            // p.getFiles().forEach(f -> f.setDeleted(true));
         }
-        */
+    }
+    
+    /** 배치 소프트삭제 */
+    @Transactional
+    public int deleteAllByIds(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) return 0;
+        return agencyProfileRepository.softDeleteAllByIds(ids);
     }
     
     @Override

@@ -79,21 +79,20 @@ public class S3FileService implements FileService {
         validateExt(original);
         validateSize(file);
 
-        // 저장 키: <prefix><uuid>.<ext>
-        String ext = getExtLower(original); // validateExt를 통과했다면 null 아님
+        // 저장 키: prefix + uuid.ext
+        String ext = getExtLower(original);
         String key = keyPrefix + UUID.randomUUID() + "." + ext;
 
         PutObjectRequest putReq = PutObjectRequest.builder()
                 .bucket(bucket)
                 .key(key)
-                .contentType(file.getContentType()) // null일 수도 있으나 대부분 세팅됨
+                .contentType(file.getContentType())
                 .acl(ObjectCannedACL.PUBLIC_READ)
                 .build();
 
         s3.putObject(putReq, RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
 
-        // 퍼블릭 URL 반환
-        return String.format("https://%s.s3.%s.amazonaws.com/%s", bucket, region, key);
+        return key;  // ✅ 풀 URL 대신 "저장키"만 반환
     }
 
     /* ===== 내부 검증/유틸 ===== */

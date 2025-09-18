@@ -13,10 +13,10 @@
   <link rel="stylesheet" th:href="@{/css/layout.css}" />
   <link rel="stylesheet" th:href="@{/css/toggle.css}">
   <link rel="stylesheet" th:href="@{/css/main.css}" />
+    <link rel="stylesheet" th:href="@{/css/login.css}">
   <link rel="stylesheet" th:href="@{/css/erp-layout.css}" />
   <!-- 등록 페이지 전용(선택) -->
   <link rel="stylesheet" th:href="@{/css/agencyRegister.css}" />
-  <link rel="stylesheet" th:href="@{/css/login.css}">
 </head>
 
 <body class="all-page"
@@ -26,7 +26,8 @@
                data-super=${isSuper}, 
                data-env=${@environment.getActiveProfiles()[0]}">
 
-<div th:replace="~{fragments/header :: siteHeader}"></div>
+ <!-- 관리자 전용, 고객 전용 토글 메뉴 -->
+ <div th:replace="${isClient} ? ~{fragments/clientHeader :: siteHeader} : ~{fragments/header :: siteHeader}"></div>
 
 <div th:replace="~{login :: loginModal}"></div>
 

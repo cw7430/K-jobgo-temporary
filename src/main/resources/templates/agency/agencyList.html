@@ -31,7 +31,10 @@
                data-super=${isSuper}, 
                data-env=${@environment.getActiveProfiles()[0]}">
 
-<div th:replace="~{fragments/header :: siteHeader}"></div>
+ <!-- 관리자 전용, 고객 전용 토글 메뉴 -->
+ <div th:replace="${isClient} ? ~{fragments/clientHeader :: siteHeader} : ~{fragments/header :: siteHeader}"></div>
+
+<div th:replace="~{login :: loginModal}"></div>
 
 <!-- ✅ K-jobgo 로고 전용 중앙 박스 -->
 <div class="center-kjobgo-logo">

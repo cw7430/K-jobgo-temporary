@@ -166,6 +166,13 @@
      }
   }
 
+  // 공통: CSRF 헤더 읽기
+  function getCsrfHeaders() {
+    const token  = document.querySelector('meta[name="_csrf"]')?.content;
+    const header = document.querySelector('meta[name="_csrf_header"]')?.content || 'X-CSRF-TOKEN';
+    return token ? { [header]: token } : {};
+  }
+  
   // 삭제 (1,2만)
   async function handleDelete() {
     if (!IS_SUPER_ADMIN) {
@@ -181,20 +188,50 @@
     if (!confirm(`선택한 ${checked.length}개 항목을 삭제할까요? 되돌릴 수 없습니다.`)) return;
 
     try {
-      // 실제 삭제 호출을 쓰려면 주석 해제
-      // await Promise.all(checked.map(async cb => {
-      //   const tr = cb.closest('tr');
-      //   const id = cb.value || tr?.dataset?.id;
-      //   await fetch(`/agency/${id}`, { method: 'DELETE', credentials: 'same-origin' });
-      // }));
+      // 선택한 id 수집
+      const ids = checked.map(cb => {
+        const tr = cb.closest('tr');
+        return Number(cb.value || tr?.dataset?.id);
+      }).filter(Boolean);
 
-      checked.forEach(cb => cb.closest('tr')?.remove());
-      alert('삭제되었습니다.');
+      // 1) 배치 삭제 API가 있는 경우: POST /agency/delete
+      const res = await fetch('/agency/delete', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...getCsrfHeaders(),
+        },
+        credentials: 'same-origin',
+        body: JSON.stringify(ids)
+      });
+
+      // 2) 배치 API가 없다면, 위 블록 대신 아래 주석을 해제해 단건 DELETE 반복 호출
+      /*
+      const headers = { ...getCsrfHeaders() };
+      for (const id of ids) {
+        const r = await fetch(`/agency/${id}`, {
+          method: 'DELETE',
+          headers,
+          credentials: 'same-origin'
+        });
+        if (!r.ok) throw new Error(`삭제 실패: ${id} (status ${r.status})`);
+      }
+      */
+
+      if (!res.ok) {
+        const msg = await res.text().catch(() => '');
+        throw new Error(`삭제 실패: ${res.status} ${msg}`);
+      }
+
+      // 서버 반영 확인 후 재조회
+      location.reload();
+
     } catch (e) {
       console.error(e);
-      alert('삭제 중 오류가 발생했습니다.');
+      alert(e.message || '삭제 중 오류가 발생했습니다.');
     }
   }
+
 
   // 이벤트 바인딩
   if (btnDownload) btnDownload.addEventListener('click', handleDownload);

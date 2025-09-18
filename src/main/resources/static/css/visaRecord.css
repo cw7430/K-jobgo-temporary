@@ -10,7 +10,7 @@
   justify-content: center;       /* 가운데 정렬 */
   align-items: center;           /* 수직 가운데 정렬 */
   margin: 60px auto 10px auto;   /* 위아래 여백 */
-  z-index: 10;                    /* 다른 요소 위에 */
+  z-index: 9;                    /* 다른 요소 위에 */
 }
 
 /* 슈퍼(1,2)가 아니면 행정사 열 감추기 */
@@ -38,7 +38,7 @@ body[data-super="false"] col.col-agent {
 }
 #visaSearchForm .inp {
   width: 380px;
-  height: 42px;
+  height: 22px;
 }
 #visaSearchForm .btn {
   height: 42px;
@@ -108,7 +108,6 @@ body[data-super="false"] col.col-agent {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 20px;
   flex-wrap: nowrap;      /* 줄바꿈 금지 */
   white-space: nowrap;    /* 버튼 텍스트 줄바꿈 방지 */
 }
@@ -157,8 +156,7 @@ body[data-super="false"] col.col-agent {
 .table.wide-table .inp,
 .table.wide-table .sel,
 .table.wide-table .txt {
-  width: 100%;
-  height: 40px;
+  width: 300px;
   padding: 8px 10px;
   font-size: 14px;
   border-radius: 6px;

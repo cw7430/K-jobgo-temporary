@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+  <!-- (선택) Referrer에 토큰이 노출되지 않도록 -->
+  <meta name="referrer" content="no-referrer">
+
+  <title>K-jobgo | 비밀번호 재설정</title>
+
+  <!-- CSRF (서버가 제공하는 경우) -->
+  <meta name="_csrf" th:content="${_csrf.token}">
+  <meta name="_csrf_header" th:content="${_csrf.headerName}">
+
+  <style>
+    :root{
+      --brand:#1E58A8;
+      --brand-dark:#174A8B;
+      --text:#222;
+      --muted:#666;
+      --border:#e6e6e6;
+      --danger:#C62828;
+      --ok:#1B5E20;
+      --bg:#f8fafc;
+      --card:#fff;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; background:var(--bg); color:var(--text);
+      font:14px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Apple SD Gothic Neo,Noto Sans KR,Malgun Gothic,sans-serif;
+      display:flex; align-items:center; justify-content:center; padding:24px;
+    }
+    .card{
+      width:min(520px, 94vw); background:var(--card); border:1px solid var(--border);
+      border-radius:14px; box-shadow:0 8px 24px rgba(0,0,0,.06);
+      padding:28px 24px;
+    }
+    .title{margin:0 0 6px; font-size:20px; font-weight:700;}
+    .subtitle{margin:0 0 18px; color:var(--muted)}
+    form{display:flex; flex-direction:column; gap:14px; margin-top:6px}
+    label{font-weight:600}
+    .field{position:relative}
+    input[type=password]{
+      width:100%; padding:12px 40px 12px 12px; border:1px solid var(--border);
+      border-radius:10px; font-size:14px; outline:none;
+    }
+    input[type=password]:focus{border-color:var(--brand); box-shadow:0 0 0 3px rgba(30,88,168,.12)}
+    .toggle{
+      position:absolute; top:50%; right:10px; transform:translateY(-50%);
+      border:0; background:transparent; cursor:pointer; color:var(--muted); padding:4px 6px;
+    }
+    .requirements{
+      background:#fbfdff; border:1px dashed #d7e5ff; border-radius:10px; padding:10px 12px;
+      color:var(--muted); font-size:13px;
+    }
+    .requirements .ok{color:var(--ok); font-weight:600}
+    .meter{height:8px; background:#eef3fb; border-radius:999px; overflow:hidden}
+    .meter > span{display:block; height:100%; width:0%; background:var(--brand); transition:width .25s}
+    .actions{display:flex; gap:10px; align-items:center; margin-top:6px}
+    .btn{
+      appearance:none; border:0; background:var(--brand); color:#fff; padding:12px 14px;
+      border-radius:10px; cursor:pointer; font-weight:700; flex:1;
+    }
+    .btn:hover{background:var(--brand-dark)}
+    .btn[disabled]{opacity:.55; cursor:not-allowed}
+    .link{color:var(--brand); text-decoration:none; font-weight:600}
+    .link:hover{color:var(--brand-dark)}
+    .msg{margin-top:8px; font-size:13px}
+    .msg.err{color:var(--danger)}
+    .msg.ok{color:var(--ok)}
+    .footer{margin-top:14px; text-align:center; color:var(--muted)}
+    .badge{
+      display:inline-block; font-size:11px; border:1px solid var(--border); border-radius:999px;
+      padding:4px 8px; color:var(--muted); background:#fff;
+    }
+  </style>
+</head>
+<body>
+
+  <main class="card">
+    <h1 class="title">비밀번호 재설정</h1>
+    <p class="subtitle">새 비밀번호를 입력해 주세요. 제출 후 즉시 적용됩니다.</p>
+
+    <!-- 서버 전달 메시지 (RedirectAttributes 등) -->
+    <p class="msg err" th:if="${err}" th:text="${err}"></p>
+    <p class="msg ok"  th:if="${msg}" th:text="${msg}"></p>
+
+    <form id="resetForm" method="post" th:action="@{/reset-password}">
+      <!-- 토큰: 서버가 내려준 값 사용, 없으면 JS가 URL에서 채움 -->
+      <input type="hidden" id="token" name="token" th:value="${token}">
+
+      <!-- CSRF (서버가 모델에 올려준 경우) -->
+      <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+      <div class="field">
+        <label for="newPwd">새 비밀번호</label>
+        <input type="password" id="newPwd" name="newPwd" autocomplete="new-password" minlength="8" required>
+        <button type="button" class="toggle" data-target="newPwd" aria-label="보기 전환">보기</button>
+      </div>
+
+      <!-- 강도 미터 -->
+      <div class="meter" aria-hidden="true"><span id="strengthBar"></span></div>
+
+      <div class="requirements" id="reqBox">
+        <span class="badge">권장</span>
+        <ul style="margin:8px 0 0 16px;padding:0">
+          <li><span id="rLen">8자 이상</span></li>
+          <li><span id="rMix">대문자/소문자/숫자/특수문자 조합</span></li>
+          <li><span id="rNoSpace">공백 없음</span></li>
+        </ul>
+      </div>
+
+      <div class="field">
+        <label for="newPwdConfirm">새 비밀번호 확인</label>
+        <input type="password" id="newPwdConfirm" name="newPwdConfirm" autocomplete="new-password" minlength="8" required>
+        <button type="button" class="toggle" data-target="newPwdConfirm" aria-label="보기 전환">보기</button>
+      </div>
+
+      <div class="actions">
+        <button class="btn" id="submitBtn" type="submit" disabled>변경하기</button>
+        <a class="link" th:href="@{/loginPage}" style="white-space:nowrap">로그인으로</a>
+      </div>
+
+      <p class="msg err" id="clientErr" style="display:none"></p>
+    </form>
+
+    <p class="footer">링크가 만료되었나요? <a class="link" th:href="@{/loginPage}">비밀번호 재설정 메일을 다시 요청</a>해 주세요.</p>
+  </main>
+
+  <script>
+    (function(){
+      const tokenInput = document.getElementById('token');
+      // 토큰이 비어 있으면 URL에서 ?token=... 추출
+      if (!tokenInput.value) {
+        const u = new URL(location.href);
+        const t = u.searchParams.get('token');
+        if (t) tokenInput.value = t;
+      }
+
+      const newPwd = document.getElementById('newPwd');
+      const newPwdConfirm = document.getElementById('newPwdConfirm');
+      const bar = document.getElementById('strengthBar');
+      const submitBtn = document.getElementById('submitBtn');
+      const clientErr = document.getElementById('clientErr');
+
+      const rLen = document.getElementById('rLen');
+      const rMix = document.getElementById('rMix');
+      const rNoSpace = document.getElementById('rNoSpace');
+
+      // 보기 전환
+      document.querySelectorAll('.toggle').forEach(btn=>{
+        btn.addEventListener('click', ()=>{
+          const id = btn.getAttribute('data-target');
+          const el = document.getElementById(id);
+          el.type = el.type === 'password' ? 'text' : 'password';
+          btn.textContent = (el.type === 'password') ? '보기' : '숨김';
+        });
+      });
+
+      // 강도 계산
+      function score(pw){
+        let s = 0;
+        if (pw.length >= 8) s++;
+        if (/[A-Z]/.test(pw)) s++;
+        if (/[a-z]/.test(pw)) s++;
+        if (/\d/.test(pw)) s++;
+        if (/[^A-Za-z0-9]/.test(pw)) s++;
+        if (/\s/.test(pw)) s = Math.max(0, s-2); // 공백 감점
+        return Math.min(s, 5);
+      }
+      function updateReqs(pw){
+        const ok = 'ok';
+        (pw.length >= 8) ? rLen.classList.add(ok) : rLen.classList.remove(ok);
+        ((/[A-Z]/.test(pw) && /[a-z]/.test(pw) && /\d/.test(pw) && /[^A-Za-z0-9]/.test(pw)))
+          ? rMix.classList.add(ok) : rMix.classList.remove(ok);
+        (/\s/.test(pw)) ? rNoSpace.classList.remove(ok) : rNoSpace.classList.add(ok);
+      }
+      function updateBar(pw){
+        const s = score(pw);
+        const pct = [0,25,45,65,85,100][s];
+        bar.style.width = pct + '%';
+        bar.style.background = s <=2 ? '#f66' : (s===3 ? '#f0ad4e' : '#2e7d32');
+      }
+      function validate(){
+        clientErr.style.display = 'none';
+        const pw = newPwd.value;
+        const okLen = pw.length >= 8;
+        const okMix = /[A-Z]/.test(pw) && /[a-z]/.test(pw) && /\d/.test(pw) && /[^A-Za-z0-9]/.test(pw);
+        const okSpace = !/\s/.test(pw);
+        const match = pw && (pw === newPwdConfirm.value);
+        const strongEnough = score(pw) >= 3; // 기준: 3/5 이상
+
+        submitBtn.disabled = !(okLen && okMix && okSpace && match && strongEnough && tokenInput.value);
+      }
+
+      newPwd.addEventListener('input', ()=>{
+        const pw = newPwd.value;
+        updateReqs(pw);
+        updateBar(pw);
+        validate();
+      });
+      newPwdConfirm.addEventListener('input', validate);
+
+      // 폼 제출 전 간단 클라이언트 검증
+      document.getElementById('resetForm').addEventListener('submit', (e)=>{
+        if (submitBtn.disabled){
+          e.preventDefault();
+          clientErr.textContent = '비밀번호 조건을 충족하고 두 칸이 일치해야 합니다.';
+          clientErr.style.display = 'block';
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

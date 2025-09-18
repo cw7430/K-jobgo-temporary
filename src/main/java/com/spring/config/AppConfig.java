@@ -14,12 +14,18 @@ import com.spring.service.FileService;
 import com.spring.service.LocalFileService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.client.RestTemplate;
 
 @Configuration
 public class AppConfig {
     @Bean
     public FileService fileService() {
         return new LocalFileService();
+    }
+    
+    @Bean
+    RestTemplate restTemplate() {
+        return new RestTemplate();
     }
 }
 

@@ -21,10 +21,9 @@ main.wrap {
 }
 .search-bar .inp {
   width: 320px;
-  height: 42px;
 }
 .search-bar .btn {
-  height: 42px;
+  height: 38px;
   padding: 0 16px;
 }
 

@@ -1,0 +1,71 @@
+<!-- templates/fragments/clientHeader.html -->
+<header class="top-var" th:fragment="siteHeader" th:with="
+  isAdmin=${isAdmin} ?: false,
+  isClient=${isClient} ?: false,
+  isLoggedIn=${isLoggedIn} ?: ((isAdmin ?: false) or (isClient ?: false)),
+  authorityId=${authorityId} ?: 0,
+  myApprStatus=${myApprStatus} ?: 'NONE',
+  adminName=${adminName} ?: '',
+  clientName=${clientName} ?: ''
+">
+  <a th:href="@{/}" class="brand-header">
+    <div class="logo-slogan">
+      <img src="/img/favicon.png" class="logo" alt="K-jobgo | 외국인 인재 매칭 플랫폼" />
+      <p class="about-slogan">KOREAMSA Inc.</p>
+    </div>
+  </a>
+
+  <div class="menu-wrapper">
+    <div class="login-info">
+      <span th:if="${isAdmin or isClient}"
+            th:text="${(isAdmin ? (adminName ?: '관리자') : (clientName ?: '회원')) + '님'}"></span>
+      <button id="loginBtn" type="button"
+              th:text="${isAdmin or isClient} ? '로그아웃' : '로그인'"></button>
+    </div>
+
+    <div class="menu-toggle" aria-haspopup="true" aria-expanded="false" aria-controls="menu">☰</div>
+
+    <div id="menu" class="menu-popup hidden-menu">
+      <ul>
+        <!-- 승인된 기업만 바로 진입 -->
+        <li th:if="${isClientLoggedIn and (myApprStatus == 'APPROVED')}">
+          <a class="menu-item" th:href="@{/client/applyEmp}" data-close-menu="true">구직 신청</a>
+        </li>
+
+        <!-- 비로그인 → 로그인 모달 유도 -->
+        <li th:if="${!isClientLoggedIn}">
+          <a class="menu-item" href="#"
+             data-redirect-to="/client/applyEmp"
+             data-login-tab="client"
+             data-close-menu="true"
+             onclick="return openLoginGate(event, this);">구직 신청</a>
+        </li>
+
+        <!-- 로그인했지만 미승인/반려 -->
+        <li th:if="${isClientLoggedIn and (myApprStatus != 'APPROVED')}">
+          <button type="button" class="menu-item" onclick="openPendingDialog()" data-close-menu="true">
+            구직 신청
+          </button>
+        </li>
+
+        <!-- 마이페이지 -->
+        <li th:if="${isClientLoggedIn}">
+          <a class="menu-item" th:href="@{/client/clientMyPage}" data-close-menu="true">마이페이지</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</header>
+
+<!-- 이 헤더를 쓰는 페이지에도 포함 필요 -->
+<dialog id="pendingDialog">
+  <p style="margin:0 0 12px 0;">
+    구직 신청은 <strong>가입 승인 완료 회원</strong>만 이용할 수 있습니다.<br/>
+    <span th:if="${myApprStatus == 'PENDING'}">현재 상태: 대기(PENDING)</span>
+    <span th:if="${myApprStatus == 'REJECTED'}">현재 상태: 반려(REJECTED)</span>
+  </p>
+  <div style="text-align:right; display:flex; gap:8px; justify-content:flex-end;">
+    <a class="btn small" th:href="@{/my/join-status}">가입 진행상태 보기</a>
+    <button class="btn small" onclick="document.getElementById('pendingDialog').close()">닫기</button>
+  </div>
+</dialog>

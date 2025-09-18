@@ -1,0 +1,62 @@
+<!-- templates/client/clientMyPage.html -->
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="_csrf" th:content="${_csrf.token}"/>
+<meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+
+
+<!-- 추가 추천 -->
+<meta name="description" content="외국인 인재 매칭 플랫폼 - K-jobgo 회원가입 페이지">
+<meta name="keywords" content="외국인 채용, K-jobgo, 한국경영지원사업단, 인재 매칭, 기업 회원가입">
+<meta name="robots" content="index, follow">
+
+<!-- meta태그 추가해야함 : 검색엔진화 특화된 태그로 -->
+
+	<title>(주)한국경영지원사업단 | 마이 페이지</title>
+	
+<link rel="stylesheet" th:href="@{/css/clientMyPage.css}">
+<link rel="stylesheet" th:href="@{/css/layout.css}">
+<link rel="stylesheet" th:href="@{/css/toggle.css}">
+
+</head>
+
+<body class="all-page"
+      th:attr="data-is-admin=${false}, data-env=${@environment.getActiveProfiles()[0]}">
+
+  <!-- 헤더 -->
+  <div th:replace="${isClient} ? ~{fragments/clientHeader :: siteHeader} : ~{fragments/header :: siteHeader}"></div>
+
+  <!-- 로고 -->
+  <div class="center-kjobgo-logo">
+    <a th:href="@{/}">
+      <img src="/img/k-jobgo_company.png" alt="K-jobgo | 외국인 인재 매칭 플랫폼" class="k-jobgologo" />
+    </a>
+  </div>
+
+
+
+
+
+
+<footer class="foot-var">
+     <div>
+	<p> 
+	<span>(주)한국경영지원사업단&nbsp; 대표이사 : 이준희 <span class="divider">|</span> 사업자등록번호 : 887-81-00124</span><br>
+    본사_경기도 김포시 김포한강4로 125 월드타워 705호 <span class="divider">|</span> 본부_경기도 광명시 일직로 43 GIDC A1706호<br>
+    국내지사_김해지사, 대구지사, 천안지사, 광주지사, 원주지사 <span class="divider">|</span> 해외지사_베트남, 필리핀, 인도네시아, 인도, 몽골, 네팔, 우즈베키스탄<br>
+    유료직업소개업 등록번호 : 제2025-4090515-14-5-00012호 <span class="divider">|</span> 
+    Tel_ 031-983-0942 <span class="divider">|</span>  Fax_ 031-624-1540  <span class="divider">|</span> Email_ k-jobgo@naver.com<br>
+	ⓒ 2025 K-jobgo. All rights reserved.</p>
+	</div>
+  </footer>
+    
+    <!-- JS 연결 -->
+    <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+    <script th:src="@{/js/clientMyPage.js}"></script>
+    <script th:src="@{/js/common.js}"></script>
+    <script th:src="@{/js/login.js}"></script>
+</body>
+</html>

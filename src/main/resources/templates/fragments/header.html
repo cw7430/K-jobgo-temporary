@@ -1,6 +1,22 @@
 <!-- templates/fragments/header.html -->
-<header class="top-var" th:fragment="siteHeader" th:with="loggedIn=${isAdmin == true}">
-  <!-- ✅ 로고 + 슬로건 -->
+<header
+  class="top-var"
+  th:fragment="siteHeader"
+  th:with="
+    isAdmin=${isAdmin} ?: false,
+    isClient=${isClient} ?: false,
+    isLoggedIn=${isLoggedIn} ?: ( (isAdmin ?: false) or (isClient ?: false) ),
+    authorityId=${authorityId} ?: 0,
+    myApprStatus=${myApprStatus} ?: 'NONE',
+    adminName=${adminName} ?: '',
+    clientName=${clientName} ?: '',
+    canSeeProfiles=${canSeeProfiles} ?: false,
+    canListAgency=${canListAgency} ?: false,
+    canRegisterVisa=${canRegisterVisa} ?: false,
+    showConfirmInHeader=${showConfirmInHeader} ?: false
+  "
+>
+  <!-- 로고 + 슬로건 -->
   <a th:href="@{/}" class="brand-header">
     <div class="logo-slogan">
       <img src="/img/favicon.png" class="logo" alt="K-jobgo | 외국인 인재 매칭 플랫폼" />
@@ -10,49 +26,55 @@
 
   <div class="menu-wrapper">
     <!-- 로그인 상태 표시 -->
-	<div class="login-info">
-	  <span th:if="${isAdmin}" th:text="${adminName + '님'}"></span>
-	  <button id="loginBtn" type="button"
-	          th:text="${isAdmin} ? '로그아웃' : '로그인'">
-	  </button>
-	</div>
+    <div class="login-info">
+      <span th:if="${isAdmin or isClient}"
+            th:text="${(isAdmin ? (adminName ?: '관리자') : (clientName ?: '회원')) + '님'}"></span>
+      <button id="loginBtn" type="button"
+              th:text="${isAdmin or isClient} ? '로그아웃' : '로그인'">
+      </button>
+    </div>
 
     <!-- 메뉴 토글 버튼 -->
-    <div class="menu-toggle">☰</div>
+    <div class="menu-toggle" aria-haspopup="true" aria-expanded="false" aria-controls="menu">☰</div>
 
     <!-- 토글 메뉴 -->
     <div id="menu" class="menu-popup hidden-menu">
       <ul>
-        <li onclick="alert('페이지 준비 중입니다.')">Partner Company Insight</li>
-        <li onclick="alert('페이지 준비 중입니다.')">Q&A board</li>
+        <!-- 공통 -->
+        <li>
+          <a class="menu-item" th:href="@{/agency/register}" data-close-menu="true">송출업체 프로필 등록</a>
+        </li>
 
-        <!-- 관리자 전용 -->
-        <li th:if="${isAdmin}" class="menu-divider"></li>
-        <li th:if="${isAdmin}" class="admin-label">관리자 전용</li>
-        <li th:if="${isAdmin}" onclick="location.href='/admin/profileList'">국내 외국인 프로필보기</li>
-	      <!-- 🔻 송출업체 메뉴 분리 (배타적 노출) -->
-	      <!-- (1,2,5) 전용: 현황(목록) -->
-	      <li th:if="${canListAgency}" onclick="location.href='/agency/List'">
-	        송출업체 현황
-	      </li>
-	      
-	      <!-- 일반/타권한/미로그인: 등록만 -->
-	      <li onclick="location.href='/agency/register'">
-	        송출업체 프로필 등록
-	      </li>       
-	      <!-- 권한 1,2,5 전용 GlobalModelAttributeAdvice.java -->
-			<!-- 권한 5 → 자기 전용 비자 등록/관리 -->
-			<li th:if="${canRegisterVisa and authorityId == 5}" 
-			    onclick="location.href='/admin/visa/register'">
-			  내 비자 등록·관리
-			</li>
-			
-			<!-- 권한 1,2 → 전체 비자 현황 -->
-			<li th:if="${canRegisterVisa and (authorityId == 1 or authorityId == 2)}" 
-			    onclick="location.href='/admin/visa/register'">
-			  전체 비자 현황
-			</li>
+        <!-- 1,2 전용: 관리자 바로가기 -->
+        <th:block th:if="${authorityId == 1 or authorityId == 2}">
+          <li><a class="menu-item admin" th:href="@{/adminMain}" data-close-menu="true">관리자 전용</a></li>
+        </th:block>
+
+        <!-- 1,2 이외 -->
+        <th:block th:unless="${authorityId == 1 or authorityId == 2}">
+          <li th:if="${canSeeProfiles and authorityId != 5}">
+            <a class="menu-item" th:href="@{/admin/profileList}" data-close-menu="true">국내 외국인 프로필보기</a>
+          </li>
+          <li th:if="${canListAgency}">
+            <a class="menu-item" th:href="@{/agency/List}" data-close-menu="true">송출업체 현황</a>
+          </li>
+          <li th:if="${canRegisterVisa and authorityId == 5}">
+            <a class="menu-item" th:href="@{/admin/visa/register}" data-close-menu="true">내 비자 등록·관리</a>
+          </li>
+
+          <!-- 권한 6: 구직신청 확인 메뉴 추가 -->
+          <li th:if="${applyEmp}">
+            <a class="menu-item" th:href="@{/admin/applyEmpList}" data-close-menu="true">구직 신청 확인</a>
+          </li>
+
+          <!-- 헤더에서 회원관리: 6만 노출(기존 정책 유지 시) -->
+          <li th:if="${showConfirmInHeader}">
+            <a class="menu-item" th:href="@{/admin/confirmClient}" data-close-menu="true">회원 관리</a>
+          </li>
+        </th:block>
       </ul>
     </div>
   </div>
 </header>
+
+

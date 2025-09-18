@@ -18,9 +18,12 @@
   <name>k-jobgo_project</name>
   <description>Spring Boot + Thymeleaf + JPA + AWS S3</description>
 
-  <properties>
-    <java.version>21</java.version>
-  </properties>
+<properties>
+  <java.version>21</java.version>
+  <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+  <maven.resources.encoding>UTF-8</maven.resources.encoding>
+</properties>
 
   <!-- AWS SDK BOM -->
   <dependencyManagement>
@@ -121,6 +124,18 @@
       <scope>provided</scope>
     </dependency>
 
+  <!-- Jakarta Mail (이메일 전송용) -->
+    <dependency>
+        <groupId>com.sun.mail</groupId>
+        <artifactId>jakarta.mail</artifactId>
+        <version>2.0.1</version>
+    </dependency>
+    
+    <dependency>
+    	<groupId>org.springframework.boot</groupId>
+    	<artifactId>spring-boot-starter-mail</artifactId>
+	</dependency>
+
     <!-- Test -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -144,6 +159,13 @@
   </dependencies>
 
   <build>
+    <!-- (추가) resources: properties/yml 필터링 끄고 UTF-8 고정 -->
+  <resources>
+    <resource>
+      <directory>src/main/resources</directory>
+      <filtering>false</filtering>
+    </resource>
+  </resources>
     <plugins>
       <!-- Java 컴파일러 설정 -->
       <plugin>
@@ -162,7 +184,19 @@
           </annotationProcessorPaths>
         </configuration>
       </plugin>
-
+    <!-- (추가) maven-resources-plugin: UTF-8로 고정 + 필터링 예외 -->
+    <plugin>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-resources-plugin</artifactId>
+      <version>3.3.1</version>
+      <configuration>
+        <encoding>UTF-8</encoding>
+        <nonFilteredFileExtensions>
+          <nonFilteredFileExtension>properties</nonFilteredFileExtension>
+          <nonFilteredFileExtension>yml</nonFilteredFileExtension>
+        </nonFilteredFileExtensions>
+      </configuration>
+    </plugin>
       <!-- Spring Boot Maven Plugin -->
       <plugin>
         <groupId>org.springframework.boot</groupId>

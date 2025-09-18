@@ -19,10 +19,11 @@
   --font: 'Segoe UI', "Noto Sans KR", system-ui, -apple-system, Roboto, Arial, sans-serif;
 }
 
+/*
 * {
   box-sizing: border-box;
 }
-
+*/
 html, body {
   margin: 0;
   padding: 0;
@@ -114,63 +115,6 @@ body.all-page .company-info p {
   color: var(--brand-text);
 }
 
-/* ---------- 메뉴 토글 ---------- */
-.menu-wrapper {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  z-index: 999;
-  pointer-events: auto;
-}
-
-.menu-toggle {
-  font-size: 24px;
-  cursor: pointer;
-  padding: 8px 12px;
-  transition: transform .3s ease;
-  z-index: 1000;
-}
-
-.menu-toggle:hover {
-  transform: scale(1.1);
-}
-
-.menu-popup.hidden-menu {
-  display: none;
-  position: absolute;
-  top: 36px;
-  right: 0;
-  width: 180px;
-  background: #fff;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, .1);
-  padding: 10px 15px;
-  z-index: 999;
-  list-style: none;
-  margin: 0;
-  text-align: right;
-}
-
-.menu-popup.hidden-menu li {
-  list-style: none;
-  padding: 6px 0;
-  cursor: pointer;
-}
-
-.menu-popup.hidden-menu li:hover {
-  color: var(--warn);
-}
-
-body.menu-open {
-  overflow: hidden;
-  position: fixed;
-  width: 100%;
-}
-
 /* ---------- 공통 컨테이너/타이틀 ---------- */
 .wrap {
   max-width: 1800px;
@@ -243,7 +187,7 @@ h1 {
 
 /* ---------- 입력 공통 ---------- */
 .inp, .sel, .txt {
-  width: 100%;
+  width: 300px; 
   padding: 10px 12px;
   border: 1px solid var(--line);
   border-radius: 6px;
@@ -251,9 +195,6 @@ h1 {
   font-size: 14px;
 }
 
-.sel {
-  height: 42px;
-}
 
 .txt {
   min-height: 44px;
@@ -405,24 +346,6 @@ footer.foot-var {
   .company-info p {
     font-size: 12px !important;
     text-align: left !important;
-  }
-
-  .menu-wrapper {
-    position: static;
-    width: 100%;
-    align-items: flex-start;
-  }
-
-  .menu-popup.hidden-menu {
-    width: 100%;
-    box-shadow: none;
-    border: none;
-    border-radius: 0;
-    text-align: left;
-  }
-
-  .menu-popup.hidden-menu li {
-    padding: 10px 0;
   }
 
   .wrap {

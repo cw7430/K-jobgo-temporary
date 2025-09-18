@@ -1,0 +1,303 @@
+@charset "UTF-8";
+/* =========================================
+   confirmClient.css (ERP 공통과 톤 일치)
+   - erp-layout.css 기반 + 페이지 전용 보정
+   ========================================= */
+
+/* 스크롤 컨테이너: ERP 기본을 유지하되 살짝 높이만 조정 */
+.table-scroll {
+  max-height: 65vh;
+  overflow: auto;
+  background: #fff;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--line);
+}
+
+/* 테이블 본문 보더/호버 보정 (ERP 본문 톤을 해치지 않음) */
+.table.wide-table tbody td {
+  border-bottom: 1px solid #e6e8ed;
+  vertical-align: middle;
+}
+
+/* 행 hover 강조 */
+.table.wide-table tbody tr:hover {
+  background: #f9fbff;
+}
+
+/* 가독성 위해 옅은 줄무늬 */
+.table.wide-table tbody tr:nth-child(even) td {
+  background: #f7faff; /* very light blue */
+}
+
+/* 헤더는 ERP의 var(--accent) 톤 유지(erp-layout.css) */
+
+/* 체크박스/No 너비 미세 보정 */
+.erp-table th:nth-child(1),
+.erp-table td:nth-child(1) { width: 30px; text-align: center; }
+.erp-table th:nth-child(2),
+.erp-table td:nth-child(2) { width: 30px; text-align: center; }
+
+/* =========================
+   파일 액션(미리보기)
+   ========================= */
+.file-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.btn-link {
+  border: 0;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--brand-text);
+  text-decoration: underline;
+}
+.btn-link:hover {
+  color: var(--accent);
+}
+
+/* =========================
+   상단 툴바(수정/저장/취소)
+   ========================= */
+.toolbar {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.btn.small {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 36px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  border-radius: 6px;
+  background: #ff8040;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color .2s ease, transform .15s ease, color .2s ease;
+}
+.btn.small:hover {
+  transform: translateY(-1px);
+  background: var(--accent-2);
+  color: #fff;
+}
+.btn.small:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* 공통 confirmBtn */
+.confirmBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 36px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color .2s ease, transform .15s ease, color .2s ease;
+  border: 1px solid transparent;
+}
+
+/* 첨부 다운로드 (Neutral) */
+.confirmBtn.download {
+  background: #f8f9fa;
+  color: #333;
+  border-color: #e6e8ed;
+}
+.confirmBtn.download:hover {
+  background: #e2e6ea;
+}
+
+/* 승인 (Primary) */
+.confirmBtn.btn-approve {
+  background: var(--accent);   /* 파란색 */
+  color: #fff;
+  border-color: var(--accent);
+}
+.confirmBtn.btn-approve:hover {
+  background: var(--accent-2);
+  transform: translateY(-1px);
+}
+
+/* 반려 (Danger) */
+.confirmBtn.btn-reject {
+  background: #dc3545;   /* 빨강 */
+  color: #fff;
+  border-color: #dc3545;
+}
+.confirmBtn.btn-reject:hover {
+  background: #b02a37;
+  transform: translateY(-1px);
+}
+
+
+/* 테이블 내 액션 버튼 묶음 */
+.row-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* =========================
+   상태 입력 필드(반려 사유)
+   ========================= */
+.reject-reason {
+  width: 350px;
+  height: 36px;
+  padding: 6px 10px;
+  font-size: 13px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #fff;
+}
+.reject-reason:disabled {
+  background: #f4f6f9;
+  color: #99a1b3;
+}
+
+/* 업체명, 담당자이름, 담당자연락처 편집 가능 */
+td.editable input.inp:disabled { background: #f6f7fb; color:#666; }
+td.editable input.inp.is-dirty { background: #fff9e6; outline: 1px dashed #f0c36d; }
+
+/* =========================
+   배지(대리가입/직접가입)
+   ========================= */
+.badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 9999px;
+  font-size: 14px;
+  font-weight: 700;
+  border: 1px solid transparent;
+}
+.badge-proxy {
+  background: #fff3cd;
+  color: #8a6d3b;
+  border-color: #ffe8a1;
+}
+.badge-direct {
+  background: #e7f5ff;
+  color: #0b5ed7;
+  border-color: #cfe9ff;
+}
+
+/* =========================
+   상태 칩(대기/승인/반려)
+   ========================= */
+.chip {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1;
+  border: 1px solid transparent;
+}
+.chip--pending  { background:#f1f5f9; color:#334155; border-color:#e2e8f0; }
+.chip--approved { background:#e7f8ee; color:#0f5132; border-color:#bcdcc6; }
+.chip--rejected { background:#fdebea; color:#842029; border-color:#f5c2c7; }
+
+/* =========================
+   모달(파일 미리보기/결정)
+   ========================= */
+dialog#previewDialog,
+dialog#decisionDialog {
+  border: 0;
+  border-radius: 10px;
+  padding: 0;
+  width: auto;
+  max-width: 92vw;
+  box-shadow: 0 6px 20px rgba(0,0,0,.25);
+}
+dialog#previewDialog::backdrop,
+dialog#decisionDialog::backdrop {
+  background: rgba(0,0,0,.35);
+}
+
+/* 모달 헤더 */
+#previewDialog .pv-head,
+#decisionDialog .pv-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--line);
+  background: #f8f9fa;
+}
+.pv-title {
+  font-weight: 800;
+  font-size: 14px;
+  color: var(--brand-text);
+}
+.pv-close {
+  background: none;
+  border: 0;
+  font-size: 20px;
+  cursor: pointer;
+  color: #555;
+}
+
+/* 모달 본문 */
+#previewDialog .pv-body,
+#decisionDialog .pv-body {
+  padding: 12px;
+  font-size: 14px;
+}
+#previewDialog .pv-body iframe,
+#previewDialog .pv-body img {
+  display: block;
+  max-width: 90vw;
+  max-height: 78vh;
+  border-radius: 6px;
+}
+
+/* =========================
+   삭제 표시(일관 톤)
+   ========================= */
+.table.wide-table tr.is-deleted td {
+  color: #70757a;
+  background: #f5f6f8;
+  text-decoration: line-through;
+}
+.table.wide-table tr.is-deleted td:nth-child(2)::before {
+  content: "[삭제] ";
+  color: #b42318;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+/* =========================
+   스크롤바(톤 일치)
+   ========================= */
+.table-scroll::-webkit-scrollbar {
+  height: 10px;
+  width: 10px;
+}
+.table-scroll::-webkit-scrollbar-thumb {
+  background: #c9d4ef;
+  border-radius: 8px;
+}
+.table-scroll::-webkit-scrollbar-track {
+  background: #f1f3f9;
+}
+
+/* =========================
+   반응형(ERP 기준 보정)
+   ========================= */
+@media (max-width: 900px) {
+  .table.wide-table { min-width: 1100px; }
+}

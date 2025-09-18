@@ -1,5 +1,6 @@
 package com.spring.controller;
 
+import java.util.List;
 // import java.util.List;
 import java.util.Locale;
 
@@ -182,6 +183,7 @@ public class AgencyController {
     }
 
     // 4) 삭제 (권한 1,2)
+ // 단건: 유지
     @DeleteMapping("/{id}")
     @ResponseBody
     public ResponseEntity<?> deleteAgency(@PathVariable Long id, HttpSession session) {
@@ -192,6 +194,19 @@ public class AgencyController {
         profileService.deleteById(id);
         return ResponseEntity.ok("deleted");
     }
+
+    // 배치: 추가
+    @PostMapping(value = "/delete", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public ResponseEntity<?> deleteBatch(@RequestBody List<Long> ids, HttpSession session) {
+        Integer authorityId = (Integer) session.getAttribute("authorityId");
+        if (authorityId == null || !(authorityId == 1 || authorityId == 2)) {
+            return ResponseEntity.status(403).body("삭제 권한이 없습니다.");
+        }
+        int affected = profileService.deleteAllByIds(ids);
+        return ResponseEntity.ok(affected + " deleted");
+    }
+
 
     // ====== 검증 유틸 ======
 

@@ -1,0 +1,194 @@
+<!-- src/main/resources/templates/admin/applyList.html -->
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="_csrf" th:if="${_csrf != null}" th:content="${_csrf.token}" />
+  <meta name="_csrf_header" th:if="${_csrf != null}" th:content="${_csrf.headerName}" />
+  <meta name="page-size" th:content="${pageObj != null ? pageObj.size : 10}" />
+
+  <title>(주)한국경영지원사업단 | 구직 신청 관리</title>
+
+  <!-- Favicon -->
+  <link rel="icon" href="https://k-jobgo-profile-photos-seoul.s3.ap-northeast-2.amazonaws.com/img/favicon.png" />
+  <!-- CSS (공통 → 상세) -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" th:href="@{/css/layout.css}" />
+  <link rel="stylesheet" th:href="@{/css/toggle.css}" />
+  <link rel="stylesheet" th:href="@{/css/main.css}" />
+  <link rel="stylesheet" th:href="@{/css/login.css}" />
+  <link rel="stylesheet" th:href="@{/css/erp-layout.css}" />
+  <link rel="stylesheet" th:href="@{/css/applyList.css}" />
+</head>
+
+<body class="all-page"
+      th:attr="data-is-admin=${isAdmin}, 
+               data-authority=${authorityId}, 
+               data-admin-name=${adminName}, 
+               data-super=${isSuper}, 
+               data-env=${@environment.getActiveProfiles()[0]}">
+
+  <!-- 헤더 (클라이언트/관리자 공용 선택) -->
+  <div th:replace="${isClient} ? ~{fragments/clientHeader :: siteHeader} : ~{fragments/header :: siteHeader}"></div>
+  <div th:replace="~{login :: loginModal}"></div>
+
+  <!-- 상단 로고 -->
+  <div class="center-kjobgo-logo">
+    <a th:href="@{/}">
+      <img src="/img/k-jobgo_company.png" alt="K-jobgo | 외국인 인재 매칭 플랫폼" class="k-jobgologo" />
+    </a>
+  </div>
+
+  <!-- ▷ 로컬 툴바 프래그먼트 (이 페이지 안에서 정의 → 공용 테이블에 주입) -->
+  <th:block th:fragment="toolbar">
+    <div class="toolbar"
+         style="display:flex; align-items:center; gap:12px; justify-content:space-between; flex-wrap:wrap;">
+      <!-- 좌측: 일괄 처리 -->
+      <div class="toolbar-left" style="flex:0 0 auto; display:flex; gap:8px;">
+        <button type="button" class="btn btn--secondary" id="btnAssignOwner">담당자 배정</button>
+        <button type="button" class="btn btn--primary"   id="btnBulkComplete">선택 완료</button>
+        <button type="button" class="btn"                id="btnBulkCancel">선택 취소</button>
+      </div>
+
+      <!-- 중앙: 검색/필터 -->
+      <form class="toolbar-center"
+            method="get" th:action="@{/admin/applyEmp/list}"
+            style="margin:0 auto; display:flex; align-items:center; gap:8px; flex:1 1 auto; justify-content:center;">
+        <select name="status" class="sel" style="width:150px">
+          <option value="" th:selected="${param.status == null}">전체 상태</option>
+          <option value="ACTIVE"     th:selected="${param.status == 'ACTIVE'}">대기</option>
+          <option value="COMPLETED"  th:selected="${param.status == 'COMPLETED'}">완료</option>
+          <option value="CANCELLED"  th:selected="${param.status == 'CANCELLED'}">취소</option>
+        </select>
+
+        <input class="inp" type="date" name="from" th:value="${param.from}" style="width:160px" />
+        <span style="opacity:.6">~</span>
+        <input class="inp" type="date" name="to"   th:value="${param.to}"   style="width:160px" />
+
+        <input class="inp" type="text" name="q"
+               placeholder="업체/담당자/국적/직종 검색"
+               th:value="${param.q}" style="width:280px" />
+
+        <button class="btn btn--secondary" type="submit">검색</button>
+        <a class="btn" th:href="@{/admin/applyEmp/list}">초기화</a>
+      </form>
+
+      <!-- 우측: (선택) 삭제포함/내담당만 보기 등 고급 필터 -->
+      <div class="toolbar-right" style="flex:0 0 auto; display:flex; align-items:center; gap:10px;">
+        <label th:if="${isSuper}" style="display:flex; align-items:center; gap:6px; font-size:14px;">
+          <input type="checkbox"
+                 th:checked="${param.includeDeleted} == 'true'"
+                 onclick="location.href='?'+new URLSearchParams({...Object.fromEntries(new URLSearchParams(location.search)), includeDeleted:this.checked})">
+          <span>삭제포함</span>
+        </label>
+        <label style="display:flex; align-items:center; gap:6px; font-size:14px;">
+          <input type="checkbox"
+                 th:checked="${param.mine} == 'true'"
+                 onclick="location.href='?'+new URLSearchParams({...Object.fromEntries(new URLSearchParams(location.search)), mine:this.checked})">
+          <span>내 담당만</span>
+        </label>
+      </div>
+    </div>
+  </th:block>
+
+  <div class="wrap" th:with="toolbarFrag=~{::toolbar}">
+    <h1>구직 신청 관리</h1>
+    <p class="sub">신청서를 검색·필터링하고, 선택 행에 대해 일괄 처리할 수 있습니다. 행을 클릭하면 상세 페이지로 이동합니다.</p>
+
+    <!-- ✅ 공용 테이블 프래그먼트 사용 (isAdmin=true, toolbarFrag 주입, pageObj 전달) -->
+    <div th:replace="~{fragments/applyFragments :: applyEmpTable(${applyList}, ${true}, ${filterStatus}, ${toolbarFrag}, ${pageObj})}"></div>
+
+    <!-- 중앙 하단 페이징 -->
+    <div class="pagination" th:if="${pageObj != null and pageObj.totalPages > 0}"
+         style="display:flex; justify-content:center; margin:18px 0 6px;">
+      <ul style="display:flex; gap:6px; list-style:none; padding:0; margin:0;">
+        <!-- 이전 -->
+        <li th:classappend="${pageObj.first} ? 'disabled'">
+          <a th:if="${!pageObj.first}"
+             th:href="@{/admin/applyEmp/list(page=${pageObj.number-1}, size=${pageObj.size}, q=${param.q}, status=${param.status}, from=${param.from}, to=${param.to}, includeDeleted=${param.includeDeleted}, mine=${param.mine})}">« 이전</a>
+          <span th:if="${pageObj.first}">« 이전</span>
+        </li>
+
+        <!-- 번호 -->
+        <li th:each="i : ${#numbers.sequence(0, pageObj.totalPages-1)}"
+            th:classappend="${i == pageObj.number} ? 'active'">
+          <a th:href="@{/admin/applyEmp/list(page=${i}, size=${pageObj.size}, q=${param.q}, status=${param.status}, from=${param.from}, to=${param.to}, includeDeleted=${param.includeDeleted}, mine=${param.mine})}"
+             th:text="${i+1}">1</a>
+        </li>
+
+        <!-- 다음 -->
+        <li th:classappend="${pageObj.last} ? 'disabled'">
+          <a th:if="${!pageObj.last}"
+             th:href="@{/admin/applyEmp/list(page=${pageObj.number+1}, size=${pageObj.size}, q=${param.q}, status=${param.status}, from=${param.from}, to=${param.to}, includeDeleted=${param.includeDeleted}, mine=${param.mine})}">다음 »</a>
+          <span th:if="${pageObj.last}">다음 »</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <footer class="foot-var">
+    <div>
+      <p>
+        <span>(주)한국경영지원사업단&nbsp; 대표이사 : 이준희 <span class="divider">|</span> 사업자등록번호 : 887-81-00124</span><br>
+        본사_경기도 김포시 김포한강4로 125 월드타워 705호 <span class="divider">|</span> 본부_경기도 광명시 일직로 43 GIDC A1706호<br>
+        국내지사_김해지사, 대구지사, 천안지사, 광주지사, 원주지사 <span class="divider">|</span> 해외지사_베트남, 필리핀, 인도네시아, 인도, 몽골, 네팔, 우즈베키스탄<br>
+        유료직업소개업 등록번호 : 제2025-4090515-14-5-00012호 <span class="divider">|</span>
+        Tel_ 031-983-0942 <span class="divider">|</span>  Fax_ 031-624-1540  <span class="divider">|</span> Email_ k-jobgo@naver.com<br>
+        ⓒ 2025 K-jobgo. All rights reserved.
+      </p>
+    </div>
+  </footer>
+
+  <!-- JS -->
+  <script th:src="@{/js/common.js}"></script>
+  <script th:src="@{/js/login.js}"></script>
+  <script>
+    // 행 전체 클릭 → 상세 이동
+    document.addEventListener('DOMContentLoaded', function () {
+      document.querySelectorAll('table.erp-table tbody tr').forEach(tr => {
+        const link = tr.querySelector('a.row-link');
+        if (!link) return;
+        tr.style.cursor = 'pointer';
+        tr.addEventListener('click', (e) => {
+          if (e.target.closest('a, button, input, label, select')) return;
+          link.click();
+        });
+      });
+
+      // 전체 체크
+      const checkAll = document.getElementById('checkAll');
+      if (checkAll) {
+        checkAll.addEventListener('change', () => {
+          document.querySelectorAll('.row-check').forEach(cb => cb.checked = checkAll.checked);
+        });
+      }
+
+      // 일괄 처리 버튼(예시) → 실제 API 연동은 페이지 전용 JS에서 처리
+      const getSelectedIds = () =>
+        Array.from(document.querySelectorAll('.row-check:checked')).map(cb => cb.value);
+
+      document.getElementById('btnAssignOwner')?.addEventListener('click', () => {
+        const ids = getSelectedIds();
+        if (!ids.length) return alert('대상 행을 선택하세요.');
+        // TODO: 담당자 배정 모달/처리 로직 연결
+        console.log('담당자 배정 대상:', ids);
+      });
+
+      document.getElementById('btnBulkComplete')?.addEventListener('click', () => {
+        const ids = getSelectedIds();
+        if (!ids.length) return alert('대상 행을 선택하세요.');
+        // TODO: 완료 처리 API 호출
+        console.log('완료 처리 대상:', ids);
+      });
+
+      document.getElementById('btnBulkCancel')?.addEventListener('click', () => {
+        const ids = getSelectedIds();
+        if (!ids.length) return alert('대상 행을 선택하세요.');
+        // TODO: 취소 처리 API 호출
+        console.log('취소 처리 대상:', ids);
+      });
+    });
+  </script>
+</body>
+</html>

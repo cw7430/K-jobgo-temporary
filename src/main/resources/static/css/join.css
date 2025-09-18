@@ -1,0 +1,459 @@
+@charset "UTF-8";
+
+.center-kjobgo-logo {
+  position: relative;             /* 독립적 위치지정 */
+  width: 100%;                    /* 전체 너비 */
+  display: flex;                  /* 가로 중앙 정렬용 */
+  justify-content: center;       /* 가운데 정렬 */
+  align-items: center;           /* 수직 가운데 정렬 */
+  margin: 60px auto 10px auto;   /* 위아래 여백 */
+  z-index: 10;                    /* 다른 요소 위에 */
+}
+
+/* ✅ 로고 이미지 */
+.k-jobgologo {
+  width: 380px;
+  height: auto;
+  object-fit: contain;
+  display: block;
+}
+
+body {
+  font-family: 'Noto Sans KR', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f5f7fa;
+  color: #333;
+  margin: 0;
+  padding: 0;
+  line-height: 1.6;
+}
+
+/* 폼 전체 박스 */
+.form-box {
+  min-width: 1200px;
+  margin: 60px auto 1000px;
+  padding: 40px 30px;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  box-sizing: border-box;
+}
+
+/* fieldset 기본 스타일 */
+fieldset {
+  border: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* legend 스타일 */
+legend {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 30px;
+  text-align: center;
+  color: #0054a8;
+}
+
+/* 폼 그룹(입력+라벨) */
+.form-group {
+  margin-bottom: 25px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 폼 그룹(입력+라벨) */
+.form-group business-check {
+  margin-bottom: 25px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 라벨 */
+.form-group label {
+  font-weight: 600;
+  font-size: 16px;
+  margin-bottom: 8px;
+  color: #222;
+}
+
+/* 필수 별표 */
+.required-star {
+  color: #e74c3c;
+  margin-left: 5px;
+  font-weight: 700;
+}
+
+/* 입력 필드 공통 */
+input[type="text"],
+input[type="number"],
+input[type="email"],
+input[type="password"],
+select,
+textarea:not([readonly]) {
+  font-family: 'Noto Sans KR', sans-serif;
+  padding: 12px 15px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-sizing: border-box;
+  width: 100%;
+  transition: border-color 0.3s ease;
+}
+
+/* 입력 필드 포커스 효과 */
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+select:focus,
+textarea:not([readonly]):focus {
+  border-color: #0054a8;
+  outline: none;
+}
+
+/* 입력 힌트 */
+.input-hint {
+  display: block;
+  font-size: 14px;
+  color: #ff0000;
+  margin-top: 4px;
+}
+
+/* 사업자등록번호 + 버튼 적용 */
+.input-with-button {
+  display: flex;
+  align-items: center; /* 세로 중앙 정렬 */
+  gap: 6px; /* 각 요소 간 간격 */
+}
+
+.input-with-button input {
+  width: 80px; /* 각 input 너비 고정 (필요시 조정) */
+  padding: 8px;
+  box-sizing: border-box;
+}
+
+.input-with-button span {
+  user-select: none; /* - 기호 선택 방지 */
+  font-weight: bold;
+}
+
+.input-with-button button {
+  background-color: #0054a8;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  white-space: nowrap;
+  transition: background-color 0.3s ease;
+}
+
+.input-with-button button:hover {
+  background-color: #003f82;
+}
+
+.email-combo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.emailInput {
+  height: 38px;
+  padding: 0 10px;
+  font-size: 12px;
+}
+
+#email1, #email2 {
+  width: 160px;
+}
+
+.emailSelect {
+  width: 180px;
+  padding: 8px;     /* 내부 여백 */
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.emailCheckBtn {
+  height: 38px;
+  padding: 0 14px;
+  font-size: 14px;
+  white-space: nowrap;
+  background-color: #004080;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.input-with-button button {
+  height: 38px;
+  padding: 0 16px;
+  font-size: 14px;
+  white-space: nowrap;
+  background-color: #004080;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+
+/* 우편번호 + 버튼 인라인 */
+.address-group {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.address-group input#postcode {
+  flex: 1 1 auto; /* input이 가용 가능한 공간을 모두 차지 */
+  max-width: 150px; /* 우편번호 input 너비 조절 (필요시 조정) */
+  box-sizing: border-box;
+}
+
+.address-group button {
+  flex: 0 0 auto; /* 버튼은 고정 크기 */
+  padding: 10px 16px;
+  font-size: 14px;
+  background-color: #0054a8;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.address-group button:hover {
+  background-color: #003f82;
+}
+
+.form-group.phone-group {
+  display: flex;
+  width: 360px;
+  flex-direction: column;
+  margin-bottom: 18px;
+}
+
+.form-group.phone-group {
+  display: flex;
+  width: 360px;
+  flex-direction: column;
+  margin-bottom: 18px;
+}
+
+.phone-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 체크박스 그룹 */
+.checkbox-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 15px;
+  font-size: 15px;
+  color: #444;
+}
+
+.checkbox-group input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+/* 체크박스 그룹을 한 줄로 정렬 */
+.checkbox-group {
+  display: flex;            /* 가로 정렬 */
+  flex-wrap: wrap;          /* 공간 부족 시 다음 줄로 넘김 */
+  align-items: center;      /* 세로 중앙 정렬 */
+  gap: 16px;                /* 각 항목 간격 */
+  margin-bottom: 24px;      /* 폼 그룹 간 간격 */
+}
+
+/* 제목 레이블 스타일 (다른 form-group label 과 통일) */
+.checkbox-title {
+  font-weight: 600;
+  font-size: 16px;
+  color: #222;
+  margin-bottom: 8px;
+}
+
+/* 각 label 내부(checkbox + 텍스트)를 flex로 묶어서 정렬 */
+.checkbox-group > label {
+  display: flex;
+  align-items: center;
+  gap: 6px;                 /* checkbox와 텍스트 사이 간격 */
+  margin: 0;                /* 기본 마진 리셋 */
+  font-weight: normal; /* 일반 가중치 */
+}
+
+/* 첫 번째 label(그룹 제목)을 조금 더 강조하고 싶으면 */
+.checkbox-group > label:first-child {
+  font-weight: 600;
+  margin-right: 24px;
+}
+
+.checkbox-group strong {
+  font-weight: 600; /* strong에만 적당한 굵기 지정 */
+}
+
+/* 버튼 그룹 */
+.button-group {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  margin-top: 40px;
+}
+
+/* 제출 버튼 */
+.submit-btn {
+  padding: 14px 36px;
+  font-size: 17px;
+  border-radius: 8px;
+  cursor: pointer;
+  border: none;
+  font-weight: 700;
+  background-color: #0054a8;
+  color: white;
+  transition: background-color 0.3s ease;
+}
+
+.submit-btn:hover {
+  background-color: #003f82;
+}
+
+/* 취소 버튼 */
+.cancel-btn {
+  padding: 14px 36px;
+  font-size: 17px;
+  border-radius: 8px;
+  cursor: pointer;
+  border: none;
+  font-weight: 600;
+  background-color: #eee;
+  color: #555;
+  transition: background-color 0.3s ease;
+}
+
+.cancel-btn:hover {
+  background-color: #ccc;
+}
+
+/* small check-result 메시지 */
+.check-result {
+  margin-top: 8px;
+  font-size: 13px;
+  color: #e74c3c;
+  font-weight: 600;
+}
+
+/* textarea terms */
+#termsText, #joinText {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #444;
+  background-color: #f9f9f9;
+  border-radius: 6px;
+  resize: vertical;
+}
+
+/* 비밀번호 불일치 시 스타일 */
+input.invalid {
+  border: 2px solid #e74c3c;
+}
+
+.check-result {
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+/* 모달 스타일 */
+.confirm-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: rgba(0,0,0,0.5);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.confirm-box {
+  background-color: white;
+  padding: 30px;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 460px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  font-size: 15px;
+  color: #333;
+}
+
+.confirm-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 15px;
+  color: #0054a8;
+}
+
+.confirm-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.confirm-buttons button {
+  padding: 10px 22px;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.confirm-buttons button:first-child {
+  background-color: #0054a8;
+  color: white;
+}
+
+.confirm-buttons button:last-child {
+  background-color: #eee;
+  color: #444;
+}
+
+/* 숨김 클래스 */
+.hidden {
+  display: none;
+}
+
+/* 반응형 */
+@media screen and (max-width: 768px) {
+  .form-box {
+    max-width: 90%;
+    min-width: auto;
+    padding: 25px 20px;
+    margin: 30px auto 60px;
+  }
+  .button-group {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .submit-btn, .cancel-btn {
+    width: 100%;
+    margin-bottom: 12px;
+  }
+  .input-with-button {
+    flex-direction: column;
+  }
+  .input-with-button button {
+    width: 100%;
+  }
+}

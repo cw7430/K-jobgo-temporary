@@ -70,5 +70,6 @@ implements AdminService {
     public AdminServiceImpl(AdminRepository adminRepository) {
         this.adminRepository = adminRepository;
     }
+    
 }
 

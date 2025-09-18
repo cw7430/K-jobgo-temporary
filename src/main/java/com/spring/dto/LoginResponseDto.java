@@ -1,5 +1,7 @@
 package com.spring.dto;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,4 +16,5 @@ public class LoginResponseDto {
     private String adminName;
     private String authorityType;
     private String sessionId;
+    private List<String> roles;
 }

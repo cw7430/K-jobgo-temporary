@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    .btn { display:inline-block; padding:8px 16px; background:#e74c3c; color:#fff; text-decoration:none; border-radius:4px; }
+    .reason-list { margin:0; padding-left:20px; }
+  </style>
+</head>
+<body>
+  <p>안녕하세요, <strong th:text="${companyName}">회사명</strong>님!</p>
+  <p>아래 사유로 회원가입 신청이 <strong>반려</strong>되었습니다.</p>
+  <ul class="reason-list">
+    <li th:each="r : ${reasons}" th:text="${r}">반려 사유</li>
+  </ul>
+  <p>재신청 방법:</p>
+  <ol>
+    <li>로그인 → 마이페이지 “신청 수정” 클릭</li>
+    <li>반려된 항목 보완</li>
+    <li>“재신청” 버튼 클릭</li>
+  </ol>
+  <p>
+    <a th:href="@{https://k-jobgo.com}" class="btn">다시 홈으로 & 재신청하기</a>
+  </p>
+  <p>감사합니다.<br/>㈜한국경영지원사업단(K-jobgo) 드림</p>
+</body>
+</html>

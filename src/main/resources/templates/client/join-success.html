@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- meta태그 추가해야함 : 검색엔진화 특화된 태그로 -->
+
+	<title>(주)한국경영지원사업단 | 외국인 인재 매칭 플랫폼 - K‑jobgo</title>
+
+<link rel="stylesheet" th:href="@{/css/join.css}">
+<link rel="stylesheet" th:href="@{/css/layout.css}">
+<link rel="stylesheet" th:href="@{/css/toggle.css}">
+<link rel="stylesheet" th:href="@{/css/login.css}">
+
+<!-- ✅ 페이지 전용 스타일 (다른 CSS와 충돌 없도록 접두 클래스 사용) -->
+<style>
+  .signup-done {
+    position: relative;
+    min-height: calc(100vh - 220px); /* 헤더/푸터 제외한 대략 높이 */
+    background: #f5f7fa;
+    display: grid;
+    place-items: start center;
+    padding: 64px 16px 96px;
+  }
+  .signup-done .done-hero{
+    position:absolute; inset:0;
+    z-index:0;
+  }
+  .signup-done .done-card{
+    position: relative;
+    z-index:1;
+    width:min(720px, 92vw);
+    background:#fff;
+    border-radius:16px;
+    box-shadow: 0 12px 40px rgba(16,24,40,.12);
+    padding: 32px 28px;
+    text-align:center;
+    color:#1f2937;
+    animation: card-in .45s ease-out;
+  }
+  .signup-done .done-icon{
+    width:72px; height:72px; margin: 8px auto 12px;
+    color:#0ea5e9; /* 청록~블루 톤 */
+    display:grid; place-items:center;
+    border-radius:50%;
+    background: linear-gradient(180deg, #e6f6ff, #eef9ff);
+    box-shadow: inset 0 0 0 2px rgba(14,165,233,.12);
+  }
+  .signup-done .done-title{
+    font-size: clamp(22px, 3.6vw, 28px);
+    line-height:1.25;
+    margin: 4px 0 8px;
+    font-weight: 800;
+    letter-spacing:-.01em;
+    color:#0f172a;
+  }
+  .signup-done .done-sub{
+    margin:0 0 16px;
+    color:#475569;
+    font-size: 15px;
+  }
+
+  .signup-done .done-next{
+    list-style:none; padding:0; margin: 18px auto 8px; text-align:left;
+    display:grid; gap:10px; max-width:560px;
+  }
+  .signup-done .done-next li{
+    background:#f8fafc;
+    border:1px solid #eef2f7;
+    border-radius:10px;
+    padding:12px 14px 12px 44px;
+    position:relative;
+    font-size:14px; color:#374151;
+  }
+  .signup-done .done-next li span{
+    position:absolute; left:12px; top:10px;
+    width:22px; height:22px; border-radius:50%;
+    display:grid; place-items:center;
+    background:#e0f2fe; color:#0369a1; font-weight:700; font-size:12px;
+  }
+
+  .signup-done .done-actions{
+    display:flex; gap:12px; justify-content:center; flex-wrap:wrap;
+    margin: 22px 0 8px;
+  }
+  
+  .signup-done .btn{
+    display:inline-block; padding:12px 18px; border-radius:10px;
+    font-weight:700; text-decoration:none; line-height:1; font-size:14px;
+    border:1px solid transparent; transition: all .18s ease;
+  }
+  
+ .signup-done .btn.primary{
+  background:#0054a8;           /* 메인 블루 */
+  color:#fff;
+  box-shadow:0 6px 16px rgba(0,84,168,.22);
+ }
+.signup-done .btn.primary:hover{
+  background:#003f82;            /* hover 톤 */
+  transform: translateY(-1px);
+ }
+
+.signup-done .btn.ghost{
+  color:#003f82;
+  border-color:#d8e2f0;
+  background:#fff;
+ }
+ 
+.signup-done .btn.ghost:hover{
+  background:#f3f7ff;
+ }
+
+  .signup-done .done-help{
+    margin-top: 10px; font-size:13px; color:#6b7280;
+  }
+  .signup-done .done-help a{ color:#0ea5e9; text-decoration:none; }
+  .signup-done .done-help a:hover{ text-decoration:underline; }
+
+  @keyframes card-in{
+    from{ transform: translateY(8px); opacity:0 }
+    to{ transform: translateY(0); opacity:1 }
+  }
+
+  /* 접근성: 모션 최소화 설정 존중 */
+  @media (prefers-reduced-motion: reduce){
+    .signup-done .done-card{ animation: none; }
+  }
+
+  /* 모바일 여백 조절 */
+  @media (max-width: 480px){
+    .signup-done{ padding:48px 12px 80px; }
+    .signup-done .done-card{ padding:24px 18px; }
+  }
+</style>
+</head>
+
+<body class="all-page" th:attr="data-is-admin=${isAdmin}">
+
+ <!-- 관리자 전용, 고객 전용 토글 메뉴 -->
+ <div th:replace="${isClient} ? ~{fragments/clientHeader :: siteHeader} : ~{fragments/header :: siteHeader}"></div>
+
+<div th:replace="~{login :: loginModal}"></div>
+
+<!-- ✅ K-jobgo 로고 전용 중앙 박스 (about-section 위에 배치) -->
+<div class="center-kjobgo-logo">
+	<a th:href="@{/}">
+	  <img src="/img/k-jobgo_company.png" alt="K-jobgo | 외국인 인재 매칭 플랫폼" class="k-jobgologo" />
+	</a>
+</div>
+
+<!-- ✅ 회원가입 완료 섹션 -->
+<main class="signup-done">
+  <div class="done-hero" aria-hidden="true">
+    <!-- 라이트 그라데이션 배경 -->
+  </div>
+
+  <section class="done-card" role="status" aria-live="polite">
+    <div class="done-icon" aria-hidden="true">
+        <!-- 체크 아이콘 -->
+        <svg viewBox="0 0 24 24" width="28" height="28" focusable="false">
+          <circle cx="12" cy="12" r="11" fill="currentColor" opacity=".12"></circle>
+          <path d="M9.3 12.9l-2-2a1 1 0 10-1.4 1.4l2.7 2.7a1 1 0 001.4 0l6.8-6.8a1 1 0 10-1.4-1.4l-6.1 6.1z" fill="currentColor"></path>
+        </svg>
+    </div>
+
+    <h1 class="done-title">회원가입 요청이 접수되었습니다</h1>
+    <p class="done-sub">
+      관리자 검토 후 <strong>최대 2영업일 이내</strong>에 승인 안내 메일을 보내드립니다.
+    </p>
+
+    <ul class="done-next">
+      <li><span>1</span> 입력하신 이메일로 도착한 메일을 확인해 주세요.</li>
+      <li><span>2</span> 승인 완료 시 메일의 <b>로그인 링크</b>로 접속하실 수 있습니다.</li>
+      <li><span>3</span> 메일이 보이지 않으면 <b>스팸함/프로모션함</b>도 확인해 주세요.</li>
+    </ul>
+
+    <div class="done-actions">
+      <a class="btn primary" href="/">홈으로 돌아가기</a>
+    </div>
+
+    <div class="done-help">
+      도움이 필요하신가요? <a href="mailto:k-jobgo@naver.com">k-jobgo@naver.com</a>
+    </div>
+  </section>
+</main>
+
+<footer class="foot-var">
+     <div>
+	<p> 
+	<span>(주)한국경영지원사업단&nbsp; 대표이사 : 이준희 <span class="divider">|</span> 사업자등록번호 : 887-81-00124</span><br>
+    본사_경기도 김포시 김포한강4로 125 월드타워 705호 <span class="divider">|</span> 본부_경기도 광명시 일직로 43 GIDC A1706호<br>
+    국내지사_김해지사, 대구지사, 천안지사, 광주지사, 원주지사 <span class="divider">|</span> 해외지사_베트남, 필리핀, 인도네시아, 인도, 몽골, 네팔, 우즈베키스탄<br>
+    유료직업소개업 등록번호 : 제2025-4090515-14-5-00012호 <span class="divider">|</span> 
+    Tel_ 031-983-0942 <span class="divider">|</span>  Fax_ 031-624-1540  <span class="divider">|</span> Email_ k-jobgo@naver.com<br>
+	ⓒ 2025 K-jobgo. All rights reserved.</p>
+	</div>
+  </footer>
+    
+    <!-- JS 연결 -->
+    <script th:src="@{/js/common.js}"></script>
+    <script th:src="@{/js/login.js}"></script>
+
+</body>
+</html>
+</body>
+</html>

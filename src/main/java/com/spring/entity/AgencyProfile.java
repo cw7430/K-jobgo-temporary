@@ -43,7 +43,7 @@ public class AgencyProfile {
     private ProfileStatus status = ProfileStatus.READY;
 
     @Builder.Default
-    @Column(name = "is_deleted", nullable = false)
+    @Column(name="is_deleted", nullable=false)
     private boolean deleted = false;
 
     // 운영 추적

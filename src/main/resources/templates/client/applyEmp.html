@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="_csrf" th:if="${_csrf != null}" th:content="${_csrf.token}" />	
+	<meta name="_csrf_header" th:if="${_csrf != null}" th:content="${_csrf.headerName}" />
+
+ 	<title>(주)한국경영지원사업단 | 외국인 인재 매칭 플랫폼 - K‑jobgo</title>
+    
+<link rel="icon" href="https://k-jobgo-profile-photos-seoul.s3.ap-northeast-2.amazonaws.com/img/favicon.png" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" th:href="@{/css/layout.css}" />
+    <link rel="stylesheet" th:href="@{/css/toggle.css}" />
+    <link rel="stylesheet" th:href="@{/css/main.css}" />
+    <link rel="stylesheet" th:href="@{/css/login.css}" />
+</head>
+
+<body class="all-page"
+      th:attr="data-is-admin=${isAdmin} ?: false, 
+               data-authority=${authorityId} ?: 0, 
+               data-env=${@environment.getActiveProfiles()[0]}">
+
+ <!-- 관리자 전용, 고객 전용 토글 메뉴 -->
+ <div th:replace="${isClient} ? ~{fragments/clientHeader :: siteHeader} : ~{fragments/header :: siteHeader}"></div>
+
+  <!-- ✅ K-jobgo 로고 전용 중앙 박스 (about-section 위에 배치) -->
+<div class="center-kjobgo-logo">
+<a th:href="@{/}">
+  <img src="/img/k-jobgo_company.png" alt="K-jobgo | 외국인 인재 매칭 플랫폼" class="k-jobgologo" />
+</a>
+</div>
+
+<form id="joinForm" th:action="@{/join}" th:object="${joinReq}" method="post" enctype="multipart/form-data" class="form-box" novalidate>
+   <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+  <fieldset>
+    <legend>회원가입</legend>
+
+    <!-- 회사 정보 -->
+    <div class="form-group">
+      <label for="cmpName">회사명<span class="required-star">*</span></label>
+      <input type="text" id="cmpName" name="cmpName" class="comInput" placeholder="예: (주)한국경영지원사업단" required>
+    </div>
+
+    <div class="form-group">
+      <label for="ceoName">대표자성명<span class="required-star">*</span></label>
+      <input type="text" id="ceoName" name="ceoName"  class="nameInput" placeholder="예: 이준희" required>
+    </div>
+    
+	<div class="form-group business-check">
+	  <label for="companyNumber">사업자등록번호<span class="required-star">*</span></label>
+	  <div class="input-with-button">
+	    <input type="text" id="companyNumber1" name="bizNo1" maxlength="3" placeholder="123" required> <span>-</span>
+	    <input type="text" id="companyNumber2" name="bizNo2" maxlength="2" placeholder="45" required> <span>-</span>
+	    <input type="text" id="companyNumber3" name="bizNo3" maxlength="5" placeholder="67890" required>
+	    <!-- DTO 가 바인딩할 bizNo 한 개 -->
+		<input type="hidden" id="bizNo" name="bizNo">
+	    <button type="button" onclick="verifyBusinessNumber()">인증</button>
+	    </div>
+	    
+  			<!-- 사업자등록번호 조회 결과 -->
+			<small id="bizCheckResult" class="check-result"></small>
+	 </div>
+	
+	<div class="form-group">
+	  <label>이메일(아이디로 사용)<span class="required-star">*</span></label>
+	  <small class="input-hint">※ 실제 사용하는 이메일 주소를 입력해주세요. 로그인 안내 메일이 발송됩니다.</small>
+	  
+	  <div class="email-combo">
+	    <input type="text" id="email1" name="bizEmailLocal" class="emailInput" placeholder="아이디" required> @
+	
+	    <select id="emailDomainSelect" class="emailSelect" onchange="handleEmailDomainChange()" style="min-width: 140px;" required>
+	      <option value="">선택</option>
+	      <option value="naver.com">naver.com</option>
+	      <option value="gmail.com">gmail.com</option>
+	      <option value="daum.net">daum.net</option>
+	      <option value="custom">직접입력</option>
+	    </select>
+	
+	    <input type="text" id="email2" name="bizEmailDomain" class="emailInput" placeholder="도메인 입력" style="display:none;" required>
+		<!-- 2) 이메일 합칠 필드 (bizEmailLocal + bizEmailDomain) -->
+		<input type="hidden" id="bizEmail" name="bizEmail">
+	    <button type="button" class="emailCheckBtn" onclick="checkEmailDuplicate()">중복 확인</button>
+	  </div>
+			<!-- 이메일 중복 검사 -->
+	  		<small id="emailCheckResult" class="check-result"></small>
+	</div>
+	
+    <!-- 주소 -->
+    <div class="form-group">
+      <label for="postcode">우편번호<span class="required-star">*</span></label>
+      <div class="address-group">
+        <input type="text" id="postcode" name="zipCode" placeholder="우편번호" readonly required>
+        <button type="button" onclick="openKakaoPostcode()">주소 검색</button>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="companyAddress">회사 주소<span class="required-star">*</span></label>
+      <input type="text" id="companyAddress" name="cmpAddr" placeholder="주소" readonly required>
+    </div>
+
+    <div class="form-group">
+      <label for="detailAddress">상세 주소<span class="required-star">*</span></label>
+      <input type="text" id="detailAddress" name="addrDt" placeholder="상세 주소를 입력하세요" required>
+    </div>
+    
+    <!-- 회사 연락처 -->
+	<div class="form-group phone-group">
+	  <label>회사 연락처(010 또는 지역번호)<span class="required-star">*</span></label> 
+	  <div class="phone-wrap">
+	    <input type="text" name="cmpPhone1" maxlength="3" placeholder="010" required>
+	    <span>-</span>
+	    <input type="text" name="cmpPhone2" maxlength="4" placeholder="1234" required>
+	    <span>-</span>
+	    <input type="text" name="cmpPhone3" maxlength="4" placeholder="5678" required>
+	    <!-- 3) 회사 연락처 합칠 필드 (cmpPhone1-3 합친 값) -->
+		<input type="hidden" id="cmpPhone" name="cmpPhone">
+	  </div>
+	</div>
+	
+	<!--  담당자 정보 -->
+	 <div class="form-group">
+      <label for="ManagerName">담당자성명<span class="required-star">*</span></label>
+      <input type="text" id="ManagerName" name="empName"  class="nameInput" placeholder="예: 이준희" required>
+    </div>
+    
+    <div class="form-group">
+      <label for="Role">담당자직급/직함<span class="required-star">*</span></label>
+      <input type="text" id="Role" name="empTitle"  class="nameInput" placeholder="예: 대리, 과장 등" required>
+    </div>
+    
+	<div class="form-group phone-group">
+	  <label>담당자 연락처(010 또는 지역번호)<span class="required-star">*</span></label> 
+	  <div class="phone-wrap">
+	    <input type="text" name="empPhone1" maxlength="3" placeholder="010" required>
+	    <span>-</span>
+	    <input type="text" name="empPhone2" maxlength="4" placeholder="1234" required>
+	    <span>-</span>
+	    <input type="text" name="empPhone3" maxlength="4" placeholder="5678" required>
+	    <!-- 4) 담당자 연락처 합칠 필드 (empPhone1-3 합친 값) -->
+		<input type="hidden" id="empPhone" name="empPhone">
+	  </div>
+	</div>
+	
+<!-- ✅ 구인조건 영역 -->
+ <legend>구인조건</legend>
+
+	<!-- ✅ 채용요청 함께 제출할지 여부 -->
+	<div class="checkbox-group">
+	  <input type="checkbox" id="withJobRequest" name="withJobRequest" value="true">
+	  <label for="withJobRequest"><strong>이번 가입과 함께 채용요청도 제출합니다</strong></label>
+	  <small class="input-hint">선택 시 아래 구인조건을 입력해 주세요. 미선택하면 가입만 처리됩니다.</small>
+	</div>
+
+	<!-- ✅ 구인조건 섹션: 전체 래핑 -->
+	<section id="jobRequestSection" class="card" style="display:none; opacity:.6; pointer-events:none;">
+	  <div class="form-group">
+	    <label for="jobType">구인직종</label>
+	    <input type="text" id="jobType" name="jobType" placeholder="예: 생산직, 서비스직 등" >
+	  </div>
+	
+	 <div class="form-group">
+	    <label for="desiredNationality">희망 국적</label>
+	    <select id="desiredNationality" name="desiredNationality" onchange="toggleCustomNationality()">
+		    <option value="" th:selected="${nationality == null}">국적</option>
+		    <option value="네팔" th:selected="${nationality == '네팔'}">네팔</option>
+		    <option value="몽골" th:selected="${nationality == '몽골'}">몽골</option>
+		    <option value="미얀마" th:selected="${nationality == '미얀마'}">미얀마</option>
+		    <option value="방글라데시" th:selected="${nationality == '방글라데시'}">방글라데시</option>
+		    <option value="베트남" th:selected="${nationality == '베트남'}">베트남</option>
+		    <option value="스리랑카" th:selected="${nationality == '스리랑카'}">스리랑카</option>
+		    <option value="우즈베키스탄" th:selected="${nationality == '우즈베키스탄'}">우즈베키스탄</option>
+		    <option value="인도" th:selected="${nationality == '인도'}">인도</option>
+		    <option value="인도네시아" th:selected="${nationality == '인도네시아'}">인도네시아</option>
+		    <option value="캄보디아" th:selected="${nationality == '캄보디아'}">캄보디아</option>
+		    <option value="키르키스스탄" th:selected="${nationality == '키르키스스탄'}">키르키스스탄</option>
+		    <option value="파키스탄" th:selected="${nationality == '파키스탄'}">파키스탄</option>
+		    <option value="필리핀" th:selected="${nationality == '필리핀'}">필리핀</option>
+		    <option value="기타" th:selected="${nationality == '기타'}">기타</option>
+		</select>
+	    <input type="text" id="customNationality" name="customNationality" placeholder="국적 입력(또는 국적 무관)") style="display:none;">
+	  </div>
+	  
+	  <div class="form-group">
+	    <label for="desiredCount">희망 인원</label>
+	    <input type="number" id="desiredCount" name="desiredCount" min="0" step="1" placeholder="예: 0명" >
+	  </div>
+	  
+		<div class="form-group">
+		    <label for="jobCategory">관련 직종</label>
+		    <input type="text" id="jobCategory" name="jobCategory" placeholder="예: 생산직, 서비스직 등">
+		</div>
+		
+		<div class="form-group">
+		    <label for="experience">경력</label>
+		    <input type="text" id="experience" name="experience" placeholder="예: 관련직종 1년이상, 3년 이하, 상관없음 등">
+		</div>
+		
+		<div class="form-group">
+		    <label for="education">학력</label>
+		    <input type="text" id="education" name="education" placeholder="예: 고졸이상, 대졸 이상, 상관없음 등">
+		</div>
+		
+		<div class="form-group">
+		    <label for="qualification">자격 면허</label>
+		    <input type="text" id="qualification" name="qualification" placeholder="예: 자격증, 언어등급, 상관없음 등">
+		</div>
+		
+		<div class="form-group">
+		    <label for="workingHours">근무시간</label>
+		        <textarea id="workingHours" name="workingHours"
+        		placeholder="예: 요일 주/야간 00시 00분 ~ 00시 00분 (잔업시 ~ 00:00) 교대 제(1조 2교대) 등"
+        		rows="3"></textarea>
+		</div>
+		
+		<div class="form-group">
+		    <label for="breakTime">휴게시간</label>
+		    <input type="text" id="breakTime" name="breakTime" placeholder="예: 00시00분 ~ 00시 00분(0시간)">
+		</div>
+		
+		<div class="form-group">
+		    <label for="employmentType">근무형태</label>
+		    <input type="text" id="employmentType" name="employmentType" placeholder="예: 주 5일 근무 등">
+		</div>
+		
+		<div class="form-group">
+		    <label for="insurance">사대보험</label>
+		    <input type="text" id="insurance" name="insurance" placeholder="예: 국민연금, 고용보험, 산재보험, 건강보험 등">
+		</div>
+		
+		<div class="form-group">
+		    <label for="retirementPay">퇴직급여</label>
+		    <input type="text" id="retirementPay" name="retirementPay" placeholder="예: 퇴직연금">
+		</div>
+
+	  <div class="form-group">
+	    <label for="totalCount">총 인원수</label>
+	    <input type="number" id="totalCount" name="totalCount" min="0" step="1" placeholder="예: 0명">
+	  </div>
+	
+	  <div class="form-group">
+	    <label for="currentForeigners">현재 외국인 근로자 수</label>
+	    <input type="number"  id="currentForeigners" name="currentForeigners" min="0" step="1" placeholder="예: 0명">
+	  </div>
+
+		  <div class="checkbox-group">
+		  	 <label class="checkbox-title">기숙사 제공 여부</label>
+		    <label><input type="radio" name="dormitory" value="내부기숙사"> 내부기숙사</label>
+		    <label><input type="radio" name="dormitory" value="원룸"> 원룸</label>
+		    <label><input type="radio" name="dormitory" value="없음"> 기숙사 없음</label>
+		    <label><input type="radio" id= "dormitoryOtherChk" name="dormitory" value="기타"> 기타</label>
+		      <input type="text" id="dormitoryOtherTxt" name="dormitoryOther" placeholder="직접 입력"
+	    style="display:none; margin-left:8px; padding:6px 10px; width:300px; border:1px solid #ccc; border-radius:4px;">
+		  </div>
+	
+	<!-- 식사 제공 여부 -->
+	  <div class="checkbox-group">
+	  	 <label class="checkbox-title">식사 제공 여부</label>
+	    <label><input type="radio" name="meal" value="중식 제공"> 중식 제공</label>
+	    <label><input type="radio" name="meal" value="조식/석식 제공"> 조식/석식 제공</label>
+	    <label><input type="radio" name="meal" value="미제공"> 미제공</label>
+	    <label><input type="radio" id="mealOtherChk" name="meal" value="기타"> 기타</label>
+	      <input type="text" id="mealOtherTxt" name="mealOther" placeholder="직접 입력"
+    style="display:none; margin-left:8px; padding:6px 10px; width:300px; border:1px solid #ccc; border-radius:4px;">
+	  </div>
+	
+	  <div class="form-group">
+	    <label for="jobDescription">실제 업무 설명</label>
+	    <textarea id="jobDescription" name="jobDescription" rows="4" placeholder="실제 수행할 업무 내용을 상세히 입력해주세요."
+          style="width: 100%; resize: vertical; padding: 10px; border: 1px solid #ccc;"></textarea>
+	  </div>
+	  
+	  <!-- ✅ 우대사항: label-for를 각 입력 id에 맞게 수정 -->
+	  <div class="form-group">
+	    <label for="major">전공:</label>
+	    <input type="text" id="major" name="major" placeholder="예: 기계공학, 전기공학, 경영학 등">
+	
+	    <label for="computerSkills">컴퓨터 활용 능력:</label>
+	    <input type="text" id="computerSkills" name="computerSkills" placeholder="예: MS Office, Excel 등">
+	
+	    <label for="languageSkills">외국어 능력:</label>
+	    <input type="text" id="languageSkills" name="languageSkills" placeholder="예: 한국어, 영어, 중국어 등">
+	
+	    <label for="preferredConditions">우대 조건:</label>
+	    <input type="text" id="preferredConditions" name="preferredConditions" placeholder="예: 상세 기술 가능 등">
+	
+	    <label for="otherPreferredConditions">기타 우대사항:</label>
+	    <input type="text" id="otherPreferredConditions" name="otherPreferredConditions" placeholder="예: 빠른 업무 습득, 야근 가능 등">
+	  </div>
+	  
+	  <div class="form-group">
+	    <label for="otherNotes">기타사항</label>
+	    <textarea id="otherNotes" name="otherNotes" rows="3" placeholder="추가로 전달할 내용을 입력하세요."
+        		style="width: 100%; resize: vertical; padding: 10px; border: 1px solid #ccc;"></textarea>
+	  </div>
+	</section>
+</fieldset>
+
+    <footer class="foot-var">		
+         <div>
+  		<p> 
+  		<span>(주)한국경영지원사업단&nbsp; 대표이사 : 이준희 <span class="divider">|</span> 사업자등록번호 : 887-81-00124</span><br>
+        본사_경기도 김포시 김포한강4로 125 월드타워 705호 <span class="divider">|</span> 본부_경기도 광명시 일직로 43 GIDC A1706호<br>
+        국내지사_김해지사, 대구지사, 천안지사, 광주지사, 원주지사 <span class="divider">|</span> 해외지사_베트남, 필리핀, 인도네시아, 인도, 몽골, 네팔, 우즈베키스탄<br>
+        유료직업소개업 등록번호 : 제2025-4090515-14-5-00012호 <span class="divider">|</span> 
+        Tel_ 031-983-0942 <span class="divider">|</span>  Fax_ 031-624-1540  <span class="divider">|</span> Email_ k-jobgo@naver.com<br>
+ 		ⓒ 2025 K-jobgo. All rights reserved.</p>
+ 		</div>
+    </footer>
+    
+    <!-- JS 연결 -->
+    <script th:src="@{/js/common.js}"></script>
+    <script th:src="@{/js/login.js}"></script>
+    <!-- 권장: Thymeleaf 유틸로 현재시간 -->
+	<script th:src="@{/js/applyEmp.js}"></script>
+</body>
+</html>

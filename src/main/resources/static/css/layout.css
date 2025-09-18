@@ -1,3 +1,4 @@
+/* layout.css */
 @charset "UTF-8";
 
 /* 기본 설정 */
@@ -103,53 +104,6 @@ footer.foot-var {
 .divider {
   margin: 0 5px;
   color: #aaa;
-}
-
-/* 토글 메뉴 */
-.menu-wrapper {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  z-index: 999;
-  pointer-events: auto;
-}
-.menu-toggle {
-  font-size: 24px;
-  cursor: pointer;
-  padding: 8px 12px;
-  transition: transform 0.3s ease;
-  z-index: 1000;
-}
-.menu-toggle:hover {
-  transform: scale(1.1);
-}
-.hidden-menu {
-  display: none;
-  position: absolute;
-  top: 36px;
-  right: 0;
-  width: 160px;
-  background-color: white;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  padding: 10px 15px;
-  z-index: 999;
-  list-style: none;
-  margin: 0;
-  padding-left: 0;
-  text-align: right;
-}
-.hidden-menu li {
-  list-style-type: none;
-  padding: 5px 0;
-  cursor: pointer;
-}
-.hidden-menu li:hover {
-  color: #E88C44;
 }
 
 /* 토글 시 바디 고정 */

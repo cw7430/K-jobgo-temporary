@@ -1,6 +1,9 @@
 package com.spring.repository;
 
 import com.spring.entity.AgencyProfile;
+
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.*;
@@ -44,11 +47,20 @@ public interface AgencyProfileRepository extends JpaRepository<AgencyProfile, Lo
     		Page<AgencyProfile> searchByKeyword(@Param("kw") String keyword, Pageable pageable);
     
     @Query("""
-    		  SELECT p FROM AgencyProfile p
+    		  SELECT DISTINCT p FROM AgencyProfile p
     		  LEFT JOIN FETCH p.files
     		  WHERE p.deleted = false AND p.profileId = :id
     		""")
     		java.util.Optional<AgencyProfile> findWithFilesById(@Param("id") Long id);
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("""
+      update AgencyProfile p
+         set p.deleted = true
+       where p.profileId in :ids
+         and p.deleted = false
+    """)
+    int softDeleteAllByIds(@Param("ids") List<Long> ids);
 
 }
 

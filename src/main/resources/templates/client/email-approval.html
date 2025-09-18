@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    /* 인라인 스타일 또는 <style> 영역에 CSS */
+    .btn { display:inline-block; padding:10px 20px; background:#007bff; color:#fff; text-decoration:none; border-radius:4px; }
+  </style>
+</head>
+<body>
+  <p>안녕하세요, <span th:text="${companyName}">회사명</span>님!</p>
+  <p>K-jobgo 회원가입이 관리자 확인을 통해 최종 승인되었습니다.</p>
+  <hr/>
+  <p><strong>로그인 아이디</strong>: <span th:text="${loginId}">아이디</span></p>
+  <p><strong>로그인 비밀번호</strong>: (가입 시 설정한 비밀번호)</p>
+  <hr/>
+  <p>이제 로그인 후 마이페이지에서 구인정보를 관리할 수 있습니다.</p>
+  <p>승인 후 이용 가능한 서비스:</p>
+  <ol>
+    <li>외국인 근로자 채용 신청서 추가 작성 및 수정</li>
+    <li>전담 매니저 상담 및 채용 절차 안내</li>
+    <li>매칭 진행 상황 확인 및 피드백 제공</li>
+  </ol>
+  <p>지금 바로 로그인하려면 아래 버튼을 클릭하세요:</p>
+  <p><a th:href="@{https://k-jobgo.com}" class="btn">K-jobgo 홈으로</a></p>
+  <p>궁금하신 사항이나 상담이 필요하실 경우,<br/>
+    언제든지 담당 매니저 또는 고객센터(<a href="mailto:k-jobgo@naver.com">k-jobgo@naver.com</a>)로 문의해 주세요.</p>
+  <p>감사합니다.<br/>㈜한국경영지원사업단(K-jobgo) 드림</p>
+</body>
+</html>

@@ -1,0 +1,88 @@
+/* applyList.css */
+@charset "UTF-8";
+/* applyList.css — 구직 신청 목록 전용 마이크로 UX */
+
+/* 테이블 폭: 이 페이지는 칼럼 수가 비교적 적으니 약간 좁혀 균형 */
+.table.wide-table { min-width: 1200px; }
+
+/* 툴바: 좌·중앙·우 정렬 간격 미세 조정 */
+.toolbar { gap: 12px; }
+.toolbar .toolbar-left,
+.toolbar .toolbar-right { display: flex; align-items: center; gap: 8px; }
+.toolbar .toolbar-center .inp { width: 280px; }
+@media (max-width: 900px) {
+  .toolbar { flex-direction: column; align-items: stretch; }
+  .toolbar .toolbar-center { justify-content: center; }
+}
+
+/* 행 링크: 제목/구인직종 앵커를 '클릭 가능한 리스트'처럼 */
+a.row-link {
+  color: var(--brand-text);
+  text-decoration: none;
+  font-weight: 700;
+}
+a.row-link:hover { color: var(--accent-2); text-decoration: underline; }
+
+/* 긴 텍스트 말줄임용 */
+.ellipsis {
+  max-width: 240px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 상태 칩 */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  height: 24px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .2px;
+  background: #eef3ff;
+  color: #26498f;
+  border: 1px solid #d6e3ff;
+}
+.chip--pending {
+  background: #fff7e6; color: #8a5a00; border-color: #ffe0a3;
+}
+.chip--approved {
+  background: #e7f8ee; color: #0b6b2f; border-color: #bfe8cf;
+}
+.chip--rejected {
+  background: #fdeaea; color: #8c1d1d; border-color: #f5c2c2;
+}
+
+/* 체크박스 열 살짝 중앙정렬 */
+.table td:first-child, .table th:first-child { text-align: center; }
+
+/* 페이징: 중앙 하단 배치 시 룩 통일 */
+.pagination ul li a,
+.pagination ul li span {
+  display: inline-block;
+  min-width: 36px;
+  padding: 6px 10px;
+  text-align: center;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--brand-text);
+}
+.pagination ul li.active a {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+.pagination ul li.disabled span {
+  opacity: .5;
+  cursor: default;
+}
+
+/* ‘데이터 없음’ 행을 조금 더 공손하게 */
+.table tbody tr td .no-data {
+  display: inline-block;
+  padding: 12px 8px;
+  color: #666;
+}
