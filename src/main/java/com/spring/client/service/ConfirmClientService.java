@@ -1,11 +1,31 @@
 // com.spring.client.service.ConfirmClientService
 package com.spring.client.service;
 
+import com.spring.client.dto.ConfirmRowDto;
 import com.spring.client.enums.ApprStatus;
+
+import java.time.LocalDate;
 import java.util.List;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface ConfirmClientService {
 
+    Page<ConfirmRowDto> searchRows(ApprStatus status, String q, Pageable pageable);
+    
+ // ConfirmClientService.java
+    Page<ConfirmRowDto> searchFiltered(
+    	    ApprStatus status,
+    	    String field,         // all | cmpName | bizNo | contactName | contactPhone | proxyExecutor
+    	    String keyword,       // 텍스트 검색어
+    	    String prxJoinVal,    // "" | "true"
+    	    String dateType,      // "created" | "processed"
+    	    LocalDate dateFrom,   // 시작일 (nullable)
+    	    LocalDate dateTo,     // 종료일 (nullable, inclusive)
+    	    Pageable pageable
+    );
+    
     void applyDecision(Long cmpId,
                        ApprStatus status,
                        String rejectReason,
@@ -43,4 +63,6 @@ public interface ConfirmClientService {
         public void setRejectReason(String rejectReason) { this.rejectReason = rejectReason; }
         public void setSendEmail(boolean sendEmail) { this.sendEmail = sendEmail; }
     }
+    
+    
 }

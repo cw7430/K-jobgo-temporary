@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CmpAttach {
+public class CmpAttach { // 회원가입 첨부파일 영역
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

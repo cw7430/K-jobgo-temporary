@@ -1,37 +1,34 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-  <!-- ▷ 공통 구직신청 테이블 (액션 컬럼 없음, pageObj 지원) -->
-  <th:block th:fragment="applyEmpTable(applyList, isAdmin, filterStatus, toolbarFrag, pageObj)">
-    <!-- (옵션) 상단 툴바 슬롯: 넘겨받은 fragment 자체를 삽입 -->
-    <div th:if="${toolbarFrag != null}" th:insert="${toolbarFrag}"></div>
-
-    <div class="table-scroll">
+<!-- src/main/resources/templates/fragments/applyFragments.html : 구직신청 확인페이지 -->
+  <!-- ✅ 테이블 + 바디 영역을 프래그먼트로 분리 (visa 구조와 유사) -->
+  <th:block xmlns:th="http://www.thymeleaf.org">
+  <th:block th:fragment="applyEmpTable(applyList, isAdmin, filterStatus, pageObj)">
+    <div class="table-scroll" role="region" aria-label="구직신청 테이블" tabindex="0">
       <table class="table wide-table erp-table">
         <colgroup>
-          <col style="width:44px" />   <!-- 체크박스 -->
+          <col style="width:10px" />   <!-- 선택 -->
           <col style="width:60px" />   <!-- No -->
-          <col style="width:160px" />  <!-- 구인직종(또는 제목) -->
+          <col th:if="${isAdmin}" style="width:160px" /> <!-- 업체명 (관리자 전용) -->
+          <col style="width:120px" />  <!-- 담당자명 -->
+          <col style="width:140px" />  <!-- 연락처 -->
+          <col style="width:160px" />  <!-- 구인직종 -->
           <col style="width:120px" />  <!-- 희망국적 -->
           <col style="width:90px" />   <!-- 희망인원 -->
-          <col th:if="${isAdmin}" style="width:160px" /><!-- 업체명(관리자 전용) -->
-          <col style="width:120px" />  <!-- 담당자명(신청 측) -->
-          <col style="width:140px" />  <!-- 담당자 연락처 -->
-          <col style="width:120px" />  <!-- 처리담당자(관리자) -->
-          <col style="width:110px" />  <!-- 처리상태 -->
+          <col style="width:120px" />  <!-- 처리담당자 -->
+          <col style="width:110px" />  <!-- 상태 -->
           <col style="width:140px" />  <!-- 신청일 -->
           <col style="width:140px" />  <!-- 처리일 -->
         </colgroup>
 
         <thead>
           <tr>
-            <th><input type="checkbox" id="checkAll"/></th>
+            <th><input type="checkbox" id="checkAll" /></th>
             <th>No</th>
+			<th th:if="${isAdmin}">업체명</th>
+			<th>담당자명</th>
+            <th>연락처</th>
             <th>구인직종</th>
             <th>희망국적</th>
             <th>희망인원</th>
-            <th th:if="${isAdmin}">업체명</th>
-            <th>담당자명</th>
-            <th>연락처</th>
             <th>처리담당자</th>
             <th>상태</th>
             <th>신청일</th>
@@ -39,69 +36,129 @@
           </tr>
         </thead>
 
-        <tbody>
-          <tr th:each="row, st : ${applyList}"
-              th:with="statusName=${row.status != null ? row.status.name() : 'ACTIVE'}"
-              th:attr="data-job-id=${row.jobId}">
-            <td><input type="checkbox" class="row-check" th:value="${row.jobId}" /></td>
-
-            <!-- 페이지 기반 넘버링 지원 -->
-            <td th:text="${pageObj != null} ? ${pageObj.number * pageObj.size + st.index + 1} : ${st.index + 1}">1</td>
-
-            <!-- 구인직종(또는 제목) : 행 클릭 유도용 앵커 -->
-            <td class="ellipsis">
-              <a class="row-link"
-                 th:href="${isAdmin} ? @{/admin/applyEmp/detail/{id}(id=${row.jobId})}
-                                     : @{/client/applyEmp/detail/{id}(id=${row.jobId})}"
-                 th:text="${row.jobType ?: row.title}">구인직종</a>
-            </td>
-
-            <td th:text="${row.desiredNationality}">-</td>
-            <td th:text="${row.desiredCount}">0</td>
-            <td th:if="${isAdmin}" th:text="${row.clientName}">업체명</td>
-            <td th:text="${row.contactName}">담당자명</td>
-            <td th:text="${row.contactPhone}">010-0000-0000</td>
-            <td th:text="${row.processOwner ?: '-'}">-</td>
-
-            <!-- 상태 칩 -->
-            <td>
-              <span class="chip"
-                    th:classappend="${
-                       statusName == 'COMPLETED' ? ' chip--approved' :
-                       (statusName == 'CANCELLED' ? ' chip--rejected' : ' chip--pending')
-                    }"
-                    th:text="${
-                      statusName == 'COMPLETED' ? '완료' :
-                      (statusName == 'CANCELLED' ? '취소' : '대기')
-                    }">대기</span>
-            </td>
-
-            <td th:text="${row.createdAt != null ? #temporals.format(row.createdAt,'yyyy-MM-dd') : '-'}">-</td>
-            <td th:text="${row.processedAt != null ? #temporals.format(row.processedAt,'yyyy-MM-dd') : '-'}">-</td>
-          </tr>
-
-          <!-- 데이터 없음 -->
-          <tr th:if="${#lists.isEmpty(applyList)}">
-            <td th:colspan="${isAdmin} ? 12 : 11"
-                style="text-align:center;color:#666;background:#fafafa;">
-              <div style="padding:16px 0;">
-                <div th:switch="${filterStatus != null ? filterStatus.name() : 'ALL'}">
-                  <span th:case="'ACTIVE'">진행 중인 구직신청이 없습니다.</span>
-                  <span th:case="'COMPLETED'">완료된 구직신청이 없습니다.</span>
-                  <span th:case="'CANCELLED'">취소된 구직신청이 없습니다.</span>
-                  <span th:case="*">표시할 데이터가 없습니다.</span>
-                </div>
-                <!-- 고객에게는 CTA 표시 -->
-                <div th:if="${!isAdmin}">
-                  <a class="btn btn--primary" th:href="@{/client/applyEmp(new=1)}" style="margin-top:10px;display:inline-block;">
-                    구직신청 작성하기
-                  </a>
-                </div>
-              </div>
-            </td>
-          </tr>
-        </tbody>
+        <!-- ✅ 목록 전용 tbody (별도 프래그먼트로도 제공) -->
+        <tbody th:replace="~{fragments/applyFragments :: tbodyRows(${applyList}, ${isAdmin}, ${filterStatus}, ${pageObj})}"></tbody>
       </table>
     </div>
   </th:block>
-</html>
+
+  <!-- ✅ tbody만 교체 갱신할 수 있도록 별도 분리 -->
+  <th:block th:fragment="tbodyRows(applyList, isAdmin, filterStatus, pageObj)">
+    <!-- 데이터 없음 -->
+    <tr th:if="${#lists.isEmpty(applyList)}" class="no-result">
+      <td th:colspan="${isAdmin} ? 12 : 11" class="noresult-cell" style="text-align:center;">
+        <div style="padding:16px 0;">
+          <div th:switch="${filterStatus != null ? filterStatus.name() : 'ALL'}">
+            <span th:case="'ACTIVE'">진행 중인 구직신청이 없습니다.</span>
+            <span th:case="'COMPLETED'">완료된 구직신청이 없습니다.</span>
+            <span th:case="'CANCELLED'">취소된 구직신청이 없습니다.</span>
+            <span th:case="*">해당 데이터가 없습니다.</span>
+          </div>
+        </div>
+      </td>
+    </tr>
+
+	<!-- 목록 -->
+	<tr th:each="row, st : ${applyList}"
+   		th:attr="data-job-id=${row.jobId},
+             title=|상세보기 이동 (요청 #${row.jobId})|"
+	    class="clickable-row"
+	    th:with="
+	      contacts=${row.cmpInfo != null ? row.cmpInfo.contacts : null},
+	      cont=${contacts != null and !contacts.isEmpty() ? contacts.get(0) : null}">
+	
+	<!-- 1 체크박스 -->
+	<td><input type="checkbox" class="row-check" th:value="${row.jobId}" /></td>
+	
+	<!-- 2 No -->
+	<td th:text="${pageObj != null ? pageObj.number * pageObj.size + st.index + 1 : st.index + 1}">1</td>
+	
+	<!-- 3 업체명(관리자 전용) -->
+	<td th:if="${isAdmin}">
+	  <a class="row-link"
+	     th:href="@{/admin/applyEmp/detail/{id}(id=${row.jobId})}"
+	     th:text="${row.cmpInfo != null ? row.cmpInfo.cmpName : '-'}">업체명</a>
+	</td>
+	
+	<!-- 4 담당자명 -->
+	<td th:text="${cont != null && cont.empName != null ? cont.empName : '-'}">-</td>
+	
+	<!-- 5 담당자 연락처 (담당자 없으면 회사 대표번호 보조) -->
+	<td th:text="${
+	      cont != null && cont.empPhone != null && !#strings.isEmpty(cont.empPhone) ? cont.empPhone :
+	      (row.cmpInfo != null && row.cmpInfo.cmpPhone != null && !#strings.isEmpty(row.cmpInfo.cmpPhone) ? row.cmpInfo.cmpPhone : '-')
+	    }">-</td>
+
+	<!-- 6 구인직종 -->
+	<td class="ellipsis">
+	  <a class="row-link"
+	     th:href="@{/admin/applyEmp/detail/{id}(id=${row.jobId})}"
+	     th:text="${row.jobType != null ? row.jobType : (row.jobCategory != null ? row.jobCategory : '구인직종')}">
+	    구인직종
+	  </a>
+	</td>
+	
+	<!-- 7~8 희망국적 / 인원 -->
+	<td th:text="${row.desiredNationality != null ? row.desiredNationality : '-'}">-</td>
+	<td th:text="${row.desiredCount != null ? row.desiredCount : 0}">0</td>
+
+	 <!-- 9 처리담당자 (관리자 입력값; 상세 페이지에서 관리자가 채우면 노출) -->
+	<td th:text="${row.handledBy != null && !#strings.isEmpty(row.handledBy) ? row.handledBy : '-'}">-</td>
+	
+	<!-- 10 상태 -->
+	<td>
+	  <span class="chip"
+	        th:with="statusName=${row.status != null ? row.status.name() : 'ACTIVE'}"
+	        th:classappend="${statusName == 'COMPLETED' ? ' chip--approved' :
+	                        (statusName == 'CANCELLED' ? ' chip--rejected' : ' chip--pending')}"
+	        th:text="${statusName == 'COMPLETED' ? '완료' :
+	                 (statusName == 'CANCELLED' ? '취소' : '대기')}">대기</span>
+	</td>
+	
+	<!-- 11 신청일 -->
+	<td th:text="${row.createdAt != null ? #temporals.format(row.createdAt, 'yyyy-MM-dd') : '-'}">-</td>
+	
+	<!-- 12 처리일 -->
+	  <td th:text="${row.handledAt != null ? #temporals.format(row.handledAt, 'yyyy-MM-dd') : '-'}">-</td>
+	</tr>
+  </th:block>
+ </th:block>
+ <script>
+document.addEventListener('click', (e) => {
+  const tr = e.target.closest('.clickable-row');
+  if (!tr) return;
+  const id = tr.getAttribute('data-job-id');
+  const isAdmin = document.body.dataset.isAdmin === 'true';
+  const base = isAdmin ? '/admin/applyEmp' : '/applyEmp';
+  window.location.href = `${base}/detail/${id}`;
+});
+</script>
+
+<style>
+.clickable-row { cursor: pointer; transition: background .12s ease; }
+.clickable-row:hover td { background: #eef3ff; }
+.clickable-row:focus-within td,
+.clickable-row:focus td { outline: 2px solid #8fb3ff; outline-offset: -2px; }
+
+.table .row-link { font-weight: 700; text-decoration: none; }
+.table .row-link:hover { text-decoration: underline; }
+
+/* 시각 힌트: 행 우측에 미세 화살표 */
+.clickable-row td:last-child {
+  position: relative;
+}
+.clickable-row:hover td:last-child::after,
+.clickable-row:focus td:last-child::after {
+  content: '›';
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: .4;
+  font-size: 18px;
+}
+
+/* 선택 시 라벨/체크박스 클릭과의 충돌 줄이기 */
+.row-check { cursor: default; }
+</style>
+

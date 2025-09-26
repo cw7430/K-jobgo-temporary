@@ -12,6 +12,7 @@
 
   <!-- Favicon -->
   <link rel="icon" href="https://k-jobgo-profile-photos-seoul.s3.ap-northeast-2.amazonaws.com/img/favicon.png" />
+
   <!-- CSS (공통 → 상세) -->
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" th:href="@{/css/layout.css}" />
@@ -23,104 +24,83 @@
 </head>
 
 <body class="all-page"
-      th:attr="data-is-admin=${isAdmin}, 
-               data-authority=${authorityId}, 
-               data-admin-name=${adminName}, 
-               data-super=${isSuper}, 
+      th:attr="data-is-admin=${isAdmin},
+               data-authority=${authorityId},
+               data-admin-name=${adminName},
+               data-super=${isSuper},
                data-env=${@environment.getActiveProfiles()[0]}">
 
   <!-- 헤더 (클라이언트/관리자 공용 선택) -->
   <div th:replace="${isClient} ? ~{fragments/clientHeader :: siteHeader} : ~{fragments/header :: siteHeader}"></div>
-  <div th:replace="~{login :: loginModal}"></div>
 
-  <!-- 상단 로고 -->
+  <!-- 상단 로고 (visa 페이지와 동일 배치) -->
   <div class="center-kjobgo-logo">
     <a th:href="@{/}">
       <img src="/img/k-jobgo_company.png" alt="K-jobgo | 외국인 인재 매칭 플랫폼" class="k-jobgologo" />
     </a>
   </div>
 
-  <!-- ▷ 로컬 툴바 프래그먼트 (이 페이지 안에서 정의 → 공용 테이블에 주입) -->
-  <th:block th:fragment="toolbar">
-    <div class="toolbar"
-         style="display:flex; align-items:center; gap:12px; justify-content:space-between; flex-wrap:wrap;">
-      <!-- 좌측: 일괄 처리 -->
-      <div class="toolbar-left" style="flex:0 0 auto; display:flex; gap:8px;">
-        <button type="button" class="btn btn--secondary" id="btnAssignOwner">담당자 배정</button>
-        <button type="button" class="btn btn--primary"   id="btnBulkComplete">선택 완료</button>
-        <button type="button" class="btn"                id="btnBulkCancel">선택 취소</button>
-      </div>
+  <div class="wrap">
+    <h1>구직신청 확인 페이지</h1>
 
-      <!-- 중앙: 검색/필터 -->
-      <form class="toolbar-center"
-            method="get" th:action="@{/admin/applyEmp/list}"
-            style="margin:0 auto; display:flex; align-items:center; gap:8px; flex:1 1 auto; justify-content:center;">
-        <select name="status" class="sel" style="width:150px">
-          <option value="" th:selected="${param.status == null}">전체 상태</option>
-          <option value="ACTIVE"     th:selected="${param.status == 'ACTIVE'}">대기</option>
-          <option value="COMPLETED"  th:selected="${param.status == 'COMPLETED'}">완료</option>
-          <option value="CANCELLED"  th:selected="${param.status == 'CANCELLED'}">취소</option>
-        </select>
+    <!-- 🔎 검색 폼 (가운데 정렬, 동작은 미정) -->
+    <form class="search-bar" method="get" th:action="@{/admin/applyEmp/list}">
+	  <!-- 상태 버킷: 클래스 유지 -->
+		<select name="bucket" class="sel" id="statusBucket" style="width:180px">
+		  <option value="" th:selected="${filterBucket == null or filterBucket == ''}">전체</option>
+		  <option value="IN_PROGRESS" th:selected="${filterBucket == 'IN_PROGRESS'}">진행중</option>
+		  <option value="COMPLETED" th:selected="${filterBucket == 'COMPLETED'}">완료</option>
+		  <option value="CANCELLED_OR_REJECTED" th:selected="${filterBucket == 'CANCELLED_OR_REJECTED'}">취소·반려</option>
+		</select>
+	
+	  <!-- 기간/키워드: 클래스 유지 -->
+	  <input class="inp" type="date" name="from" th:value="${param.from}" style="width:160px" />
+	  <span style="opacity:.6">~</span>
+	  <input class="inp" type="date" name="to" th:value="${param.to}" style="width:160px" />
+	
+	  <input class="inp" type="text" name="q"
+	         placeholder="업체/담당자/국적/직종 등 검색"
+	         th:value="${param.q}" style="width:280px" />
+	
+	  <button class="btn btn--primary" type="submit">검색</button>
+	  
+	  <!-- ✅ 전체보기(필터 초기화) 버튼 -->
+	  <button type="button" class="btn" id="btnReset" style="margin-left:8px;">전체보기</button>
+	
+	  <!-- 안내문: 기존 .hint 활용 -->
+		<div id="bucketHint" class="hint" style="margin-left:4px" th:switch="${filterBucket}">
+		  <span th:case="'IN_PROGRESS'">‘진행중’에는 <b>접수됨·검토중·진행중·보류</b>가 포함됩니다.</span>
+		  <span th:case="'COMPLETED'">‘완료’에는 <b>완료</b>만 포함됩니다.</span>
+		  <span th:case="'CANCELLED_OR_REJECTED'">‘취소·반려’에는 <b>취소·반려</b>가 포함됩니다.</span>
+		  <span th:case="*">상태를 선택하거나 키워드를 입력해 검색하세요.</span>
+		</div>	
+    </form>
 
-        <input class="inp" type="date" name="from" th:value="${param.from}" style="width:160px" />
-        <span style="opacity:.6">~</span>
-        <input class="inp" type="date" name="to"   th:value="${param.to}"   style="width:160px" />
+    <!-- ✅ 테이블 프래그먼트 삽입 (visa와 동일한 사용 패턴) -->
+    <div th:replace="~{fragments/applyFragments :: applyEmpTable(${applyList}, ${true}, ${filterStatus}, ${pageObj})}"></div>
 
-        <input class="inp" type="text" name="q"
-               placeholder="업체/담당자/국적/직종 검색"
-               th:value="${param.q}" style="width:280px" />
-
-        <button class="btn btn--secondary" type="submit">검색</button>
-        <a class="btn" th:href="@{/admin/applyEmp/list}">초기화</a>
-      </form>
-
-      <!-- 우측: (선택) 삭제포함/내담당만 보기 등 고급 필터 -->
-      <div class="toolbar-right" style="flex:0 0 auto; display:flex; align-items:center; gap:10px;">
-        <label th:if="${isSuper}" style="display:flex; align-items:center; gap:6px; font-size:14px;">
-          <input type="checkbox"
-                 th:checked="${param.includeDeleted} == 'true'"
-                 onclick="location.href='?'+new URLSearchParams({...Object.fromEntries(new URLSearchParams(location.search)), includeDeleted:this.checked})">
-          <span>삭제포함</span>
-        </label>
-        <label style="display:flex; align-items:center; gap:6px; font-size:14px;">
-          <input type="checkbox"
-                 th:checked="${param.mine} == 'true'"
-                 onclick="location.href='?'+new URLSearchParams({...Object.fromEntries(new URLSearchParams(location.search)), mine:this.checked})">
-          <span>내 담당만</span>
-        </label>
-      </div>
-    </div>
-  </th:block>
-
-  <div class="wrap" th:with="toolbarFrag=~{::toolbar}">
-    <h1>구직 신청 관리</h1>
-    <p class="sub">신청서를 검색·필터링하고, 선택 행에 대해 일괄 처리할 수 있습니다. 행을 클릭하면 상세 페이지로 이동합니다.</p>
-
-    <!-- ✅ 공용 테이블 프래그먼트 사용 (isAdmin=true, toolbarFrag 주입, pageObj 전달) -->
-    <div th:replace="~{fragments/applyFragments :: applyEmpTable(${applyList}, ${true}, ${filterStatus}, ${toolbarFrag}, ${pageObj})}"></div>
-
-    <!-- 중앙 하단 페이징 -->
+    <!-- 📄 페이징 (visa 페이지와 동일한 중앙 하단 배치) -->
     <div class="pagination" th:if="${pageObj != null and pageObj.totalPages > 0}"
          style="display:flex; justify-content:center; margin:18px 0 6px;">
       <ul style="display:flex; gap:6px; list-style:none; padding:0; margin:0;">
         <!-- 이전 -->
         <li th:classappend="${pageObj.first} ? 'disabled'">
           <a th:if="${!pageObj.first}"
-             th:href="@{/admin/applyEmp/list(page=${pageObj.number-1}, size=${pageObj.size}, q=${param.q}, status=${param.status}, from=${param.from}, to=${param.to}, includeDeleted=${param.includeDeleted}, mine=${param.mine})}">« 이전</a>
+             th:href="@{/admin/applyEmp/list(page=${pageObj.number-1}, size=${pageObj.size}, q=${param.q}, bucket=${param.bucket}, from=${param.from}, to=${param.to})}">« 이전</a>
           <span th:if="${pageObj.first}">« 이전</span>
         </li>
 
         <!-- 번호 -->
         <li th:each="i : ${#numbers.sequence(0, pageObj.totalPages-1)}"
             th:classappend="${i == pageObj.number} ? 'active'">
-          <a th:href="@{/admin/applyEmp/list(page=${i}, size=${pageObj.size}, q=${param.q}, status=${param.status}, from=${param.from}, to=${param.to}, includeDeleted=${param.includeDeleted}, mine=${param.mine})}"
+          <a th:href="@{/admin/applyEmp/list(page=${i}, size=${pageObj.size}, q=${param.q}, bucket=${param.bucket}, from=${param.from}, to=${param.to})}"
              th:text="${i+1}">1</a>
         </li>
 
         <!-- 다음 -->
         <li th:classappend="${pageObj.last} ? 'disabled'">
           <a th:if="${!pageObj.last}"
-             th:href="@{/admin/applyEmp/list(page=${pageObj.number+1}, size=${pageObj.size}, q=${param.q}, status=${param.status}, from=${param.from}, to=${param.to}, includeDeleted=${param.includeDeleted}, mine=${param.mine})}">다음 »</a>
+             th:href="@{/admin/applyEmp/list(page=${pageObj.number+1}, size=${pageObj.size}, q=${param.q}, bucket=${param.bucket}, from=${param.from}, to=${param.to})}">다음 »</a>
           <span th:if="${pageObj.last}">다음 »</span>
         </li>
       </ul>
@@ -140,55 +120,9 @@
     </div>
   </footer>
 
-  <!-- JS -->
-  <script th:src="@{/js/common.js}"></script>
-  <script th:src="@{/js/login.js}"></script>
-  <script>
-    // 행 전체 클릭 → 상세 이동
-    document.addEventListener('DOMContentLoaded', function () {
-      document.querySelectorAll('table.erp-table tbody tr').forEach(tr => {
-        const link = tr.querySelector('a.row-link');
-        if (!link) return;
-        tr.style.cursor = 'pointer';
-        tr.addEventListener('click', (e) => {
-          if (e.target.closest('a, button, input, label, select')) return;
-          link.click();
-        });
-      });
+<script th:src="@{/js/common.js}"></script>
+<script th:src="@{/js/login.js}"></script>
+<script th:src="@{/js/applyList.js}"></script> <!-- ✅ 추가 -->
 
-      // 전체 체크
-      const checkAll = document.getElementById('checkAll');
-      if (checkAll) {
-        checkAll.addEventListener('change', () => {
-          document.querySelectorAll('.row-check').forEach(cb => cb.checked = checkAll.checked);
-        });
-      }
-
-      // 일괄 처리 버튼(예시) → 실제 API 연동은 페이지 전용 JS에서 처리
-      const getSelectedIds = () =>
-        Array.from(document.querySelectorAll('.row-check:checked')).map(cb => cb.value);
-
-      document.getElementById('btnAssignOwner')?.addEventListener('click', () => {
-        const ids = getSelectedIds();
-        if (!ids.length) return alert('대상 행을 선택하세요.');
-        // TODO: 담당자 배정 모달/처리 로직 연결
-        console.log('담당자 배정 대상:', ids);
-      });
-
-      document.getElementById('btnBulkComplete')?.addEventListener('click', () => {
-        const ids = getSelectedIds();
-        if (!ids.length) return alert('대상 행을 선택하세요.');
-        // TODO: 완료 처리 API 호출
-        console.log('완료 처리 대상:', ids);
-      });
-
-      document.getElementById('btnBulkCancel')?.addEventListener('click', () => {
-        const ids = getSelectedIds();
-        if (!ids.length) return alert('대상 행을 선택하세요.');
-        // TODO: 취소 처리 API 호출
-        console.log('취소 처리 대상:', ids);
-      });
-    });
-  </script>
 </body>
 </html>

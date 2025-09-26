@@ -50,36 +50,6 @@ public class MainController {
         return "login";
     }
 
-    /*
-    @GetMapping("/home")
-    public String main(HttpSession session, Model model) {
-        Admin admin = (Admin) session.getAttribute("loggedInAdmin");
-
-        // 1) 로그인 여부
-        model.addAttribute("isAdmin", admin != null ? 1 : 0);
-
-        if (admin != null) {
-            // 2) 화면 표시에 쓸 이름
-            model.addAttribute("adminName", admin.getAdminName());
-
-            // 3) 권한 ID/이름(널 가드)
-            Integer authorityId = null;
-            String authorityName = null;
-            if (admin.getAuthorityType() != null) {
-                authorityId = admin.getAuthorityType().getAuthorityId();
-                authorityName = admin.getAuthorityType().getAuthorityName();
-            }
-            model.addAttribute("authorityId", authorityId);     // ✅ 토글 분기용
-            model.addAttribute("authorityName", authorityName); // (선택)
-            
-            // (선택) adminId도 쓸 일이 있으면 함께 내려두기
-            model.addAttribute("adminId", admin.getAdminId());
-        }
-
-        return "main";
-    }
-*/
-    
     @GetMapping("/home")
     public String main(HttpSession session, Model model) {
         Admin admin = (Admin) session.getAttribute("loggedInAdmin");

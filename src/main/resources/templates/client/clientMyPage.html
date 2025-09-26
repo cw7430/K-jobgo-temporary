@@ -2,44 +2,93 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="_csrf" th:content="${_csrf.token}"/>
-<meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="_csrf" th:content="${_csrf.token}"/>
+  <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
 
+  <title>(주)한국경영지원사업단 | 마이페이지</title>
 
-<!-- 추가 추천 -->
-<meta name="description" content="외국인 인재 매칭 플랫폼 - K-jobgo 회원가입 페이지">
-<meta name="keywords" content="외국인 채용, K-jobgo, 한국경영지원사업단, 인재 매칭, 기업 회원가입">
-<meta name="robots" content="index, follow">
-
-<!-- meta태그 추가해야함 : 검색엔진화 특화된 태그로 -->
-
-	<title>(주)한국경영지원사업단 | 마이 페이지</title>
-	
-<link rel="stylesheet" th:href="@{/css/clientMyPage.css}">
-<link rel="stylesheet" th:href="@{/css/layout.css}">
-<link rel="stylesheet" th:href="@{/css/toggle.css}">
-
+  <link rel="stylesheet" th:href="@{/css/layout.css}">
+  <link rel="stylesheet" th:href="@{/css/toggle.css}">
+  <link rel="stylesheet" th:href="@{/css/clientMyPage.css}">
 </head>
+<body class="all-page" th:attr="data-is-admin=${false}">
+  <!-- 헤더: 클라이언트 전용 헤더가 있으면 우선 사용
+  <div th:replace="${isClient} ? ~{fragments/clientHeader :: siteHeader} : ~{fragments/header :: siteHeader}"></div> -->
+  <div th:replace="${isClientLoggedIn} ? ~{fragments/clientHeader :: siteHeader}
+                                    : ~{fragments/header :: siteHeader}"></div>
 
-<body class="all-page"
-      th:attr="data-is-admin=${false}, data-env=${@environment.getActiveProfiles()[0]}">
+  <main class="mypage-wrap">
+    <section class="mypage-hero">
+      <h1>
+        <span th:text="${clientName}">고객</span> 님의 마이페이지
+      </h1>
+      <p class="sub" th:if="${myApprStatus != 'APPROVED'}">
+        현재 승인 상태: <strong th:text="${myApprStatus}">PENDING</strong>
+      </p>
+    </section>
 
-  <!-- 헤더 -->
-  <div th:replace="${isClient} ? ~{fragments/clientHeader :: siteHeader} : ~{fragments/header :: siteHeader}"></div>
+    <!-- 승인 전: 상태 안내/보완 경로만 -->
+    <section class="status-card" th:if="${myApprStatus != 'APPROVED'}">
+      <div class="card info">
+        <h3>승인 대기 중입니다</h3>
+        <p>
+          관리자 확인 후 승인이 완료되면 서비스 이용이 가능해집니다.
+          처리 현황은 아래에서 확인하세요.
+        </p>
+        <div class="actions">
+          <a class="btn primary" th:href="@{/my/join-status}">승인 진행상태 보기</a>
+          <a class="btn ghost" th:href="@{/client/joinPage}">가입정보 보완</a>
+        </div>
+      </div>
+    </section>
 
-  <!-- 로고 -->
-  <div class="center-kjobgo-logo">
-    <a th:href="@{/}">
-      <img src="/img/k-jobgo_company.png" alt="K-jobgo | 외국인 인재 매칭 플랫폼" class="k-jobgologo" />
-    </a>
-  </div>
+    <!-- 승인 후: 서비스 타일 -->
+    <section class="tiles" th:if="${myApprStatus == 'APPROVED'}">
+      <!-- 구직요청 목록 -->
+      <a class="tile" th:href="@{/client/applyEmp/list}" data-tile="apply-list">
+        <div class="icon">📄</div>
+        <div class="title">내 구직요청</div>
+        <div class="desc">작성/진행 중인 요청 확인</div>
+      </a>
 
+      <!-- 새 구직요청 -->
+      <a class="tile" th:href="@{/client/applyEmp(new=1)}" data-tile="apply-new">
+        <div class="icon">➕</div>
+        <div class="title">새 구직요청</div>
+        <div class="desc">요건 입력 후 제출</div>
+      </a>
 
+      <!-- 알림/공지 (향후) -->
+      <a class="tile disabled" href="javascript:void(0)" title="준비 중">
+        <div class="icon">🔔</div>
+        <div class="title">알림</div>
+        <div class="desc">승인/처리 알림 확인</div>
+      </a>
 
+      <!-- 자료실/문서함 (향후) -->
+      <a class="tile disabled" href="javascript:void(0)" title="준비 중">
+        <div class="icon">🗂️</div>
+        <div class="title">문서함</div>
+        <div class="desc">계약/첨부파일</div>
+      </a>
 
+      <!-- 문의/지원 -->
+      <a class="tile" th:href="@{/support}" data-tile="support">
+        <div class="icon">💬</div>
+        <div class="title">문의하기</div>
+        <div class="desc">빠른 1:1 문의</div>
+      </a>
 
+      <!-- 설정 -->
+      <a class="tile" th:href="@{/my/settings}" data-tile="settings">
+        <div class="icon">⚙️</div>
+        <div class="title">설정</div>
+        <div class="desc">정보 및 비밀번호 변경</div>
+      </a>
+    </section>
+  </main>
 
 <footer class="foot-var">
      <div>
@@ -52,7 +101,7 @@
 	ⓒ 2025 K-jobgo. All rights reserved.</p>
 	</div>
   </footer>
-    
+
     <!-- JS 연결 -->
     <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
     <script th:src="@{/js/clientMyPage.js}"></script>

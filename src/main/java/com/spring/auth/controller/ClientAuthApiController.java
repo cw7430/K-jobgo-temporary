@@ -7,6 +7,8 @@ import java.util.Map;
 import com.spring.client.dto.request.ClientLoginRequest;
 import com.spring.client.service.ClientAuthService;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,35 +34,39 @@ public class ClientAuthApiController {
    * - 실패: 401(자격 없음) 또는 400(형식 오류)
    */
   @PostMapping("/api/client/login")
-  public ResponseEntity<?> clientLogin(@RequestBody @Valid ClientLoginRequest req, HttpSession session) {
-    var member = clientAuthService.authenticate(req.getEmail(), req.getPassword());
-    if (member == null) {
-      return ResponseEntity.status(401).body(Map.of(
-          "success", false,
-          "message", "이메일 또는 비밀번호가 올바르지 않습니다."
-      ));
-    }
-
-    // 세션에 기업 회원 정보 저장
-    session.setAttribute("loggedInClient", member);                             // CmpInfo 엔티티/DTO
-    session.setAttribute("clientApprStatus", member.getApprStatus().name());    // "APPROVED" | "PENDING" | "REJECTED"
-    session.setAttribute("clientName", member.getCmpName());
-
-    // (선택) 세션 타임아웃 지정
-    // session.setMaxInactiveInterval(60 * 60 * 2); // 2시간
-
-    // 스프링시큐리티 컨텍스트 - ROLE_COMPANY 부여
-    var auth = new UsernamePasswordAuthenticationToken(
-        member, null, List.of(new SimpleGrantedAuthority("ROLE_COMPANY")));
-    SecurityContextHolder.getContext().setAuthentication(auth);
-    session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
-
-    return ResponseEntity.ok(Map.of(
-        "success", true,
-        "apprStatus", member.getApprStatus().name(),
-        "displayName", member.getCmpName()
-    ));
-  }
+  public ResponseEntity<?> clientLogin(@RequestBody @Valid ClientLoginRequest req,
+          HttpServletRequest request,
+          HttpServletResponse response,
+          HttpSession session) {
+	var member = clientAuthService.authenticate(req.getEmail(), req.getPassword());
+	if (member == null) {
+	return ResponseEntity.status(401).body(Map.of(
+	"success", false,
+	"message", "이메일 또는 비밀번호가 올바르지 않습니다."
+	));
+	}
+	
+	var auth = new UsernamePasswordAuthenticationToken(
+	member, null, List.of(new SimpleGrantedAuthority("ROLE_COMPANY")));
+	var ctx = SecurityContextHolder.createEmptyContext();
+	ctx.setAuthentication(auth);
+	SecurityContextHolder.setContext(ctx);
+	
+	// ✅ 표준 키 + 저장소 save로 영속화 보장
+	session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, ctx);
+	new HttpSessionSecurityContextRepository().saveContext(ctx, request, response);
+	
+	// 편의 세션
+	session.setAttribute("loggedInClient", member);
+	session.setAttribute("clientApprStatus", member.getApprStatus().name());
+	session.setAttribute("clientName", member.getCmpName());
+	
+	return ResponseEntity.ok(Map.of(
+	"success", true,
+	"apprStatus", member.getApprStatus().name(),
+	"displayName", member.getCmpName()
+	));
+}
 
   /**
    * 기업 회원 로그아웃

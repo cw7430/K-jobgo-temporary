@@ -40,7 +40,7 @@ public interface CmpJobConditionService {
     // 관리자 검색(페이지)
     Page<CmpJobCondition> searchForAdmin(
         String q,
-        JobStatus status,
+        List<JobStatus> statuses,
         LocalDate from,
         LocalDate to,
         boolean includeDeleted,
@@ -58,4 +58,13 @@ public interface CmpJobConditionService {
     
     // 고객 상세(소유권 검사 포함)
     CmpJobCondition loadByIdForCompany(Long jobId, Long cmpId);
+    
+    /** 엔티티 직접 조회가 필요하다면 명확한 반환 타입으로 */
+    CmpJobCondition findEntity(Long jobId);
+
+    /** 상태 전환 규칙을 캡슐화 */
+    void changeStatus(Long jobId, JobStatus to, String actorName);
+
+    /** (선택) 엔티티 저장 메서드를 노출하고 싶다면 */
+    CmpJobCondition save(CmpJobCondition job);
 }
