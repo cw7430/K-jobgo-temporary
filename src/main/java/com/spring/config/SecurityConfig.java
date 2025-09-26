@@ -50,9 +50,13 @@ public class SecurityConfig {
           // ✅ 기업 로그인 API 공개
           .requestMatchers(HttpMethod.POST, "/api/client/login", "/api/client/logout").permitAll()
 
-          // ✅ 기업 전용: 구직요청(작성/조회)
-          .requestMatchers("/client/applyEmp/**", "/client/clientMyPage/**").hasRole("COMPANY")
-          
+          // ✅ 마이페이지: 로그인(ROLE_COMPANY)만 요구, 승인까지는 아님
+          .requestMatchers("/my/**").hasRole("COMPANY")
+
+          // ✅ 실제 서비스: 기존대로 ROLE_COMPANY + (위 인터셉터에서 승인검사)
+          .requestMatchers("/client/clientMyPage", "/client/clientMyPage/**").hasRole("COMPANY")
+          .requestMatchers("/client/applyEmp", "/client/applyEmp/**").hasRole("COMPANY")
+    
           .requestMatchers(HttpMethod.POST, "/api/password/forgot").permitAll()
           .requestMatchers(HttpMethod.GET,  "/reset-password").permitAll()
           .requestMatchers(HttpMethod.POST, "/reset-password").permitAll()

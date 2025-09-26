@@ -18,6 +18,12 @@ public class CmpJobConditionDto {
     // (선택) 낙관적 락
     private Long version;
 
+    // ✅ 뷰에서 요구하는 필드
+    private String cmpName;        // 회사명
+    private String contactName;    // 담당자
+    private String contactPhone;   // 연락처
+    private String ownerAdminName; // 담당 관리자 표시용(있으면)
+
     // ---- 구인조건 기본 필드 ----
     private String jobType;
     private String desiredNationality;
@@ -57,7 +63,7 @@ public class CmpJobConditionDto {
 
     /** Entity → DTO */
     public static CmpJobConditionDto from(CmpJobCondition e) {
-        return CmpJobConditionDto.builder()
+        CmpJobConditionDto dto = CmpJobConditionDto.builder()
                 .jobId(e.getJobId())
                 .cmpId(e.getCmpInfo() != null ? e.getCmpInfo().getCmpId() : null)
                 .version(getVersionSafely(e))
@@ -93,6 +99,62 @@ public class CmpJobConditionDto {
                 .handledAt(e.getHandledAt())
                 .adminNote(e.getAdminNote())
                 .build();
+
+        // ✅ 연관 엔티티에서 안전하게 값 꺼내기 (필드명/구조에 맞춰 안전 접근)
+        CmpInfo cmp = e.getCmpInfo();
+        if (cmp != null) {
+            // 회사명
+            try { dto.setCmpName(nz(cmp.getCmpName())); } catch (Exception ignore) {}
+
+            // 담당자명/연락처: contacts의 첫 원소 우선, 없으면 회사 대표번호로 폴백
+            String cName = null;
+            String cPhone = null;
+            try {
+                var contacts = cmp.getContacts(); // List<...> 가정
+                if (contacts != null && !contacts.isEmpty()) {
+                    Object c = contacts.get(0); // 타입 의존 제거(리플렉션 사용)
+                    try {
+                        var m = c.getClass().getMethod("getEmpName");
+                        Object v = m.invoke(c);
+                        if (v != null) cName = v.toString();
+                    } catch (NoSuchMethodException ignore) {}
+                    try {
+                        var m = c.getClass().getMethod("getEmpPhone");
+                        Object v = m.invoke(c);
+                        if (v != null) cPhone = v.toString();
+                    } catch (NoSuchMethodException ignore) {}
+                }
+            } catch (Exception ignore) {}
+
+            if (isBlank(cPhone)) {
+                try { cPhone = nz(cmp.getCmpPhone()); } catch (Exception ignore) {}
+            }
+
+            dto.setContactName(nz(cName));
+            dto.setContactPhone(nz(cPhone));
+        }
+
+        // (선택) 담당 관리자명: 실제 연관 필드가 있을 때만
+        // if (e.getOwnerAdmin() != null) {
+        //     dto.setOwnerAdminName(e.getOwnerAdmin().getAdminName());
+        // }
+
+        return dto;
+    }
+
+    private static String nz(String v) { return v == null ? "" : v; }
+    private static boolean isBlank(String s) { return s == null || s.trim().isEmpty(); }
+
+    // 엔티티에 @Version 없으면 null 리턴
+    private static Long getVersionSafely(CmpJobCondition e) {
+        try {
+            var f = CmpJobCondition.class.getDeclaredField("version");
+            f.setAccessible(true);
+            Object v = f.get(e);
+            return (v instanceof Number) ? ((Number) v).longValue() : null;
+        } catch (NoSuchFieldException | IllegalAccessException ex) {
+            return null;
+        }
     }
 
     /** DTO → 새 Entity (insert 용)  */
@@ -129,7 +191,6 @@ public class CmpJobConditionDto {
     /**
      * DTO 값으로 엔티티 갱신(부분 업데이트)
      * - 클라이언트(회원) 입력을 반영: 관리자 메타는 절대 건드리지 않음
-     * @param ignoreNulls true면 null 필드는 건너뜀
      */
     public void copyTo(CmpJobCondition target, boolean ignoreNulls) {
         if (!ignoreNulls || jobType != null) target.setJobType(jobType);
@@ -171,16 +232,10 @@ public class CmpJobConditionDto {
         return String.format("jobType=%s, desiredNationality=%s, desiredCount=%s, status=%s",
                 e.getJobType(), e.getDesiredNationality(), e.getDesiredCount(), e.getStatus());
     }
-
-    // 엔티티에 @Version 없으면 null 리턴
-    private static Long getVersionSafely(CmpJobCondition e) {
-        try {
-            var f = CmpJobCondition.class.getDeclaredField("version");
-            f.setAccessible(true);
-            Object v = f.get(e);
-            return (v instanceof Number) ? ((Number) v).longValue() : null;
-        } catch (NoSuchFieldException | IllegalAccessException ex) {
-            return null;
-        }
+    
+    // 템플릿 상태 badge
+    public String getStatusLabel() {
+        return status != null ? status.getLabelKo() : "상태 미정";
     }
+
 }

@@ -4,6 +4,24 @@
    - erp-layout.css 기반 + 페이지 전용 보정
    ========================================= */
 
+ /* 탭 네비 (간단 스타일) */
+ .erp-tabs { display:flex; gap:8px; margin: 12px 0 18px; }
+ .erp-tabs a {
+   display:inline-flex; align-items:center; gap:6px;
+   padding:8px 14px; border:1px solid var(--line); border-radius:9999px;
+   background:#fff; color:#0E2C54; font-weight:700; font-size:13px; text-decoration:none;
+   transition: background .2s ease, color .2s ease, transform .15s ease;
+ }
+ .erp-tabs a:hover { transform: translateY(-1px); background: #eef3ff; }
+ .erp-tabs a.is-active { background: var(--accent); color:#fff; border-color: var(--accent); }
+ .erp-tabs .count {
+   display:inline-flex; min-width:20px; height:20px; padding:0 6px; border-radius:9999px;
+   align-items:center; justify-content:center; font-weight:800; font-size:12px; background:rgba(255,255,255,.2);
+ }
+ /* 편집 가능한 셀 시각 표시 */
+ .editable input.ed:not([disabled]) { background:#fffdf5; border-color:#ffd48a; }
+ .editable input.ed.is-dirty { box-shadow: 0 0 0 2px rgba(255,184,61,.35) inset; }
+ 
 /* 스크롤 컨테이너: ERP 기본을 유지하되 살짝 높이만 조정 */
 .table-scroll {
   max-height: 65vh;
@@ -58,6 +76,22 @@
 }
 .btn-link:hover {
   color: var(--accent);
+}
+
+/* 검색 바 */
+.search-bar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin: 50px 50px 0 14px;
+}
+.search-bar .inp {
+  width: 320px;
+}
+.search-bar .btn {
+  height: 38px;
+  padding: 0 16px;
 }
 
 /* =========================

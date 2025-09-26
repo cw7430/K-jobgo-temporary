@@ -212,7 +212,6 @@ h1 {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
-  overflow: hidden;
   border-radius: 8px;
   box-shadow: var(--shadow);
 }
@@ -273,9 +272,9 @@ h1 {
 }
 */
 
-.erp-table th:nth-child(1), /* No */
+.erp-table th:nth-child(1), /* 체크박스 */
 .erp-table td:nth-child(1) {
-  width: 60px;
+  width: 30px;
   text-align: center;
 }
 
@@ -283,6 +282,28 @@ h1 {
 .erp-table td:nth-child(5) {
   width: 70px;
   text-align: center;
+}
+
+/* 페이징: 중앙 하단 배치 시 룩 통일 */
+.pagination ul li a,
+.pagination ul li span {
+  display: inline-block;
+  min-width: 36px;
+  padding: 6px 10px;
+  text-align: center;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--brand-text);
+}
+.pagination ul li.active a {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+.pagination ul li.disabled span {
+  opacity: .5;
+  cursor: default;
 }
 
 /* ---------- 푸터(사이트와 동일 톤) ---------- */

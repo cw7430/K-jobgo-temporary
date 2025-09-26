@@ -22,25 +22,6 @@
   <link rel="stylesheet" th:href="@{/css/erp-layout.css}" />
   <link rel="stylesheet" th:href="@{/css/confirmClient.css}" />
 
-  <style>
-    /* 탭 네비 (간단 스타일) */
-    .erp-tabs { display:flex; gap:8px; margin: 12px 0 18px; }
-    .erp-tabs a {
-      display:inline-flex; align-items:center; gap:6px;
-      padding:8px 14px; border:1px solid var(--line); border-radius:9999px;
-      background:#fff; color:#0E2C54; font-weight:700; font-size:13px; text-decoration:none;
-      transition: background .2s ease, color .2s ease, transform .15s ease;
-    }
-    .erp-tabs a:hover { transform: translateY(-1px); background: #eef3ff; }
-    .erp-tabs a.is-active { background: var(--accent); color:#fff; border-color: var(--accent); }
-    .erp-tabs .count {
-      display:inline-flex; min-width:20px; height:20px; padding:0 6px; border-radius:9999px;
-      align-items:center; justify-content:center; font-weight:800; font-size:12px; background:rgba(255,255,255,.2);
-    }
-    /* 편집 가능한 셀 시각 표시 */
-    .editable input.ed:not([disabled]) { background:#fffdf5; border-color:#ffd48a; }
-    .editable input.ed.is-dirty { box-shadow: 0 0 0 2px rgba(255,184,61,.35) inset; }
-  </style>
 </head>
 
 <body
@@ -81,7 +62,47 @@
         <span class="count" th:if="${rejectedCount != null}" th:text="${rejectedCount}">0</span>
       </a>
     </nav>
+    
+    <!-- 검색/필터 -->
+    <form id="filterForm" class="search-bar" method="get" th:action="@{/admin/confirmClient}">
+      <!-- 현재 탭 유지 -->
+      <input type="hidden" name="status" th:value="${filterStatus != null ? filterStatus.name() : 'PENDING'}" />
 
+      <!-- 대리가입 필터 -->
+      <select class="inp" name="prxJoinVal" id="prxJoinVal" style="max-width:120px">
+        <option value=""     th:selected="${prxJoinVal == null or prxJoinVal == ''}">가입종류</option>
+        <option value="true" th:selected="${prxJoinVal == 'true'}">대리가입</option>
+      </select>
+
+      <!-- 어떤 컬럼으로 검색할지 선택 -->
+      <select class="inp" name="field" id="fieldSelect" style="max-width:180px">
+        <option value="all"            th:selected="${field == null or field == 'all'}">항목선택</option>
+        <option value="cmpName"        th:selected="${field == 'cmpName'}">업체명</option>
+        <option value="bizNo"          th:selected="${field == 'bizNo'}">사업자등록번호</option>
+        <option value="contactName"    th:selected="${field == 'contactName'}">담당자 이름</option>
+        <option value="contactPhone"   th:selected="${field == 'contactPhone'}">담당자 연락처</option>
+        <option value="proxyExecutor"  th:selected="${field == 'proxyExecutor'}">대리가입자</option>
+      </select>
+
+      <!-- 텍스트 키워드 입력 (텍스트 컬럼/전체/대리가입자에서 사용) -->
+      <input class="inp" type="text" name="keyword" id="keywordInput"
+             placeholder="키워드"
+             th:value="${keyword}"
+             style="max-width:240px;" />
+
+		<!-- ✅ 날짜 범위 필터 -->
+		<select class="inp" name="dateType" style="max-width:120px">
+		  <option th:value="created"   th:selected="${dateType == null or dateType == 'created'}">신청일</option>
+		  <option th:value="processed" th:selected="${dateType == 'processed'}">처리일</option>
+		</select>
+		<input class="inp" type="date" name="dateFrom" th:value="${dateFrom}" style="width:120px">
+		<span style="align-self:center">~</span>
+		<input class="inp" type="date" name="dateTo"   th:value="${dateTo}" style="width:120px">
+
+      <button class="btn btn--primary" type="submit">검색</button>
+      <button class="btn" type="button" id="resetBtn">전체보기</button>
+    </form>
+    
     <!-- 상단 툴바 -->
     <div class="toolbar" style="display:flex;justify-content:flex-end;gap:8px;margin-bottom:8px;">
       <button type="button" class="btn small" id="btnEdit">수정</button>
@@ -238,6 +259,63 @@
           </tr>
         </tbody>
       </table>
+    </div>
+    
+   <!-- 페이지네이션 (필터 파라미터 유지) -->
+    <div class="pagination" th:if="${pageObj != null and pageObj.totalPages > 0}"
+    	style="display:flex; justify-content:center; margin:18px 0 6px;">
+        <ul style="display:flex; gap:6px; list-style:none; padding:0; margin:0;">
+        <!-- 이전 -->
+        <li th:classappend="${pageObj.first} ? 'disabled'">
+          <a th:if="${!pageObj.first}"
+             th:href="@{/admin/confirmClient(
+                page=${pageObj.number-1},
+                size=${pageObj.size},
+                status=${filterStatus.name()},
+                prxJoinVal=${prxJoinVal},
+                field=${field},
+                keyword=${keyword},
+                dateType=${dateType},
+				dateFrom=${dateFrom},
+				dateTo=${dateTo}
+             )}">« 이전</a>
+          <span th:if="${pageObj.first}">« 이전</span>
+        </li>
+
+		<!-- 번호 -->
+        <li th:each="i : ${#numbers.sequence(0, pageObj.totalPages-1)}"
+            th:classappend="${i == pageObj.number} ? 'active'">
+          <a th:href="@{/admin/confirmClient(
+                page=${i},
+                size=${pageObj.size},
+                status=${filterStatus.name()},
+                prxJoinVal=${prxJoinVal},
+                field=${field},
+                keyword=${keyword},
+                dateType=${dateType},
+				dateFrom=${dateFrom},
+				dateTo=${dateTo}
+             )}"
+             th:text="${i+1}">1</a>
+        </li>
+
+		<!-- 다음 -->
+        <li th:classappend="${pageObj.last} ? 'disabled'">
+          <a th:if="${!pageObj.last}"
+             th:href="@{/admin/confirmClient(
+                page=${pageObj.number+1},
+                size=${pageObj.size},
+                status=${filterStatus.name()},
+                prxJoinVal=${prxJoinVal},
+                field=${field},
+                keyword=${keyword},
+                dateType=${dateType},
+				dateFrom=${dateFrom},
+				dateTo=${dateTo}
+             )}">다음 »</a>
+          <span th:if="${pageObj.last}">다음 »</span>
+        </li>
+      </ul>
     </div>
   </main>
 

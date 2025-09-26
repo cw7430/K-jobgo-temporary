@@ -16,9 +16,9 @@ document.getElementById('checkAll')?.addEventListener('change', (e) => {
 // ===== 유틸: 행에서 현재 상태/값 읽기 =====
 function getRowData(row) {
   const cmpId  = row.dataset.cmpId;
-  // 회사명은 이제 인풋에서 읽음
+  // 회사명은 인풋에서 읽음(편집모드/보기모드 모두 커버)
   const nameInput = row.querySelector('input[name="cmpName"]');
-  const name  = nameInput ? (nameInput.value?.trim() || `ID ${cmpId}`) 
+  const name  = nameInput ? (nameInput.value?.trim() || `ID ${cmpId}`)
                           : (row.children[2]?.textContent?.trim() || `ID ${cmpId}`);
   const status = row.querySelector('.status-cell .chip')?.dataset.status || 'PENDING';
   const reason = row.querySelector('.reject-reason')?.value?.trim() || '';
@@ -93,7 +93,11 @@ async function finalizeDecision(sendEmail) {
   ddNo.disabled  = true;
   try {
     await postDecision({ ...ddCtx, sendEmail });
-    location.reload(); // 필요 시 redirectWithStatus로 교체 가능
+    // 현재 탭(status) 유지한 채 새로고침
+    const url = new URL(location.href);
+    const status = document.querySelector('input[name="status"]')?.value || 'PENDING';
+    url.searchParams.set('status', status);
+    location.href = url.toString();
   } catch (e) {
     console.error(e);
     alert(e.message || '처리 중 오류가 발생했습니다.');
@@ -105,6 +109,30 @@ async function finalizeDecision(sendEmail) {
 
 ddYes?.addEventListener('click', () => finalizeDecision(true));
 ddNo?.addEventListener('click', () => finalizeDecision(false));
+
+// ===== 전체보기(필터 리셋) — 현재 탭(status)와 size만 유지 =====
+document.getElementById('resetBtn')?.addEventListener('click', () => {
+  const f = document.getElementById('filterForm');
+  if (!f) return;
+  const url = new URL(f.action, location.origin);
+
+  // 현재 탭(status) 유지
+  const status = f.querySelector('input[name="status"]')?.value || 'PENDING';
+  url.searchParams.set('status', status);
+
+  // 페이지 크기(size)는 유지(선택)
+  const cur = new URLSearchParams(location.search);
+  const size = cur.get('size');
+  if (size) url.searchParams.set('size', size);
+
+  // 나머지 필터 초기화
+  const clearNames = [
+    'field', 'keyword', 'prxJoinVal', 'dateType','dateFrom','dateTo','page'
+  ];
+  clearNames.forEach(n => url.searchParams.delete(n));
+
+  location.href = url.toString();
+});
 
 // ===== 승인 버튼 =====
 document.addEventListener('click', (e) => {
@@ -136,7 +164,6 @@ document.addEventListener('click', (e) => {
   }
 
   const { cmpId, name, reason } = getRowData(row);
-  alert('반려 사유가 입력되었습니다.');
   openDecisionDialog(
     { cmpId, status: 'REJECTED', reason },
     `가입신청 회사: ${name}\n반려 처리합니다. 반려 안내 메일을 발송하시겠습니까?`
@@ -163,9 +190,14 @@ document.addEventListener('click', async (e) => {
 
   try {
     await postDecision({ cmpId, status: 'REJECTED', reason, sendEmail: false });
-    location.reload();
+    // 현재 탭(status) 유지
+    const url = new URL(location.href);
+    const curStatus = document.querySelector('input[name="status"]')?.value || 'REJECTED';
+    url.searchParams.set('status', curStatus);
+    location.href = url.toString();
   } catch (e2) {
-    console.error(e2); alert('저장 중 오류가 발생했습니다.');
+    console.error(e2);
+    alert('저장 중 오류가 발생했습니다.');
   }
 });
 
@@ -274,7 +306,7 @@ document.addEventListener('click', function (e) {
     btnCancel.style.display = '';
   }
 
-  // 저장 (현재: 반려 사유만 저장)
+  // 저장 (회사명/담당자/연락처 + 반려 상태면 사유)
   async function onSaveClick() {
     if (!editingRow) return;
 
@@ -305,12 +337,12 @@ document.addEventListener('click', function (e) {
     btnSave.style.display = 'none';
     btnCancel.style.display = 'none';
 
-    // 현재 탭(REJECTED) 유지하며 새로고침
+    // 현재 탭(status) 유지하며 새로고침
     const url = new URL(location.href);
-    url.searchParams.set('status', 'REJECTED');
+    const status = document.querySelector('input[name="status"]')?.value || 'PENDING';
+    url.searchParams.set('status', status);
     location.href = url.toString();
   }
-
 
   // 취소 (값 원복)
   function onCancelClick() {

@@ -1,12 +1,61 @@
 /* applyList.css */
 @charset "UTF-8";
+/* ================================
+   ✅ 중앙 K-jobgo 로고: 완전 독립 스타일
+   ================================ */
+.center-kjobgo-logo {
+  position: relative;             /* 독립적 위치지정 */
+  width: 100%;                    /* 전체 너비 */
+  display: flex;                  /* 가로 중앙 정렬용 */
+  justify-content: center;       /* 가운데 정렬 */
+  align-items: center;           /* 수직 가운데 정렬 */
+  margin: 60px auto 10px auto;   /* 위아래 여백 */
+  z-index: 9;                    /* 다른 요소 위에 */
+}
+
 /* applyList.css — 구직 신청 목록 전용 마이크로 UX */
 
+/* h1과 검색폼 사이 간격 확대 */
+.wrap h1 {
+  margin-bottom: 18px; /* 기존 12px → 18px */
+}
+
+/* 검색폼: 중앙 유지 + 테이블과 간격 확보 */
+.search-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 0 auto 16px; /* 아래쪽 여백으로 테이블과 띄우기 */
+}
+
+.search-bar .hint { flex-basis: 100%; text-align: center; margin-top: 4px; }
+
+.table-scroll{
+  margin: 0 auto; 
+  background:#fff;
+  border-radius:8px;
+  box-shadow: var(--shadow);
+  overflow: auto;       /* ← 세로/가로 스크롤 컨테이너 */
+  max-height: 62vh;     /* ← 원하는 높이로 조절 */
+  position: relative;   /* ← sticky 기준 컨테이너 */
+}
+
+/* 헤더를 랩퍼 상단에 고정 */
+.table thead th{
+  position: sticky;
+  top: 0;
+  z-index: 5;                            /* 행보다 위로 */
+  background: var(--accent) !important;  /* 스크롤 시 색 유지 */
+  color:#fff;
+  box-shadow: 0 1px 0 rgba(0,0,0,.04);   /* 구분선 느낌 */
+}
+
 /* 테이블 폭: 이 페이지는 칼럼 수가 비교적 적으니 약간 좁혀 균형 */
-.table.wide-table { min-width: 1200px; }
+.table.wide-table { min-width: 2000px; }
 
 /* 툴바: 좌·중앙·우 정렬 간격 미세 조정 */
-.toolbar { gap: 12px; }
 .toolbar .toolbar-left,
 .toolbar .toolbar-right { display: flex; align-items: center; gap: 8px; }
 .toolbar .toolbar-center .inp { width: 280px; }
@@ -57,28 +106,6 @@ a.row-link:hover { color: var(--accent-2); text-decoration: underline; }
 
 /* 체크박스 열 살짝 중앙정렬 */
 .table td:first-child, .table th:first-child { text-align: center; }
-
-/* 페이징: 중앙 하단 배치 시 룩 통일 */
-.pagination ul li a,
-.pagination ul li span {
-  display: inline-block;
-  min-width: 36px;
-  padding: 6px 10px;
-  text-align: center;
-  border-radius: 6px;
-  border: 1px solid var(--line);
-  background: #fff;
-  color: var(--brand-text);
-}
-.pagination ul li.active a {
-  background: var(--accent);
-  color: #fff;
-  border-color: var(--accent);
-}
-.pagination ul li.disabled span {
-  opacity: .5;
-  cursor: default;
-}
 
 /* ‘데이터 없음’ 행을 조금 더 공손하게 */
 .table tbody tr td .no-data {

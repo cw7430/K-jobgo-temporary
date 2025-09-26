@@ -1,0 +1,95 @@
+<!-- src/main/resources/templates/fragments/applyEmpFragment.html : 구직신청 상세페이지-->
+<!-- ✅ 테이블 + 바디 영역을 프래그먼트로 분리 (visa 구조와 유사) -->
+<th:block xmlns:th="http://www.thymeleaf.org" th:fragment="jobConditionView(job)">
+  <section class="card jobcond">
+    <h3>구인조건</h3>
+
+  <div class="row" th:if="${!#strings.isEmpty(job.jobType)}">
+      <label>구인직종</label><div th:text="${job.jobType}"></div>
+    </div>
+
+    <div class="row"
+         th:if="${(!#strings.isEmpty(job.desiredNationality)) or (job.desiredCount != null and job.desiredCount > 0)}">
+      <label>희망 국적/인원</label>
+      <div>
+        <span th:text="${!#strings.isEmpty(job.desiredNationality) ? job.desiredNationality : '-'}">-</span>
+        <span th:if="${job.desiredCount != null and job.desiredCount > 0}">
+          / <span th:text="${job.desiredCount}"></span>명
+        </span>
+      </div>
+    </div>
+
+    <div class="row" th:if="${!#strings.isEmpty(job.jobDescription)}">
+      <label>실제 업무</label>
+      <div class="multiline" th:text="${job.jobDescription}"></div>
+    </div>
+
+    <div class="grid two">
+      <div class="row" th:if="${!#strings.isEmpty(job.employmentType)}">
+        <label>근무형태</label><div th:text="${job.employmentType}"></div>
+      </div>
+      <div class="row" th:if="${!#strings.isEmpty(job.workingHours)}">
+        <label>근무시간</label><div class="multiline" th:text="${job.workingHours}"></div>
+      </div>
+      <div class="row" th:if="${!#strings.isEmpty(job.breakTime)}">
+        <label>휴게시간</label><div th:text="${job.breakTime}"></div>
+      </div>
+      <div class="row" th:if="${!#strings.isEmpty(job.insurance)}">
+        <label>4대보험</label><div th:text="${job.insurance}"></div>
+      </div>
+      <div class="row" th:if="${!#strings.isEmpty(job.retirementPay)}">
+        <label>퇴직급여</label><div th:text="${job.retirementPay}"></div>
+      </div>
+
+      <!-- DTO에 없는 *Other 필드 제거하고 단일 필드만 사용 -->
+      <div class="row" th:if="${!#strings.isEmpty(job.dormitory)}">
+        <label>기숙사</label><div th:text="${job.dormitory}"></div>
+      </div>
+      <div class="row" th:if="${!#strings.isEmpty(job.meal)}">
+        <label>식사</label><div th:text="${job.meal}"></div>
+      </div>
+
+      <!-- 숫자는 >0 조건 권장(0이면 숨김) -->
+      <div class="row" th:if="${job.totalCount != null and job.totalCount > 0}">
+        <label>총 인원수</label><div><span th:text="${job.totalCount}"></span>명</div>
+      </div>
+      <div class="row" th:if="${job.currentForeigners != null and job.currentForeigners > 0}">
+        <label>현재 외국인</label><div><span th:text="${job.currentForeigners}"></span>명</div>
+      </div>
+    </div>
+
+    <div class="grid two">
+      <div class="row" th:if="${!#strings.isEmpty(job.experience)}">
+        <label>경력</label><div th:text="${job.experience}"></div>
+      </div>
+      <div class="row" th:if="${!#strings.isEmpty(job.education)}">
+        <label>학력</label><div th:text="${job.education}"></div>
+      </div>
+      <div class="row" th:if="${!#strings.isEmpty(job.qualification)}">
+        <label>자격/면허</label><div th:text="${job.qualification}"></div>
+      </div>
+      <div class="row" th:if="${!#strings.isEmpty(job.major)}">
+        <label>전공</label><div th:text="${job.major}"></div>
+      </div>
+      <div class="row" th:if="${!#strings.isEmpty(job.computerSkills)}">
+        <label>컴퓨터</label><div th:text="${job.computerSkills}"></div>
+      </div>
+      <div class="row" th:if="${!#strings.isEmpty(job.languageSkills)}">
+        <label>외국어</label><div th:text="${job.languageSkills}"></div>
+      </div>
+
+      <div class="row"
+           th:if="${!#strings.isEmpty(job.preferredConditions) or !#strings.isEmpty(job.otherPreferredConditions)}">
+        <label>우대</label>
+        <div>
+          <div th:if="${!#strings.isEmpty(job.preferredConditions)}" th:text="${job.preferredConditions}"></div>
+          <div th:if="${!#strings.isEmpty(job.otherPreferredConditions)}" th:text="${job.otherPreferredConditions}"></div>
+        </div>
+      </div>
+
+      <div class="row" th:if="${!#strings.isEmpty(job.otherNotes)}">
+        <label>기타사항</label><div class="multiline" th:text="${job.otherNotes}"></div>
+      </div>
+    </div>
+  </section>
+</th:block>

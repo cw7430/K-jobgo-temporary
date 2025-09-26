@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 
 @ControllerAdvice
 public class GlobalModelAttributeAdvice {
-
+ 
 	 @ModelAttribute
 	    public void addLoginInfo(Model model, HttpSession session) {
 
@@ -97,5 +97,7 @@ public class GlobalModelAttributeAdvice {
 	        model.addAttribute("isLoggedIn",       isLoggedIn);
 
 	        model.addAttribute("displayName", isAdmin ? model.getAttribute("adminName") : clientName);
+	        
+	        
 	    }
 	}

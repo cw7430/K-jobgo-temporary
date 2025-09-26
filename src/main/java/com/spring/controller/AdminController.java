@@ -1,9 +1,8 @@
 package com.spring.controller;
 
+import com.spring.client.dto.ConfirmRowDto;
 import com.spring.client.entity.CmpAttach;
-import com.spring.client.entity.CmpJobCondition;
 import com.spring.client.enums.ApprStatus;
-import com.spring.client.enums.JobStatus;
 import com.spring.client.repository.CmpAttachRepository;
 import com.spring.client.repository.CmpInfoRepository;
 import com.spring.client.service.CmpJobConditionService;
@@ -28,6 +27,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
@@ -39,7 +39,6 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -59,6 +58,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Controller
 @RequiredArgsConstructor
+// 국내외국인프로필, 회원가입 접수 처리 관련 페이지 컨트롤러
 public class AdminController {
 
     private final SecurityConfig securityConfig;
@@ -68,7 +68,7 @@ public class AdminController {
     private final CmpInfoRepository cmpInfoRepository;
     private final CmpAttachRepository cmpAttachRepository;
     private final ConfirmClientService confirmClientService;
-    private final CmpJobConditionService jobConditionService;
+
     
     @GetMapping("/adminMain")            
     public String adminMain() {
@@ -183,6 +183,7 @@ public class AdminController {
 
         Admin loginAdmin = (Admin) session.getAttribute("loggedInAdmin");
         if (loginAdmin != null) {
+            model.addAttribute("isAdmin", true);
             model.addAttribute("adminName", loginAdmin.getAdminName());
             model.addAttribute("authorityId", loginAdmin.getAuthorityType().getAuthorityId());
         } else {
@@ -249,27 +250,55 @@ public class AdminController {
     
     // 회원관리페이지 매핑 /templates/admin/confirmClient.html
     @GetMapping("/admin/confirmClient")
-    public String confirmClientPage(@RequestParam(required = false) ApprStatus status,
-                                    HttpSession session,
-                                    Model model) {
-        // 로그인/권한 배지(헤더 토글 등에 사용)
-        Admin loginAdmin = (Admin) session.getAttribute("loggedInAdmin");
-        if (loginAdmin != null) {
-            model.addAttribute("isAdmin", true);
-            model.addAttribute("adminName", loginAdmin.getAdminName());
-            model.addAttribute("authorityId", loginAdmin.getAuthorityType().getAuthorityId());
-        } else {
-            model.addAttribute("authorityId", 0);
-        }
+    public String confirmClient(
+            @RequestParam(defaultValue = "PENDING") ApprStatus status,
 
-        // 목록 데이터 (DTO projection)
-        ApprStatus effective = (status != null ? status : ApprStatus.PENDING);
-        var rows = cmpInfoRepository.findRows(effective);  // 상태 null이면 전체
-        model.addAttribute("companies", rows);
-        model.addAttribute("filterStatus", effective);     // 화면에서 현재 필터 유지
+            // 🔸 필터 파라미터
+            @RequestParam(required = false) String field,        // all | cmpName | bizNo | contactName | contactPhone | proxyExecutor
+            @RequestParam(required = false) String keyword,      // 텍스트
+            @RequestParam(required = false) String prxJoinVal,   // "true" (대리만) | null/"" (전체)
+            @RequestParam(required = false) String dateType, // "created" | "processed"
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate dateFrom,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate dateTo,
 
-        return "admin/confirmClient"; // templates/admin/confirmClient.html
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+
+            HttpSession session,
+            Model model
+    ) {
+        // ... (헤더/페이지네이션 동일)
+        Pageable pageable = PageRequest.of(Math.max(0, page), Math.max(1, size));
+
+        // ✅ 서비스 호출 (신규)
+        Page<ConfirmRowDto> result = confirmClientService.searchFiltered(
+                status, field, keyword, prxJoinVal, dateType, dateFrom, dateTo, pageable
+        );
+
+        model.addAttribute("companies", result.getContent());
+        model.addAttribute("pageObj", result);
+        model.addAttribute("filterStatus", status);
+
+        // ✅ 화면 유지용 새 파라미터만 바인딩
+        model.addAttribute("field", field);
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("prxJoinVal", prxJoinVal);
+        model.addAttribute("dateType", dateType);
+        model.addAttribute("dateFrom", dateFrom);
+        model.addAttribute("dateTo",   dateTo);
+
+        // 탭 카운트
+        model.addAttribute("pendingCount",  cmpInfoRepository.countByApprStatusAndIsDelFalse(ApprStatus.PENDING));
+        model.addAttribute("approvedCount", cmpInfoRepository.countByApprStatusAndIsDelFalse(ApprStatus.APPROVED));
+        model.addAttribute("rejectedCount", cmpInfoRepository.countByApprStatusAndIsDelFalse(ApprStatus.REJECTED));
+
+        return "admin/confirmClient";
     }
+
+    private static String emptyToNull(String s) {
+        return (s == null || s.isBlank()) ? null : s.trim();
+    }
+
     
     /** 공용: 경로가 URL인지(local path인지) 판단 */
     private boolean isRemote(String path) {
@@ -456,106 +485,5 @@ public class AdminController {
         public void setContactName(String v) { this.contactName = v; }
         public void setContactPhone(String v) { this.contactPhone = v; }
         public void setRejectReason(String v) { this.rejectReason = v; }
-    }
-
-    // --- ✅ 관리자 전용: 채용요청 목록/상세 ---
-    // 보안: SecurityConfig에서 /admin/applyEmp/** 는 SUPERADMIN/ADMIN(또는 STAFF 등)에게만 허용
-    @GetMapping("/admin/applyEmp")
-    public String adminApplyRedirect(
-            @RequestParam(required=false) String status,
-            @RequestParam(required=false) String q,
-            @RequestParam(required=false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
-            @RequestParam(required=false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
-            @RequestParam(defaultValue="0") int page,
-            @RequestParam(defaultValue="20") int size,
-            @RequestParam(defaultValue="false") boolean includeDeleted,
-            @RequestParam(defaultValue="false") boolean mine
-    ) {
-        String qs = org.springframework.web.util.UriComponentsBuilder.fromPath("/admin/applyEmp/list")
-                .queryParam("status", status)
-                .queryParam("q", q)
-                .queryParam("from", from)
-                .queryParam("to", to)
-                .queryParam("page", page)
-                .queryParam("size", size)
-                .queryParam("includeDeleted", includeDeleted)
-                .queryParam("mine", mine)
-                .build().toUriString();
-        return "redirect:" + qs;
-    }
-
-    @GetMapping("/admin/applyEmp/list")
-    public String adminApplyList(
-            @RequestParam(required=false) String q,
-            @RequestParam(required=false) JobStatus status,
-            @RequestParam(required=false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
-            @RequestParam(required=false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
-            @RequestParam(defaultValue="false") boolean includeDeleted,
-            @RequestParam(defaultValue="false") boolean mine,
-            @RequestParam(defaultValue="0") int page,
-            @RequestParam(defaultValue="20") int size,
-            HttpSession session,
-            Model model
-    ) {
-        // 헤더 토글/배지에 필요한 로그인 관리자 정보
-        Admin loginAdmin = (Admin) session.getAttribute("loggedInAdmin");
-        if (loginAdmin != null) {
-            model.addAttribute("isAdmin", true);
-            model.addAttribute("adminName", loginAdmin.getAdminName());
-            model.addAttribute("authorityId", loginAdmin.getAuthorityType().getAuthorityId());
-        } else {
-            model.addAttribute("authorityId", 0);
-        }
-
-        Pageable pageable = PageRequest.of(Math.max(0, page), Math.max(1, size),
-                Sort.by(Sort.Direction.DESC, "jobId"));
-
-        // ‘내 담당만’ 필터가 켜진 경우 현재 관리자 기준으로 필터링하도록 id 전달(서비스 구현 필요)
-        Long mineAdminId = (mine && loginAdmin != null) ? loginAdmin.getAdminId() : null;
-
-        Page<CmpJobCondition> result = jobConditionService.searchForAdmin(
-                (q == null ? "" : q.trim()),
-                status, from, to,
-                includeDeleted,
-                mineAdminId,
-                pageable
-        );
-
-        model.addAttribute("applyList", result.getContent());
-        model.addAttribute("pageObj", result);
-        model.addAttribute("filterStatus", status); // 프래그먼트의 상태 메시지 출력에 사용
-        model.addAttribute("param", Map.of(
-                "q", q,
-                "status", status == null ? null : status.name(),
-                "from", from,
-                "to", to,
-                "includeDeleted", includeDeleted,
-                "mine", mine
-        ));
-
-        return "admin/applyEmpList"; // ✅ 너가 만든 관리자용 목록 HTML
-    }
-    
-    /** ✅ 관리자용 상세 (행 클릭 이동 경로에 맞춤) */
-    @GetMapping("/admin/applyEmp/detail/{id}")
-    public String adminApplyDetail(@PathVariable Long id, Model model, HttpSession session) {
-        // 로그인 배지용(선택)
-        Admin loginAdmin = (Admin) session.getAttribute("loggedInAdmin");
-        if (loginAdmin != null) {
-            model.addAttribute("isAdmin", true);
-            model.addAttribute("adminName", loginAdmin.getAdminName());
-            model.addAttribute("authorityId", loginAdmin.getAuthorityType().getAuthorityId());
-        }
-
-        var form = jobConditionService.findById(id); // 서비스가 DTO/엔티티 반환
-        model.addAttribute("form", form);
-        model.addAttribute("readOnly", false); // 관리자 페이지에서는 처리/메모 가능
-        return "admin/applyEmp"; // 상세 템플릿명(재사용 정책에 따라 변경 가능)
-    }
-
-    /** (구)상세 경로 호환: /admin/applyEmp/{cmpId} → 최신 상세로 리다이렉트하고 싶다면 */
-    @GetMapping("/admin/applyEmp/{id}")
-    public String legacyAdminDetailRedirect(@PathVariable("id") Long id) {
-        return "redirect:/admin/applyEmp/detail/" + id;
     }
 }

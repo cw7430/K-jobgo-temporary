@@ -20,7 +20,7 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 @ToString(exclude = {"cmp", "job"})
 @Entity
 @Table(name = "action_request")
-public class ActionRequest {
+public class ActionRequest { // 회원 탈퇴
 
     @Id
     @GeneratedValue(strategy = IDENTITY)

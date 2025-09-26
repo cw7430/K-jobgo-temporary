@@ -16,7 +16,10 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -117,7 +120,7 @@ public class CmpJobConditionServiceImpl implements CmpJobConditionService {
     @Override
     @Transactional(readOnly = true)
     public CmpJobConditionDto findById(Long jobId) {
-        CmpJobCondition e = repo.findById(jobId)
+        CmpJobCondition e = repo.findWithCmpAndContacts(jobId)
                 .orElseThrow(() -> new IllegalArgumentException("구인조건 없음: " + jobId));
         return CmpJobConditionDto.from(e);
     }
@@ -241,22 +244,134 @@ public class CmpJobConditionServiceImpl implements CmpJobConditionService {
         repo.save(jc);
     }
 
-	@Override
-	public Page<CmpJobCondition> searchForAdmin(String q, JobStatus status, LocalDate from, LocalDate to,
-			boolean includeDeleted, Long mineAdminId, Pageable pageable) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    @Transactional(readOnly = true)
+    public Page<CmpJobCondition> searchForAdmin(
+            String q,
+            List<JobStatus> statuses,
+            LocalDate from,
+            LocalDate to,
+            boolean includeDeleted, // 현재 스키마엔 삭제필드 없음 → 미사용
+            Long mineAdminId,       // 현재 스키마엔 owner FK 없음 → 미사용
+            Pageable pageable
+    ) {
+        if (pageable == null) {
+            pageable = PageRequest.of(0, 20, Sort.by(Sort.Direction.DESC, "jobId"));
+        }
+        if (q == null) q = "";
 
-	@Override
-	public Page<CmpJobCondition> searchForClient(Long cmpId, String q, JobStatus status, Pageable pageable) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+        Specification<CmpJobCondition> spec = Specification.where(null);
+     // ✅ 상태 IN 필터
+        if (statuses != null && !statuses.isEmpty()) {
+            // IN_PROGRESS 버킷(= 네 가지 상태만 정확히 온 경우)일 때 NULL도 포함
+            boolean treatNullAsInProgress =
+                statuses.size() == 4 &&
+                statuses.contains(JobStatus.ACTIVE) &&
+                statuses.contains(JobStatus.PENDING) &&
+                statuses.contains(JobStatus.IN_PROGRESS) &&
+                statuses.contains(JobStatus.ON_HOLD);
+            
+            spec = spec.and((root, query, cb) -> {
+                var path = root.get("status");
+                var in = cb.in(path);
+                statuses.forEach(in::value);
+                return treatNullAsInProgress ? cb.or(in, cb.isNull(path)) : in;
+            });
+        }
 
-	@Override
-	public CmpJobCondition loadByIdForCompany(Long jobId, Long cmpId) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+        // 날짜 필터
+        if (from != null) {
+            spec = spec.and((root, cq, cb) ->
+                cb.greaterThanOrEqualTo(root.get("createdAt"), from.atStartOfDay()));
+        }
+        if (to != null) {
+            spec = spec.and((root, cq, cb) ->
+                cb.lessThan(root.get("createdAt"), to.plusDays(1).atStartOfDay()));
+        }
+
+        // 키워드 필터
+        if (!q.isBlank()) {
+            String like = "%" + q + "%";
+            spec = spec.and((root, cq, cb) -> cb.or(
+                cb.like(root.get("cmpInfo").get("cmpName"), like),
+                cb.like(root.get("jobType"), like),
+                cb.like(root.get("jobCategory"), like),
+                cb.like(root.get("desiredNationality"), like),
+                cb.like(root.get("adminNote"), like)
+            ));
+        }
+
+        return repo.findAll(spec, pageable);
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public Page<CmpJobCondition> searchForClient(Long cmpId, String q, JobStatus status, Pageable pageable) {
+        if (pageable == null) {
+            pageable = PageRequest.of(0, 20, Sort.by(Sort.Direction.DESC, "jobId"));
+        }
+        if (q == null) q = "";
+
+        Specification<CmpJobCondition> spec =
+            (root, cq, cb) -> cb.equal(root.get("cmpInfo").get("cmpId"), cmpId);
+
+        if (status != null) {
+            spec = spec.and((root, cq, cb) -> cb.equal(root.get("status"), status));
+        }
+
+        if (!q.isBlank()) {
+            String like = "%" + q + "%";
+            spec = spec.and((root, cq, cb) -> cb.or(
+                cb.like(root.get("jobType"), like),
+                cb.like(root.get("jobCategory"), like),
+                cb.like(root.get("desiredNationality"), like),
+                cb.like(root.get("adminNote"), like)
+            ));
+        }
+
+        Page<CmpJobCondition> page = repo.findAll(spec, pageable);
+        return (page != null) ? page : Page.empty(pageable);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public CmpJobCondition loadByIdForCompany(Long jobId, Long cmpId) {
+        CmpJobCondition e = repo.findById(jobId)
+                .orElseThrow(() -> new EntityNotFoundException("요청 없음: jobId=" + jobId));
+        if (!e.getCmpInfo().getCmpId().equals(cmpId)) {
+            throw new IllegalStateException("해당 요청은 이 회사 소유가 아닙니다.");
+        }
+        return e;
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public CmpJobCondition findEntity(Long jobId) {
+        return repo.findById(jobId)
+                   .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 신청입니다. id=" + jobId));
+    }
+
+    @Override
+    public void changeStatus(Long jobId, JobStatus to, String actorName) {
+        CmpJobCondition job = findEntity(jobId);
+        JobStatus from = job.getStatus();
+
+        // 허용 전환만 통과 (enum에 nextAllowed() 구현했다고 가정)
+        if (from == null || !from.nextAllowed().contains(to)) {
+            throw new IllegalStateException("허용되지 않은 상태 전환입니다. (" +
+                    (from == null ? "null" : from.getLabelKo()) + " -> " + to.getLabelKo() + ")");
+        }
+
+        job.setStatus(to);
+        job.setHandledBy(actorName);
+        job.setHandledAt(java.time.LocalDateTime.now());
+        // 낙관적 락(@Version)이 있다면 JPA가 버전 체크
+
+        repo.save(job);
+    }
+
+    @Override
+    public CmpJobCondition save(CmpJobCondition job) {
+        return repo.save(job);
+    }
 }

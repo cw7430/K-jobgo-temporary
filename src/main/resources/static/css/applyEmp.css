@@ -1,0 +1,276 @@
+/* applyEmp.css */
+@charset "UTF-8";
+
+/* 컨테이너 */
+.container {
+  margin: 180px  150px 10px 150px;
+  padding: 0 16px;
+  box-sizing: border-box;
+}
+
+/* 카드 */
+.card {
+  background: #fff;
+  border: 1px solid #e9eef6;
+  border-radius: 14px;
+  padding: 18px 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 1px 2px rgba(16,24,40,.04);
+}
+
+.card h3 {
+  font-size: 18px;
+  margin: 0 0 12px;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+/* 라벨-값 행 */
+.row {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 12px;
+  align-items: start;
+  padding: 8px 0;
+  border-top: 1px dashed #eef3fb;
+}
+
+.row:first-child { border-top: 0; }
+
+.row > label {
+  color: #6b7280;
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+.row > div {
+  color: #111827;
+}
+
+/* 상태/칩/배지 */
+.badge {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  background: #eef2ff;
+  color: rgb(255, 255, 255);
+  border: 1px solid #e5e7eb;
+}
+
+/* 예시 */
+.badge.status-ACTIVE, .badge.status-IN_PROGRESS { background:#2d8cff; }
+.badge.status-PENDING, .badge.status-ON_HOLD   { background:#f0ad4e; }
+.badge.status-COMPLETED                        { background:#28a745; }
+.badge.status-CANCELLED, .badge.status-REJECTED{ background:#dc3545; }
+.badge.status-DELETED                          { background:#6c757d; }
+
+.chip {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+  color: #374151;
+}
+.chip--approved  { background: #ecfdf5; color:#065f46; border-color:#d1fae5; }
+.chip--rejected  { background: #fef2f2; color:#991b1b; border-color:#fee2e2; }
+.chip--pending   { background: #eff6ff; color:#1e40af; border-color:#dbeafe; }
+
+/* 테이블 */
+.table {
+  table-layout: fixed;         /* 컬럼 너비가 일정하게 유지됨 */
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* 내용/참고 칸은 가변폭 + 내부에만 스크롤 */
+.table td.multiline .scrollbox {
+  max-height: 6rem;           /* 원하는 높이로 조절(예: 160px) */
+  overflow-y: auto;				 /* 내용이 넘치면 해당 칸 내부에서만 스크롤 */
+  overflow-x: hidden;         
+  padding: 0;               /* 여백 제거 */
+  /* 줄바꿈/가독성 옵션 */
+  white-space: normal;       /* 줄바꿈 문자 유지 + 자동 줄바꿈 */
+  word-break: break-word;      /* 긴 단어도 줄바꿈 */
+}
+
+.table th,
+.table td {
+  border-bottom: 1px solid #eef2f7;
+  padding: 4px 6px;
+  text-align: center;
+  font-size: 14px;
+}
+.table thead th {
+  font-weight: 700;
+  color: #1f2937;
+  background: #f8fafc;
+  white-space: nowrap;         /* 헤더 텍스트 세로로 쪼개지지 않게 */
+}
+
+/* 상태/상담자/관리 등 좁은 칼럼은 고정폭(선택) */
+.table th:nth-child(1), .table td:nth-child(1) { width: 150px; }  /* 일시 */
+.table th:nth-child(2), .table td:nth-child(2) { width: 90px; }   /* 상태 */
+.table th:nth-child(5), .table td:nth-child(5) { width: 90px; }   /* 상담자 */
+.table th:nth-child(6), .table td:nth-child(6) { width: 70px; }   /* 관리 */
+
+
+.table .empty { text-align: center; color:#6b7280; }
+
+/* 스크롤 테이블 */
+.table-scroll {
+  border: 1px solid #e9eef6;
+  border-radius: 12px;
+  overflow: auto;
+}
+
+/* 클릭 가능한 목록 행(호버 효과) */
+.clickable-row { cursor: pointer; }
+.clickable-row:hover td { background: #eef6ff; }
+
+/* 필터/폼 버튼 */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 8px 14px; border-radius: 10px; border: 1px solid #d1d5db;
+  background: #fff; color: #111827; cursor: pointer;
+}
+.btn.primary {
+  background: #2563eb; color: #fff; border-color: #1d4ed8;
+}
+.btn:disabled { opacity:.6; cursor:not-allowed; }
+
+/* 폼 입력 */
+input[type="text"], textarea, select {
+  width: 100%; box-sizing: border-box;
+  border: 1px solid #d1d5db; border-radius: 8px;
+  padding: 10px 12px; font-size: 14px; background: #fff;
+}
+textarea { resize: vertical; }
+
+/* 섹션 구분 */
+.jobcond { margin-top: 10px; }
+
+/* === 2분할 레이아웃: 좌 협소(고정) + 우 가변 === */
+.layout-two {
+  display: grid;
+  grid-template-columns: 320px minmax(0, 1fr); /* 좌: 320px, 우: 남은폭 */
+  column-gap: 20px;   /* 가로 간격 */
+  row-gap: 16px;      /* 세로 간격 */
+  align-items: start;  /* sticky 안정화 */
+}
+
+/* 폼 내부 2열 */
+.grid.two { display:grid; gap: 8px 20px; }
+
+/* 상태 카드 고정(헤더 높이에 맞춰 top 조절) */
+.card.sticky {
+  position: sticky;
+  top: 84px;
+  z-index: 1; /* 그림자/겹침 방지용(필요 시) */
+}
+
+/* 세로 간격 유틸(옵션) */
+.stack > * + * { margin-top: 8px; }
+
+/* 반응형: 한 컬럼으로 접기 */
+@media (max-width: 960px) {
+  .layout-two { grid-template-columns: 1fr; }
+  .card.sticky { position: static; top: auto; }
+}
+
+/* (옵션) 좌측 폭을 화면폭에 따라 유연하게: clamp 버전 */
+:root {
+  --sidebar-min: 260px;  /* 너무 좁지 않게 */
+  --sidebar-ideal: 320px;/* 기본 목표치 */
+  --sidebar-max: 360px;  /* 너무 넓지 않게 */
+}
+.layout-two.is-clamp {
+  grid-template-columns: clamp(var(--sidebar-min), 22vw, var(--sidebar-max)) minmax(0, 1fr);
+}
+
+/* 버튼 영역 공통 스타일 */
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;          /* 버튼 간 간격(선택) */
+}
+
+/* 저장 버튼 */
+.actions.save {
+  justify-content: flex-end;
+}
+
+/* 목록 버튼 */
+.actions.list {
+  margin-top:12px;
+  justify-content: flex-end;
+  padding: 10px 160px 10px 10px;
+  display:flex;
+}
+
+/* 목록 버튼 강조 */
+#btnList {
+  background:#f97316;          /* 주황 */
+  border-color:#ea580c;
+  color:#fff;
+  font-weight:700;
+  box-shadow:0 2px 6px rgba(249,115,22,.2);
+  text-decoration: none;  
+}
+#btnList:hover{ background:#ea580c; }
+#btnList:focus-visible{
+  outline:3px solid rgba(249,115,22,.35);
+  outline-offset:2px;
+}
+
+
+ /* 월 그리드 */
+.month-grid      { margin-bottom: 12px; }
+.month-grid__year{ font-weight:700; margin:8px 0; }
+.month-grid__cells{ display:grid; grid-template-columns: repeat(6, 1fr); gap:8px; }
+.month-btn{
+  padding:8px 0; border:1px solid #e5e7eb; border-radius:8px;
+  background:#fff; cursor:pointer; font-size:14px;
+}
+.month-btn.is-active   { border-color:#2563eb; font-weight:600; }
+.month-btn.is-disabled { opacity:.45; cursor:not-allowed; }
+.month-btn.is-selected { outline: 2px solid #2563eb; outline-offset: 2px; }
+
+/* 폼 정렬 유틸 */
+.mt-8 { margin-top:8px; }
+.mt-12 { margin-top:12px; }
+
+/* 아코디언 상세(타임라인 프래그먼트에서 details 사용 시) */
+details summary { cursor:pointer; color:#111827; }
+details[open] summary { font-weight:600; }
+    
+
+.deleted-text { text-decoration: line-through; opacity: .65; }
+#timelineBody tr.is-deleted td { color:#8a8a8a; }
+#timelineBody .deleted-meta { margin-top:4px; font-size:12px; opacity:.9; }
+#timelineBody tr.is-deleted .multiline s { color:inherit; }
+#timelineBody tr.is-deleted .badge { opacity:.6; }
+
+tr.is-deleted td { opacity: .85; }
+.deleted-text { color: #888; }
+.deleted-meta { margin-top: 6px; font-size: 12px; color: #999; }
+
+/* 모든 달은 클릭 가능 */
+.month-btn { cursor: pointer; }
+
+/* 기록 없는 달(기존 is-disabled)은 모양만 흐리게, 클릭은 허용 */
+.month-btn.is-disabled {
+  opacity: .45;
+  pointer-events: auto;   /* 혹시 기존에 none이라면 무효화 */
+  cursor: pointer;        /* not-allowed 제거 */
+}
+
+/* 선택 상태(이미 쓰고 있다면 유지) */
+.month-btn.is-selected {
+  outline: 2px solid currentColor;
+  opacity: 1;
+}
+
+.btn-sm:disabled { opacity:.5; cursor:not-allowed; pointer-events:none; }

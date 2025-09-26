@@ -26,7 +26,7 @@ public class ConfirmRowDto {
 
     private String rejectReason;  // 최신 승인이력의 apprCmt
     private LocalDateTime createdAt;   // cmp_info.crt_dt
-    private LocalDateTime processedAt; // 최신 승인/반려 시각
+    private LocalDateTime processedAt; // 최신 승인/반려 시각, i.processedAt
     
     private String proxyExecutor;        // ← 대리 가입 처리 직원명
 }

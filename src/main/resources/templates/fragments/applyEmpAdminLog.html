@@ -1,0 +1,66 @@
+<!-- src/main/resources/templates/fragments/applyEmpAdminLog.html -->
+<!-- ★ tbody 자체를 반환해야 th:replace로 깔끔히 교체됩니다 -->
+<tbody id="timelineBody" xmlns:th="http://www.thymeleaf.org"  th:fragment="timelineBody(timeline, isAdmin, statusLabel)" >
+  <!-- 비어있을 때 -->
+    <tr th:if="${timeline == null or #lists.isEmpty(timeline.content)}">
+      <td colspan="6" class="empty">상담 내역이 없습니다.</td>
+    </tr>
+
+  <!-- 목록 -->
+  <tr  th:each="log : ${timeline != null ? timeline.content : {}}"
+        th:classappend="${log.deleted} ? ' is-deleted' : ''">
+  
+  <!-- 1) 일시 -->
+    <td th:text="${#temporals.format(log.createdAt, 'yyyy.MM.dd HH:mm')}">0000.00.00 00:00</td>
+    
+    <!-- 2) 상태 칼럼: enum 자체를 받아서 name() + 라벨 맵으로 표시 -->
+	<td>
+	  <span class="badge"
+	        th:classappend="${(log.statusSnapshot != null) ? ' status-' + log.statusSnapshot.name() : ''}"
+	        th:text="${(log.statusSnapshot != null) ? statusLabel[log.statusSnapshot.name()] : '-'}">-</span>
+	</td>
+
+	<!-- 3) 내용 -->
+	  <td class="multiline">
+	    <div class="scrollbox">
+	      <!-- 삭제된 행 -->
+	      <th:block th:if="${log.deleted}">
+			  <del class="deleted-text"
+			       th:attr="datetime=${log.deletedAt != null ? #temporals.format(log.deletedAt, 'yyyy-MM-dd''T''HH:mm:ss') : null}">
+			    <span th:text="${log.counselContent}">내용</span>
+			  </del>
+	        <div class="deleted-meta">
+	          <small th:text="|삭제: ${log.deletedByName} · ${#temporals.format(log.deletedAt,'yyyy.MM.dd HH:mm')}|">삭제정보</small>
+	          <details th:if="${log.deleteReason}">
+	            <summary>사유</summary>
+	            <p class="multiline" th:text="${log.deleteReason}"></p>
+	          </details>
+	        </div>
+	      </th:block>
+	
+	      <!-- 삭제되지 않은 행 -->
+	      <th:block th:unless="${log.deleted}">
+	        <span th:text="${log.counselContent}">내용</span>
+	      </th:block>
+	    </div>
+	  </td>
+	  
+	 <!-- 4) 참고  ✅ 별도 셀로 분리 -->
+	  <td class="multiline">
+	    <div class="scrollbox">
+	      <span th:text="${log.referenceNote}">참고</span>
+	    </div>
+	  </td>
+		  
+	  <!-- 5) 상담자 -->
+	  <td th:text="${log.writerName}">상담자</td>
+	
+	  <!-- 6) 관리 -->
+	  <td th:if="${isAdmin}">
+	   <!-- 삭제되지 않은 행에만 버튼 -->
+	  <button type="button" class="btn-sm" th:if="${!log.deleted}" th:attr="data-id=${log.logId}">삭제</button>
+	    <!-- 삭제된 행이면 '삭제됨' 배지 등 표시 -->
+	  <span th:if="${log.deleted}" class="chip chip--rejected">삭제됨</span>
+	  </td>
+	</tr>
+  </tbody>
